@@ -1,26 +1,27 @@
+// @dart=2.12
+
 import 'dart:async';
 
 // ignore_for_file: implementation_imports
 // fignore_for_file: avoid_as
+// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
-
 import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/workspace/workspace.dart';
 import 'package:analyzer/src/context/context_root.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
+import 'package:analyzer_plugin/plugin/plugin.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
+import 'package:cool_linter/src/checker.dart';
+// import 'package:analyzer/src/workspace/workspace.dart';
 // import 'package:analyzer_plugin/plugin/plugin.dart';
 // import 'package:analyzer_plugin/protocol/protocol_common.dart';
 // import 'package:analyzer_plugin/protocol/protocol.dart';
 // import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
-
-import 'package:analyzer_plugin/plugin/plugin.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:analyzer_plugin/protocol/protocol.dart';
-import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
-import 'package:analyzer/src/dart/analysis/file_state.dart';
-
-import 'package:cool_linter/src/checker.dart';
+// import 'package:analyzer_plugin/protocol/protocol.dart';
+// import 'package:analyzer/src/dart/analysis/file_state.dart';
+// import 'package:cool_linter/src/checker.dart';
 
 class CoolLinterPlugin extends ServerPlugin {
   CoolLinterPlugin(
@@ -42,16 +43,16 @@ class CoolLinterPlugin extends ServerPlugin {
   String get contactInfo => 'https://github.com/jWinterDay/cool_linter';
 
   /// see: https://github.com/simolus3/moor/blob/master/moor_generator/lib/src/backends/common/base_plugin.dart
-  AnalysisDriverScheduler get dartScheduler {
-    if (_dartScheduler == null) {
-      _dartScheduler = AnalysisDriverScheduler(performanceLog);
-      _dartScheduler.start();
-    }
+  // AnalysisDriverScheduler get dartScheduler {
+  //   if (_dartScheduler == null) {
+  //     _dartScheduler = AnalysisDriverScheduler(performanceLog);
+  //     _dartScheduler.start();
+  //   }
 
-    return _dartScheduler;
-  }
+  //   return _dartScheduler;
+  // }
 
-  AnalysisDriverScheduler _dartScheduler;
+  // AnalysisDriverScheduler _dartScheduler;
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
@@ -106,201 +107,84 @@ class CoolLinterPlugin extends ServerPlugin {
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
-            'runZonedGuarded == ${e.toString()}',
-            'runZonedGuarded st == ${stackTrace.toString()}',
+            'Unexpected error: ${e.toString()}',
+            stackTrace.toString(),
           ).toNotification(),
         );
       },
     );
 
-    // analysisDriver.results.listen((ResolvedUnitResult analysisResult) {
-    //   _processResult(analysisDriver, analysisResult);
-    // });
-
     return analysisDriver;
   }
 
-  // @override
-  // Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
-  //   plugin.AnalysisSetContextRootsParams parameters,
-  // ) async {
-  //   final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
-  //   // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
-  //   // _updatePriorityFiles();
-
-  //   return result;
-  // }
-
-  // @override
-  // Future<plugin.AnalysisSetPriorityFilesResult> handleAnalysisSetPriorityFiles(
-  //   plugin.AnalysisSetPriorityFilesParams parameters,
-  // ) async {
-  //   // _filesFromSetPriorityFilesRequest = parameters.files;
-  //   // _updatePriorityFiles();
-
-  //   return plugin.AnalysisSetPriorityFilesResult();
-  // }
-
-  // @override
-  // Future<plugin.EditGetFixesResult> handleEditGetFixes(
-  //   plugin.EditGetFixesParams parameters,
-  // ) async {
-  // try {
-  //   final driver = driverForPath(parameters.file) as AnalysisDriver;
-  //   final analysisResult = await driver.getResult(parameters.file);
-
-  //   final fixes = _check(driver, analysisResult)
-  //       .where((fix) =>
-  //           fix.error.location.file == parameters.file &&
-  //           fix.error.location.offset <= parameters.offset &&
-  //           parameters.offset <= fix.error.location.offset + fix.error.location.length &&
-  //           fix.fixes.isNotEmpty)
-  //       .toList();
-
-  //   return plugin.EditGetFixesResult(fixes);
-  // } on Exception catch (e, stackTrace) {
-  //   channel.sendNotification(
-  //     plugin.PluginErrorParams(false, e.toString(), stackTrace.toString()).toNotification(),
-  //   );
-
-  //   return plugin.EditGetFixesResult([]);
-  // }
-  // }
-
   void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult) {
-    // final String filePath = analysisResult.libraryElement.source.fullName ?? '';
-    //
-    //
-    //
+    final String filePath = analysisResult.path;
 
-    // AnalysisResult r = AnalysisResult();
+    // channel.sendNotification(
+    //   plugin.AnalysisErrorsParams(
+    //     analysisResult.path,
+    //     <AnalysisError>[
+    //       AnalysisError(
+    //         AnalysisErrorSeverity.WARNING,
+    //         AnalysisErrorType.LINT,
+    //         Location(
+    //           analysisResult.path, //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+    //           1, // offset
+    //           1, // length
+    //           1, //lineIndex, // startLine
+    //           1, // startColumn
+    //           // 1, // endLine
+    //           // 1, // endColumn
+    //         ),
+    //         'message 888',
+    //         'code_888',
+    //       ),
+    //     ],
+    //     // checkResult.keys.toList(),
+    //   ).toNotification(),
+    // );
 
-    channel.sendNotification(
-      plugin.PluginErrorParams(
-        false,
-        'test exc filePath = ${analysisResult?.runtimeType} >>>> ${analysisResult?.content ?? "yoooo"}',
-        analysisResult?.content?.toString() ?? '---------kuuuuuuu', // StackTrace.current.toString(),
-      ).toNotification(),
-    );
+    try {
+      // If there is no relevant analysis result, notify the analyzer of no errors.
+      if (analysisResult.unit == null) {
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            <AnalysisError>[],
+          ).toNotification(),
+        );
+      } else {
+        // If there is something to analyze, do so and notify the analyzer.
+        // Note that notifying with an empty set of errors is important as
+        // this clears errors if they were fixed.
+        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+          pattern: RegExp('^Test{1}'),
+          parseResult: analysisResult,
+        );
 
-    // try {
-    //   final String filePath = analysisResult.libraryElement.source.fullName ?? '';
-
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(
-    //       false,
-    //       '+++++++filePath = $filePath',
-    //       analysisResult.content.toString(), // StackTrace.current.toString(),
-    //     ).toNotification(),
-    //   );
-
-    //   // If there is no relevant analysis result, notify the analyzer of no errors.
-    //   if (analysisResult.unit == null) {
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         <AnalysisError>[],
-    //       ).toNotification(),
-    //     );
-    //   } else {
-    //     // +++ test
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         <AnalysisError>[
-    //           AnalysisError(
-    //             AnalysisErrorSeverity.WARNING,
-    //             AnalysisErrorType.LINT,
-    //             Location(
-    //               filePath, //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-    //               1, // offset
-    //               1, // length
-    //               1, //lineIndex, // startLine
-    //               1, // startColumn
-    //               // 1, // endLine
-    //               // 1, // endColumn
-    //             ),
-    //             'message 1',
-    //             'code 1',
-    //           ),
-    //           AnalysisError(
-    //             AnalysisErrorSeverity.WARNING,
-    //             AnalysisErrorType.LINT,
-    //             Location(
-    //               filePath, //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-    //               1, // offset
-    //               1, // length
-    //               1, //lineIndex, // startLine
-    //               1, // startColumn
-    //               // 1, // endLine
-    //               // 1, // endColumn
-    //             ),
-    //             'message 2',
-    //             'code 2',
-    //           ),
-    //         ],
-    //         // checkResult.keys.toList(),
-    //       ).toNotification(),
-    //     );
-    //     // +++
-    //     //
-    //     //
-    //     //
-    //     // If there is something to analyze, do so and notify the analyzer.
-    //     // Note that notifying with an empty set of errors is important as
-    //     // this clears errors if they were fixed.
-    //     // final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-    //     //   pattern: RegExp('^Test{1}'),
-    //     //   parseResult: analysisResult,
-    //     // );
-
-    //     // channel.sendNotification(
-    //     //   plugin.AnalysisErrorsParams(
-    //     //     filePath,
-    //     //     checkResult.keys.toList(),
-    //     //   ).toNotification(),
-    //     // );
-    //   }
-    // } catch (exc, stackTrace) {
-    //   // Notify the analyzer that an exception happened.
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(
-    //       false,
-    //       exc.toString(),
-    //       stackTrace.toString(),
-    //     ).toNotification(),
-    //   );
-    // }
-    //
-    //
-    //
-    // from wrike
-    //     try {
-    //   if (analysisResult.unit != null) {
-    //     final fixes = _check(driver, analysisResult);
-
-    //     channel.sendNotification(plugin.AnalysisErrorsParams(
-    //       analysisResult.path!,
-    //       fixes.map((fix) => fix.error).toList(),
-    //     ).toNotification());
-    //   } else {
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(analysisResult.path!, [])
-    //           .toNotification(),
-    //     );
-    //   }
-    // } on Exception catch (e, stackTrace) {
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(false, e.toString(), stackTrace.toString())
-    //         .toNotification(),
-    //   );
-    // }
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            checkResult.keys.toList(),
+          ).toNotification(),
+        );
+      }
+    } catch (exc, stackTrace) {
+      // Notify the analyzer that an exception happened.
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          false,
+          exc.toString(),
+          stackTrace.toString(),
+        ).toNotification(),
+      );
+    }
   }
 
-  // @override
-  // void contentChanged(String path) {
-  //   super.driverForPath(path)?.addFile(path);
-  // }
+  @override
+  void contentChanged(String path) {
+    super.driverForPath(path)?.addFile(path);
+  }
 
   // @override
   // Future<plugin.EditGetFixesResult> handleEditGetFixes(plugin.EditGetFixesParams parameters) async {

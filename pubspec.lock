@@ -22,15 +22,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0"
-  ansicolor:
-    dependency: "direct main"
-    description:
-      name: ansicolor
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.1"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       url: "https://pub.dartlang.org"
@@ -71,13 +64,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  code_checker:
-    dependency: "direct main"
-    description:
-      name: code_checker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.6"
   collection:
     dependency: transitive
     description:
@@ -100,19 +86,12 @@ packages:
     source: hosted
     version: "0.15.2"
   crypto:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
-  csslib:
-    dependency: transitive
-    description:
-      name: csslib
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.17.0"
   dart_style:
     dependency: transitive
     description:
@@ -128,19 +107,12 @@ packages:
     source: hosted
     version: "5.2.1"
   glob:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: glob
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  html:
-    dependency: "direct main"
-    description:
-      name: html
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.15.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -191,7 +163,7 @@ packages:
     source: hosted
     version: "0.12.10"
   meta:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: meta
       url: "https://pub.dartlang.org"
@@ -233,7 +205,7 @@ packages:
     source: hosted
     version: "1.9.3"
   path:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path
       url: "https://pub.dartlang.org"
@@ -260,13 +232,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
-  quiver:
-    dependency: "direct main"
-    description:
-      name: quiver
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.5"
   shelf:
     dependency: transitive
     description:
@@ -310,7 +275,7 @@ packages:
     source: hosted
     version: "0.10.10"
   source_span:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: source_span
       url: "https://pub.dartlang.org"

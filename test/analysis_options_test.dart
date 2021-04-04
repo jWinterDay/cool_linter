@@ -60,6 +60,17 @@ cool_linter:
 
 void main() {
   group('Analysis_options.yaml', () {
+    test('some', () {
+      Map m = {"a": "fdsf"};
+
+      print('type = ${m.runtimeType}');
+
+      // final t = m as Map<String, String>?;
+      final Map<String, String>? t2 = Map<String, String>.from(m);
+      // print('----t = $t');
+      print('----t2 = $t2');
+    });
+
     test('parse yaml', () {
       final String rawYaml = json.encode(loadYaml(_exampleYaml));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);

@@ -8,5 +8,5 @@ environment:
 
 dependencies:
   cool_linter:
-    git: https://github.com/jWinterDay/cool_linter
+    git: https://github.com/jWinterDay/cool_linter #/Users/jwd25/Documents/Work/flutter_projects/cool_linter # https://github.com/jWinterDay/cool_linter
     

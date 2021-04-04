@@ -1,8 +1,10 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:analyzer_plugin/protocol/protocol_generated.dart';
+import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
+import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart';
+// import 'package:analyzer_plugin/protocol/protocol_common.dart';
+// import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 
 class Checker {
@@ -71,7 +73,7 @@ class Checker {
         'Apply fixes for cool_linter.',
         edits: <SourceFileEdit>[
           SourceFileEdit(
-            parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+            'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
             parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
             edits: <SourceEdit>[
               SourceEdit(1, 2, 'cool_linter. need to replace by pattern: $pattern'),
@@ -85,13 +87,13 @@ class Checker {
       errorSeverity ?? AnalysisErrorSeverity.WARNING,
       AnalysisErrorType.LINT,
       Location(
-        parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+        'TODO fn', //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
         1, // offset
         1, // length
         666, //lineIndex, // startLine
         1, // startColumn
-        1, // endLine
-        1, // endColumn
+        // 1, // endLine
+        // 1, // endColumn
       ),
       'Need fixes for cool_linter pattern: $pattern',
       'cool_linter_needs_fixes',
@@ -100,6 +102,6 @@ class Checker {
     result[error] = fix;
     // });
 
-    return result;
+    return result as Map<AnalysisError, PrioritizedSourceChange>;
   }
 }

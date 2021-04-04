@@ -49,7 +49,7 @@ class B {
     final Checker checker = Checker();
 
     test('find two Colors', () async {
-      final List<int> list = await checker.getIncorrectLines(twoColorsString, colorsRegExp);
+      final List<int> list = checker.getIncorrectLines(twoColorsString, colorsRegExp);
 
       expect(list.length, 2);
       expect(list[0], 4);
@@ -57,20 +57,20 @@ class B {
     });
 
     test('find two Colors in one line', () async {
-      final List<int> list = await checker.getIncorrectLines(twoColorsInOneLineString, colorsRegExp);
+      final List<int> list = checker.getIncorrectLines(twoColorsInOneLineString, colorsRegExp);
 
       expect(list.length, 1);
       expect(list[0], 4);
     });
 
     test('no Colors', () async {
-      final List<int> list = await checker.getIncorrectLines(noColorsString, colorsRegExp);
+      final List<int> list = checker.getIncorrectLines(noColorsString, colorsRegExp);
 
       expect(list, isEmpty);
     });
 
     test('exclude comments', () async {
-      final List<int> list = await checker.getIncorrectLines(excludeCommentString, colorsRegExp);
+      final List<int> list = checker.getIncorrectLines(excludeCommentString, colorsRegExp);
 
       expect(list, isEmpty);
     });

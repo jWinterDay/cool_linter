@@ -6,7 +6,7 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 
 class Checker {
-  Future<List<int>> getIncorrectLines(String src, Pattern pattern) async {
+  List<int> getIncorrectLines(String src, Pattern pattern) {
     final ParseStringResult parseResult = parseString(
       content: src,
       featureSet: FeatureSet.fromEnableFlags2(
@@ -41,13 +41,28 @@ class Checker {
   }
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    required List<int> incorrectLines,
     required Pattern pattern,
-    // required String fullName,
-    required ParseStringResult parseResult,
+    // required ParseStringResult parseResult,
+    required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity? errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
+
+    if (parseResult.content == null) {
+      return result;
+    }
+
+    final List<int> incorrectLines = getIncorrectLines(parseResult.content!, pattern);
+
+    if (incorrectLines.isEmpty) {
+      return result;
+    }
+
+    // loop through all wrong lines
+
+    final units = parseResult.libraryElement.units.first.source;
+
+    // parseResult.unit.declaredElement.source
 
     incorrectLines.forEach((int lineIndex) {
       final PrioritizedSourceChange fix = PrioritizedSourceChange(
@@ -56,10 +71,10 @@ class Checker {
           'Apply fixes for cool_linter.',
           edits: <SourceFileEdit>[
             SourceFileEdit(
-              'TODO fullName', // compilationUnit.source.fullName,
-              1, //compilationUnit.source.modificationStamp,
+              parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+              parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
               edits: <SourceEdit>[
-                SourceEdit(1, 2, 'need to replace by pattern: $pattern'),
+                SourceEdit(1, 2, 'cool_linter. need to replace by pattern: $pattern'),
               ],
             )
           ],
@@ -70,7 +85,7 @@ class Checker {
         errorSeverity ?? AnalysisErrorSeverity.WARNING,
         AnalysisErrorType.LINT,
         Location(
-          'file', // compilationUnit.source.fullName,
+          parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
           1, // offset
           1, // length
           lineIndex, // startLine
@@ -78,7 +93,7 @@ class Checker {
           1, // endLine
           1, // endColumn
         ),
-        'Class needs fixes for pattern: $pattern',
+        'Need fixes for cool_linter pattern: $pattern',
         'cool_linter_needs_fixes',
       );
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 // ignore_for_file: implementation_imports
+// ignore_for_file: avoid_as
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
 
@@ -11,6 +12,8 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
+
+//
 import 'package:cool_linter/src/checker.dart';
 
 class CoolLinterPlugin extends ServerPlugin {
@@ -18,19 +21,19 @@ class CoolLinterPlugin extends ServerPlugin {
     ResourceProvider provider,
   ) : super(provider);
 
-  final Checker checker = Checker();
+  final Checker _checker = Checker();
 
   @override
   List<String> get fileGlobsToAnalyze => const <String>['*.dart'];
 
   @override
-  String get name => 'app neo';
+  String get name => 'Cool linter';
 
   @override
   String get version => '1.0.0';
 
   @override
-  String get contactInfo => 'https://github.com/jWinterDay';
+  String get contactInfo => 'https://github.com/jWinterDay/cool_linter';
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
@@ -69,14 +72,15 @@ class CoolLinterPlugin extends ServerPlugin {
     return result;
   }
 
-  void _processResult(AnalysisDriver result, ResolvedUnitResult analysisResult) {
+  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult) {
+    final String filePath = analysisResult.path ?? 'Unknown analysisResult.path';
+
     try {
       // If there is no relevant analysis result, notify the analyzer of no errors.
       if (analysisResult.unit == null) {
-        //} || analysisResult.libraryElement == null) {
         channel.sendNotification(
           plugin.AnalysisErrorsParams(
-            analysisResult.path ?? '', // TODO
+            filePath,
             <AnalysisError>[],
           ).toNotification(),
         );
@@ -84,14 +88,14 @@ class CoolLinterPlugin extends ServerPlugin {
         // If there is something to analyze, do so and notify the analyzer.
         // Note that notifying with an empty set of errors is important as
         // this clears errors if they were fixed.
-        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = {};
-        //  = checker.check(
-        //   analysisResult.libraryElement,
-        // );
+        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+          pattern: RegExp('^Test{1}'),
+          parseResult: analysisResult,
+        );
 
         channel.sendNotification(
           plugin.AnalysisErrorsParams(
-            analysisResult.path ?? '', // TODO
+            filePath,
             checkResult.keys.toList(),
           ).toNotification(),
         );
@@ -116,18 +120,18 @@ class CoolLinterPlugin extends ServerPlugin {
   @override
   Future<plugin.EditGetFixesResult> handleEditGetFixes(plugin.EditGetFixesParams parameters) async {
     try {
-      final ResolvedUnitResult analysisResult =
-          await (driverForPath(parameters.file) as AnalysisDriver).getResult(parameters.file);
+      final AnalysisDriver analysisDriver = driverForPath(parameters.file) as AnalysisDriver;
+      final ResolvedUnitResult analysisResult = await analysisDriver.getResult(parameters.file);
 
       // Get errors and fixes for the file.
-      final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult =
-          <AnalysisError, plugin.PrioritizedSourceChange>{};
-      // checker.check(
-      //   analysisResult.libraryElement,
-      // );
+      final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+        pattern: RegExp('^Test{1}'),
+        parseResult: analysisResult,
+      );
 
       // Return any fixes that are for the expected file.
       final List<plugin.AnalysisErrorFixes> fixes = <plugin.AnalysisErrorFixes>[];
+
       for (final AnalysisError error in checkResult.keys) {
         final plugin.PrioritizedSourceChange checkResultByError = checkResult[error]!;
 

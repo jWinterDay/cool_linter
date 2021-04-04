@@ -67,9 +67,11 @@ packages:
   cool_linter:
     dependency: "direct main"
     description:
-      path: "/Users/jwd25/Documents/Work/flutter_projects/cool_linter"
-      relative: false
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "2ce6f1dfa683b3c16753c5495eab97a1c52624c0"
+      url: "https://github.com/jWinterDay/cool_linter"
+    source: git
     version: "0.0.1"
   crypto:
     dependency: transitive

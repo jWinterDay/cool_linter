@@ -1,0 +1,42 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+        {
+            "match": "\\.dart$",
+            "isAsync": true,
+            "cmd": "bash ${workspaceFolder}/scripts/run_on_save_take_screenshot.sh ${fileBasename}"
+            //  "echo '>> dart ${workspaceFolder} | ${workspaceFolder} | ${file} | ${fileBasename} | ${fileDirname}'"
+        },
+    ]
+  },
+  // "dart.doNotFormat": [
+  //   "**/generated/**",
+  // ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/.g.dart": false
+  },
+  "dart.lineLength": 120,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  },
+  "[shellscript]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  },
+  "[go]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  },
+  "dart.analysisExcludedFolders": [ "build", "release", "macos", "linux" ]
+}

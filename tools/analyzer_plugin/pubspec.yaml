@@ -1,0 +1,12 @@
+name: cool_linter_plugin_loader
+description: cool linter plugin loader
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.8.0 <3.0.0"
+
+dependencies:
+  cool_linter:
+    path: /Users/jwd25/Documents/Work/flutter_projects/cool_linter
+    

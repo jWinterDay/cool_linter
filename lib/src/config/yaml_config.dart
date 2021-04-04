@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:meta/meta.dart';
 
 // ignore_for_file: avoid_as
 class YamlConfig {

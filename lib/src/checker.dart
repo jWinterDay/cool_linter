@@ -1,8 +1,9 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 // import 'package:analyzer_plugin/protocol/protocol_common.dart';
 // import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
@@ -43,10 +44,10 @@ class Checker {
   }
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    required Pattern pattern,
+    @required Pattern pattern,
     // required ParseStringResult parseResult,
-    required ResolvedUnitResult parseResult,
-    AnalysisErrorSeverity? errorSeverity = AnalysisErrorSeverity.WARNING,
+    @required ResolvedUnitResult parseResult,
+    AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
 
@@ -74,7 +75,7 @@ class Checker {
         edits: <SourceFileEdit>[
           SourceFileEdit(
             'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-            parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+            1, //parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
             edits: <SourceEdit>[
               SourceEdit(1, 2, 'cool_linter. need to replace by pattern: $pattern'),
             ],

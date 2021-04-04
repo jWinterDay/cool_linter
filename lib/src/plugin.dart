@@ -14,10 +14,10 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 // import 'package:analyzer_plugin/protocol/protocol.dart';
 // import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 
-import 'package:analyzer_plugin_fork/plugin/plugin.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart' as plugin;
+import 'package:analyzer_plugin/plugin/plugin.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:analyzer/src/dart/analysis/file_state.dart';
 
 import 'package:cool_linter/src/checker.dart';
@@ -45,13 +45,13 @@ class CoolLinterPlugin extends ServerPlugin {
   AnalysisDriverScheduler get dartScheduler {
     if (_dartScheduler == null) {
       _dartScheduler = AnalysisDriverScheduler(performanceLog);
-      _dartScheduler!.start();
+      _dartScheduler.start();
     }
 
-    return _dartScheduler!;
+    return _dartScheduler;
   }
 
-  AnalysisDriverScheduler? _dartScheduler;
+  AnalysisDriverScheduler _dartScheduler;
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
@@ -61,28 +61,40 @@ class CoolLinterPlugin extends ServerPlugin {
       pathContext: resourceProvider.pathContext,
     )..optionsFilePath = contextRoot.optionsFile;
 
-    final ContextBuilder contextBuilder = ContextBuilder(
-      resourceProvider,
-      sdkManager,
-      null,
-    )
-      ..analysisDriverScheduler = analysisDriverScheduler //dartScheduler // analysisDriverScheduler
+    final ContextBuilder contextBuilder = ContextBuilder(resourceProvider, sdkManager, null)
+      ..analysisDriverScheduler = analysisDriverScheduler
       ..byteStore = byteStore
       ..performanceLog = performanceLog
-      ..fileContentOverlay = FileContentOverlay();
-    // ..fileContentOverlay = fileContentOverlay;
-    //
+      ..fileContentOverlay = fileContentOverlay;
 
-    final Workspace workspace = ContextBuilder.createWorkspace(
-      resourceProvider: resourceProvider,
-      options: ContextBuilderOptions(), //contextBuilder.builderOptions,
-      rootPath: contextRoot.root,
-      // lookForBazelBuildFileSubstitutes: false,
-    );
+    // final ContextRoot root = ContextRoot(
+    //   contextRoot.root,
+    //   contextRoot.exclude,
+    //   pathContext: resourceProvider.pathContext,
+    // )..optionsFilePath = contextRoot.optionsFile;
 
-    // return builder.createSourceFactory(folder.path, workspace);
+    // final ContextBuilder contextBuilder = ContextBuilder(
+    //   resourceProvider,
+    //   sdkManager,
+    //   null,
+    // )
+    //   ..analysisDriverScheduler = analysisDriverScheduler //dartScheduler // analysisDriverScheduler
+    //   ..byteStore = byteStore
+    //   ..performanceLog = performanceLog
+    //   ..fileContentOverlay = FileContentOverlay();
+    // // ..fileContentOverlay = fileContentOverlay;
+    // //
 
-    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root, workspace);
+    // final Workspace workspace = ContextBuilder.createWorkspace(
+    //   resourceProvider,
+    //   options: ContextBuilderOptions(), //contextBuilder.builderOptions,
+    //   rootPath: contextRoot.root,
+    //   // lookForBazelBuildFileSubstitutes: false,
+    // );
+
+    // // return builder.createSourceFactory(folder.path, workspace);
+
+    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root); //, workspace);
 
     runZonedGuarded(
       () {
@@ -94,8 +106,8 @@ class CoolLinterPlugin extends ServerPlugin {
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
-            e.toString(),
-            stackTrace.toString(),
+            'runZonedGuarded == ${e.toString()}',
+            'runZonedGuarded st == ${stackTrace.toString()}',
           ).toNotification(),
         );
       },
@@ -108,26 +120,26 @@ class CoolLinterPlugin extends ServerPlugin {
     return analysisDriver;
   }
 
-  @override
-  Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
-    plugin.AnalysisSetContextRootsParams parameters,
-  ) async {
-    final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
-    // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
-    // _updatePriorityFiles();
+  // @override
+  // Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
+  //   plugin.AnalysisSetContextRootsParams parameters,
+  // ) async {
+  //   final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
+  //   // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
+  //   // _updatePriorityFiles();
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  @override
-  Future<plugin.AnalysisSetPriorityFilesResult> handleAnalysisSetPriorityFiles(
-    plugin.AnalysisSetPriorityFilesParams parameters,
-  ) async {
-    // _filesFromSetPriorityFilesRequest = parameters.files;
-    // _updatePriorityFiles();
+  // @override
+  // Future<plugin.AnalysisSetPriorityFilesResult> handleAnalysisSetPriorityFiles(
+  //   plugin.AnalysisSetPriorityFilesParams parameters,
+  // ) async {
+  //   // _filesFromSetPriorityFilesRequest = parameters.files;
+  //   // _updatePriorityFiles();
 
-    return plugin.AnalysisSetPriorityFilesResult();
-  }
+  //   return plugin.AnalysisSetPriorityFilesResult();
+  // }
 
   // @override
   // Future<plugin.EditGetFixesResult> handleEditGetFixes(
@@ -156,17 +168,32 @@ class CoolLinterPlugin extends ServerPlugin {
   // }
 
   void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult) {
+    // final String filePath = analysisResult.libraryElement.source.fullName ?? '';
+    //
+    //
+    //
+
+    // AnalysisResult r = AnalysisResult();
+
     channel.sendNotification(
       plugin.PluginErrorParams(
         false,
-        'test exc',
-        analysisResult.content.toString(), // StackTrace.current.toString(),
+        'test exc filePath = ${analysisResult?.runtimeType} >>>> ${analysisResult?.content ?? "yoooo"}',
+        analysisResult?.content?.toString() ?? '---------kuuuuuuu', // StackTrace.current.toString(),
       ).toNotification(),
     );
 
-    // final String filePath = analysisResult.path ?? 'Unknown analysisResult.path';
-
     // try {
+    //   final String filePath = analysisResult.libraryElement.source.fullName ?? '';
+
+    //   channel.sendNotification(
+    //     plugin.PluginErrorParams(
+    //       false,
+    //       '+++++++filePath = $filePath',
+    //       analysisResult.content.toString(), // StackTrace.current.toString(),
+    //     ).toNotification(),
+    //   );
+
     //   // If there is no relevant analysis result, notify the analyzer of no errors.
     //   if (analysisResult.unit == null) {
     //     channel.sendNotification(
@@ -176,20 +203,63 @@ class CoolLinterPlugin extends ServerPlugin {
     //       ).toNotification(),
     //     );
     //   } else {
-    //     // If there is something to analyze, do so and notify the analyzer.
-    //     // Note that notifying with an empty set of errors is important as
-    //     // this clears errors if they were fixed.
-    //     final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-    //       pattern: RegExp('^Test{1}'),
-    //       parseResult: analysisResult,
-    //     ) as Map<AnalysisError, plugin.PrioritizedSourceChange>;
-
+    //     // +++ test
     //     channel.sendNotification(
     //       plugin.AnalysisErrorsParams(
     //         filePath,
-    //         checkResult.keys.toList(),
+    //         <AnalysisError>[
+    //           AnalysisError(
+    //             AnalysisErrorSeverity.WARNING,
+    //             AnalysisErrorType.LINT,
+    //             Location(
+    //               filePath, //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+    //               1, // offset
+    //               1, // length
+    //               1, //lineIndex, // startLine
+    //               1, // startColumn
+    //               // 1, // endLine
+    //               // 1, // endColumn
+    //             ),
+    //             'message 1',
+    //             'code 1',
+    //           ),
+    //           AnalysisError(
+    //             AnalysisErrorSeverity.WARNING,
+    //             AnalysisErrorType.LINT,
+    //             Location(
+    //               filePath, //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+    //               1, // offset
+    //               1, // length
+    //               1, //lineIndex, // startLine
+    //               1, // startColumn
+    //               // 1, // endLine
+    //               // 1, // endColumn
+    //             ),
+    //             'message 2',
+    //             'code 2',
+    //           ),
+    //         ],
+    //         // checkResult.keys.toList(),
     //       ).toNotification(),
     //     );
+    //     // +++
+    //     //
+    //     //
+    //     //
+    //     // If there is something to analyze, do so and notify the analyzer.
+    //     // Note that notifying with an empty set of errors is important as
+    //     // this clears errors if they were fixed.
+    //     // final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+    //     //   pattern: RegExp('^Test{1}'),
+    //     //   parseResult: analysisResult,
+    //     // );
+
+    //     // channel.sendNotification(
+    //     //   plugin.AnalysisErrorsParams(
+    //     //     filePath,
+    //     //     checkResult.keys.toList(),
+    //     //   ).toNotification(),
+    //     // );
     //   }
     // } catch (exc, stackTrace) {
     //   // Notify the analyzer that an exception happened.
@@ -227,10 +297,10 @@ class CoolLinterPlugin extends ServerPlugin {
     // }
   }
 
-  @override
-  void contentChanged(String path) {
-    super.driverForPath(path)?.addFile(path);
-  }
+  // @override
+  // void contentChanged(String path) {
+  //   super.driverForPath(path)?.addFile(path);
+  // }
 
   // @override
   // Future<plugin.EditGetFixesResult> handleEditGetFixes(plugin.EditGetFixesParams parameters) async {

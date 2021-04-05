@@ -1,26 +1,31 @@
+// @dart=2.12
+
 import 'dart:async';
 
 // ignore_for_file: implementation_imports
 // fignore_for_file: avoid_as
+// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/src/analysis_options/analysis_options_provider.dart';
 import 'package:analyzer/file_system/file_system.dart';
-
 import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/workspace/workspace.dart';
 import 'package:analyzer/src/context/context_root.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
+import 'package:analyzer_plugin/plugin/plugin.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
+import 'package:cool_linter/src/checker.dart';
+import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/utils/yaml_util.dart';
+import 'package:yaml/src/yaml_node.dart';
+// import 'package:analyzer/src/workspace/workspace.dart';
 // import 'package:analyzer_plugin/plugin/plugin.dart';
 // import 'package:analyzer_plugin/protocol/protocol_common.dart';
 // import 'package:analyzer_plugin/protocol/protocol.dart';
 // import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
-
-import 'package:analyzer_plugin_fork/plugin/plugin.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart' as plugin;
-import 'package:analyzer/src/dart/analysis/file_state.dart';
-
-import 'package:cool_linter/src/checker.dart';
+// import 'package:analyzer_plugin/protocol/protocol.dart';
+// import 'package:analyzer/src/dart/analysis/file_state.dart';
+// import 'package:cool_linter/src/checker.dart';
 
 class CoolLinterPlugin extends ServerPlugin {
   CoolLinterPlugin(
@@ -41,18 +46,6 @@ class CoolLinterPlugin extends ServerPlugin {
   @override
   String get contactInfo => 'https://github.com/jWinterDay/cool_linter';
 
-  /// see: https://github.com/simolus3/moor/blob/master/moor_generator/lib/src/backends/common/base_plugin.dart
-  AnalysisDriverScheduler get dartScheduler {
-    if (_dartScheduler == null) {
-      _dartScheduler = AnalysisDriverScheduler(performanceLog);
-      _dartScheduler!.start();
-    }
-
-    return _dartScheduler!;
-  }
-
-  AnalysisDriverScheduler? _dartScheduler;
-
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
     final ContextRoot root = ContextRoot(
@@ -61,170 +54,76 @@ class CoolLinterPlugin extends ServerPlugin {
       pathContext: resourceProvider.pathContext,
     )..optionsFilePath = contextRoot.optionsFile;
 
-    final ContextBuilder contextBuilder = ContextBuilder(
-      resourceProvider,
-      sdkManager,
-      null,
-    )
-      ..analysisDriverScheduler = analysisDriverScheduler //dartScheduler // analysisDriverScheduler
+    final ContextBuilder contextBuilder = ContextBuilder(resourceProvider, sdkManager, null)
+      ..analysisDriverScheduler = analysisDriverScheduler
       ..byteStore = byteStore
       ..performanceLog = performanceLog
-      ..fileContentOverlay = FileContentOverlay();
-    // ..fileContentOverlay = fileContentOverlay;
-    //
+      ..fileContentOverlay = fileContentOverlay;
 
-    final Workspace workspace = ContextBuilder.createWorkspace(
-      resourceProvider: resourceProvider,
-      options: ContextBuilderOptions(), //contextBuilder.builderOptions,
-      rootPath: contextRoot.root,
-      // lookForBazelBuildFileSubstitutes: false,
-    );
+    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root);
 
-    // return builder.createSourceFactory(folder.path, workspace);
-
-    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root, workspace);
+    // get yaml options
+    final YamlConfig? yamlConfig = _getYamlConfig(analysisDriver);
 
     runZonedGuarded(
       () {
         analysisDriver.results.listen((ResolvedUnitResult analysisResult) {
-          _processResult(analysisDriver, analysisResult);
+          _processResult(analysisDriver, analysisResult, yamlConfig);
         });
       },
       (Object e, StackTrace stackTrace) {
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
-            e.toString(),
+            'Unexpected error: ${e.toString()}',
             stackTrace.toString(),
           ).toNotification(),
         );
       },
     );
 
-    // analysisDriver.results.listen((ResolvedUnitResult analysisResult) {
-    //   _processResult(analysisDriver, analysisResult);
-    // });
-
     return analysisDriver;
   }
 
-  @override
-  Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
-    plugin.AnalysisSetContextRootsParams parameters,
-  ) async {
-    final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
-    // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
-    // _updatePriorityFiles();
+  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult, YamlConfig? yamlConfig) {
+    final String filePath = analysisResult.path;
 
-    return result;
-  }
+    try {
+      // If there is no relevant analysis result, notify the analyzer of no errors.
+      if (analysisResult.unit == null) {
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            <AnalysisError>[],
+          ).toNotification(),
+        );
+      } else {
+        // If there is something to analyze, do so and notify the analyzer.
+        // Note that notifying with an empty set of errors is important as
+        // this clears errors if they were fixed.
+        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+          yamlConfig: yamlConfig,
+          // pattern: RegExp('^Test{1}'),
+          parseResult: analysisResult,
+        );
 
-  @override
-  Future<plugin.AnalysisSetPriorityFilesResult> handleAnalysisSetPriorityFiles(
-    plugin.AnalysisSetPriorityFilesParams parameters,
-  ) async {
-    // _filesFromSetPriorityFilesRequest = parameters.files;
-    // _updatePriorityFiles();
-
-    return plugin.AnalysisSetPriorityFilesResult();
-  }
-
-  // @override
-  // Future<plugin.EditGetFixesResult> handleEditGetFixes(
-  //   plugin.EditGetFixesParams parameters,
-  // ) async {
-  // try {
-  //   final driver = driverForPath(parameters.file) as AnalysisDriver;
-  //   final analysisResult = await driver.getResult(parameters.file);
-
-  //   final fixes = _check(driver, analysisResult)
-  //       .where((fix) =>
-  //           fix.error.location.file == parameters.file &&
-  //           fix.error.location.offset <= parameters.offset &&
-  //           parameters.offset <= fix.error.location.offset + fix.error.location.length &&
-  //           fix.fixes.isNotEmpty)
-  //       .toList();
-
-  //   return plugin.EditGetFixesResult(fixes);
-  // } on Exception catch (e, stackTrace) {
-  //   channel.sendNotification(
-  //     plugin.PluginErrorParams(false, e.toString(), stackTrace.toString()).toNotification(),
-  //   );
-
-  //   return plugin.EditGetFixesResult([]);
-  // }
-  // }
-
-  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult) {
-    channel.sendNotification(
-      plugin.PluginErrorParams(
-        false,
-        'test exc',
-        analysisResult.content.toString(), // StackTrace.current.toString(),
-      ).toNotification(),
-    );
-
-    // final String filePath = analysisResult.path ?? 'Unknown analysisResult.path';
-
-    // try {
-    //   // If there is no relevant analysis result, notify the analyzer of no errors.
-    //   if (analysisResult.unit == null) {
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         <AnalysisError>[],
-    //       ).toNotification(),
-    //     );
-    //   } else {
-    //     // If there is something to analyze, do so and notify the analyzer.
-    //     // Note that notifying with an empty set of errors is important as
-    //     // this clears errors if they were fixed.
-    //     final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-    //       pattern: RegExp('^Test{1}'),
-    //       parseResult: analysisResult,
-    //     ) as Map<AnalysisError, plugin.PrioritizedSourceChange>;
-
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         checkResult.keys.toList(),
-    //       ).toNotification(),
-    //     );
-    //   }
-    // } catch (exc, stackTrace) {
-    //   // Notify the analyzer that an exception happened.
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(
-    //       false,
-    //       exc.toString(),
-    //       stackTrace.toString(),
-    //     ).toNotification(),
-    //   );
-    // }
-    //
-    //
-    //
-    // from wrike
-    //     try {
-    //   if (analysisResult.unit != null) {
-    //     final fixes = _check(driver, analysisResult);
-
-    //     channel.sendNotification(plugin.AnalysisErrorsParams(
-    //       analysisResult.path!,
-    //       fixes.map((fix) => fix.error).toList(),
-    //     ).toNotification());
-    //   } else {
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(analysisResult.path!, [])
-    //           .toNotification(),
-    //     );
-    //   }
-    // } on Exception catch (e, stackTrace) {
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(false, e.toString(), stackTrace.toString())
-    //         .toNotification(),
-    //   );
-    // }
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            checkResult.keys.toList(),
+          ).toNotification(),
+        );
+      }
+    } catch (exc, stackTrace) {
+      // Notify the analyzer that an exception happened.
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          false,
+          exc.toString(),
+          stackTrace.toString(),
+        ).toNotification(),
+      );
+    }
   }
 
   @override
@@ -232,43 +131,25 @@ class CoolLinterPlugin extends ServerPlugin {
     super.driverForPath(path)?.addFile(path);
   }
 
-  // @override
-  // Future<plugin.EditGetFixesResult> handleEditGetFixes(plugin.EditGetFixesParams parameters) async {
-  //   try {
-  //     final AnalysisDriver analysisDriver = driverForPath(parameters.file) as AnalysisDriver;
-  //     final ResolvedUnitResult analysisResult = await analysisDriver.getResult(parameters.file);
+  YamlConfig? _getYamlConfig(AnalysisDriver driver) {
+    try {
+      final bool isEmpty = driver.contextRoot?.optionsFilePath?.isEmpty ?? true;
+      if (isEmpty) {
+        return null;
+      }
 
-  //     // Get errors and fixes for the file.
-  //     final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-  //       pattern: RegExp('^Test{1}'),
-  //       parseResult: analysisResult,
-  //     );
+      final File file = resourceProvider.getFile(driver.contextRoot.optionsFilePath);
+      if (!file.exists) {
+        return null;
+      }
 
-  //     // Return any fixes that are for the expected file.
-  //     final List<plugin.AnalysisErrorFixes> fixes = <plugin.AnalysisErrorFixes>[];
+      final YamlMap yamlMap = AnalysisOptionsProvider(driver.sourceFactory).getOptionsFromFile(file);
+      final Map<String, Object> m = yamlMapToDartMap(yamlMap);
+      final YamlConfig yamlConfig = YamlConfig.fromMap(m);
 
-  //     for (final AnalysisError error in checkResult.keys) {
-  //       final plugin.PrioritizedSourceChange checkResultByError = checkResult[error]!;
-
-  //       if (error.location.file == parameters.file && checkResultByError.change.edits.single.edits.isNotEmpty) {
-  //         fixes.add(plugin.AnalysisErrorFixes(
-  //           error,
-  //           fixes: <plugin.PrioritizedSourceChange>[checkResultByError],
-  //         ));
-  //       }
-  //     }
-
-  //     return plugin.EditGetFixesResult(fixes);
-  //   } catch (exc, stackTrace) {
-  //     channel.sendNotification(
-  //       plugin.PluginErrorParams(
-  //         false,
-  //         exc.toString(),
-  //         stackTrace.toString(),
-  //       ).toNotification(),
-  //     );
-
-  //     return plugin.EditGetFixesResult(<plugin.AnalysisErrorFixes>[]);
-  //   }
-  // }
+      return yamlConfig;
+    } catch (exc) {
+      return null;
+    }
+  }
 }

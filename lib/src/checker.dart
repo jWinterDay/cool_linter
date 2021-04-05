@@ -1,50 +1,95 @@
+// @dart=2.12
+
+// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 // import 'package:analyzer_plugin/protocol/protocol_common.dart';
 // import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 
+class IncorrectLineInfo {
+  IncorrectLineInfo({
+    required this.line,
+    required this.excludeWord,
+  });
+
+  final int line;
+  final ExcludeWord excludeWord;
+}
+
 class Checker {
-  List<int> getIncorrectLines(String src, Pattern pattern) {
-    final ParseStringResult parseResult = parseString(
-      content: src,
-      featureSet: FeatureSet.fromEnableFlags2(
-        sdkLanguageVersion: Version.parse('2.12.0'),
-        flags: <String>[],
-      ),
-      throwIfDiagnostics: false,
-    );
+  List<IncorrectLineInfo>? getIncorrectLines(String src, YamlConfig? yamlConfig) {
+    final List<ExcludeWord> patterns = yamlConfig?.coolLinter?.excludeWords ?? <ExcludeWord>[];
+    if (patterns.isEmpty) {
+      return null;
+    }
 
-    final List<int> lineStarts = parseResult.lineInfo.lineStarts;
-    int prevIndex = 0;
-    int columnIndex = 0;
-    final List<int> matchIndexList = <int>[];
+    final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
+      return excludeWord.pattern != null;
+    }).map((ExcludeWord excludeWord) {
+      return RegExp(excludeWord.pattern!.toString());
+    }).toList();
 
-    lineStarts.forEach((int lineStartIndex) {
-      if (lineStartIndex == 0) return;
+    final List<IncorrectLineInfo> matchListInfo = <IncorrectLineInfo>[];
 
-      final String lineStr = src.substring(prevIndex, lineStartIndex);
-      prevIndex = lineStartIndex;
+    try {
+      final ParseStringResult parseResult = parseString(
+        content: src,
+        featureSet: FeatureSet.fromEnableFlags2(
+          sdkLanguageVersion: Version.parse('2.12.0'),
+          flags: <String>[],
+        ),
+        throwIfDiagnostics: false,
+      );
 
-      // is comment
-      final bool isComment = lineStr.trimLeft().startsWith('//');
+      final List<int> lineStarts = parseResult.lineInfo.lineStarts;
+      int prevIndex = 0;
+      int columnIndex = 0;
 
-      if (!isComment && lineStr.contains(pattern)) {
-        matchIndexList.add(columnIndex);
-      }
+      lineStarts.forEach((int lineStartIndex) {
+        if (lineStartIndex == 0) return;
 
-      columnIndex++;
-    });
+        final String lineStr = src.substring(prevIndex, lineStartIndex);
+        prevIndex = lineStartIndex;
 
-    return matchIndexList;
+        // is comment
+        final bool isComment = lineStr.trimLeft().startsWith('//');
+        if (isComment) {
+          columnIndex++;
+          return;
+        }
+
+        // patterns
+        final bool hasError = regExpPatternList.any(lineStr.contains);
+
+        if (hasError) {
+          final ExcludeWord firstExcludedWord = patterns.firstWhere((ExcludeWord excludeWord) {
+            final RegExp re = RegExp(excludeWord.pattern!);
+
+            return lineStr.contains(re);
+          });
+
+          matchListInfo.add(IncorrectLineInfo(
+            line: columnIndex + 1,
+            excludeWord: firstExcludedWord,
+          ));
+        }
+
+        columnIndex++;
+      });
+
+      return matchListInfo;
+    } catch (exc) {
+      return null; //<int>[];
+    }
   }
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    required Pattern pattern,
-    // required ParseStringResult parseResult,
+    YamlConfig? yamlConfig,
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity? errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
@@ -54,54 +99,54 @@ class Checker {
       return result;
     }
 
-    // final List<int> incorrectLines = getIncorrectLines(parseResult.content!, pattern);
+    final List<IncorrectLineInfo>? incorrectLinesInfo = getIncorrectLines(parseResult.content!, yamlConfig);
 
-    // if (incorrectLines.isEmpty) {
-    //   return result;
-    // }
+    if (incorrectLinesInfo == null || incorrectLinesInfo.isEmpty) {
+      return result;
+    }
 
     // loop through all wrong lines
+    incorrectLinesInfo.forEach((IncorrectLineInfo incorrectLineInfo) {
+      // fix
+      final PrioritizedSourceChange fix = PrioritizedSourceChange(
+        1000000,
+        SourceChange(
+          'Apply fixes for cool_linter.',
+          edits: <SourceFileEdit>[
+            SourceFileEdit(
+              'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+              1, //parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+              edits: <SourceEdit>[
+                SourceEdit(1, 2, 'cool_linter. need to replace by pattern:'), // $pattern'),
+              ],
+            )
+          ],
+        ),
+      );
 
-    // final units = parseResult.libraryElement.units.first.source;
+      // error
+      final String hint = incorrectLineInfo.excludeWord.hint ?? '';
 
-    // parseResult.unit.declaredElement.source
+      final AnalysisError error = AnalysisError(
+        AnalysisErrorSeverity(incorrectLineInfo.excludeWord.safeSeverity),
+        AnalysisErrorType.LINT,
+        Location(
+          'TODO fn', //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+          1, // offset
+          1, // length
+          incorrectLineInfo.line,
+          1, // startColumn
+          // 1, // endLine
+          // 1, // endColumn
+        ),
+        // 'Need fixes for cool_linter pattern: ${incorrectLineInfo.excludeWord.hint}',
+        'cool_linter. $hint for pattern: ${incorrectLineInfo.excludeWord.pattern}',
+        'cool_linter_needs_fixes',
+      );
 
-    // incorrectLines.forEach((int lineIndex) {
-    final PrioritizedSourceChange fix = PrioritizedSourceChange(
-      1000000,
-      SourceChange(
-        'Apply fixes for cool_linter.',
-        edits: <SourceFileEdit>[
-          SourceFileEdit(
-            'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-            parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
-            edits: <SourceEdit>[
-              SourceEdit(1, 2, 'cool_linter. need to replace by pattern: $pattern'),
-            ],
-          )
-        ],
-      ),
-    );
+      result[error] = fix;
+    });
 
-    final AnalysisError error = AnalysisError(
-      errorSeverity ?? AnalysisErrorSeverity.WARNING,
-      AnalysisErrorType.LINT,
-      Location(
-        'TODO fn', //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-        1, // offset
-        1, // length
-        666, //lineIndex, // startLine
-        1, // startColumn
-        // 1, // endLine
-        // 1, // endColumn
-      ),
-      'Need fixes for cool_linter pattern: $pattern',
-      'cool_linter_needs_fixes',
-    );
-
-    result[error] = fix;
-    // });
-
-    return result as Map<AnalysisError, PrioritizedSourceChange>;
+    return result;
   }
 }

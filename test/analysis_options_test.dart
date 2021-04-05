@@ -1,3 +1,4 @@
+// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'dart:convert';
 
 import 'package:cool_linter/src/config/yaml_config.dart';
@@ -60,41 +61,37 @@ cool_linter:
 
 void main() {
   group('Analysis_options.yaml', () {
-    test('some', () {
-      Map m = {"a": "fdsf"};
+    // test('parse real yaml', () {
+    //   final String rawYaml = json.encode(loadYaml(_realYaml));
+    //   final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      print('type = ${m.runtimeType}');
-
-      // final t = m as Map<String, String>?;
-      final Map<String, String>? t2 = Map<String, String>.from(m);
-      // print('----t = $t');
-      print('----t2 = $t2');
-    });
+    //   print('yamlConfig = $yamlConfig');
+    // });
 
     test('parse yaml', () {
       final String rawYaml = json.encode(loadYaml(_exampleYaml));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      expect(yamlConfig.analyzer!.plugins, <String>['cool_linter']);
-      expect(yamlConfig.coolLinter!.excludeFolders, <String>['test/**']);
+      expect(yamlConfig.analyzer.plugins, <String>['cool_linter']);
+      // expect(yamlConfig.coolLinter!.excludeFolders, <String>['test/**']);
 
       // Colors
-      expect(yamlConfig.coolLinter!.excludeWords!.length, 2);
-      expect(yamlConfig.coolLinter!.excludeWords![0].pattern, 'Colors');
-      expect(yamlConfig.coolLinter!.excludeWords![0].hint, 'Use colors from design system instead!');
-      expect(yamlConfig.coolLinter!.excludeWords![0].severity, 'WARNING');
+      expect(yamlConfig.coolLinter.excludeWords.length, 2);
+      expect(yamlConfig.coolLinter.excludeWords[0].pattern, 'Colors');
+      expect(yamlConfig.coolLinter.excludeWords[0].hint, 'Use colors from design system instead!');
+      expect(yamlConfig.coolLinter.excludeWords[0].severity, 'WARNING');
 
       // Test
-      expect(yamlConfig.coolLinter!.excludeWords![1].pattern, 'Test');
-      expect(yamlConfig.coolLinter!.excludeWords![1].hint, 'Use Test1 instead!');
-      expect(yamlConfig.coolLinter!.excludeWords![1].severity, 'ERROR');
+      expect(yamlConfig.coolLinter.excludeWords[1].pattern, 'Test');
+      expect(yamlConfig.coolLinter.excludeWords[1].hint, 'Use Test1 instead!');
+      expect(yamlConfig.coolLinter.excludeWords[1].severity, 'ERROR');
     });
 
     test('pattern as correct RegExp', () {
       final String rawYaml = json.encode(loadYaml(_yamlWithCorrectWordRegExp));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      final String rawRegExpStr = yamlConfig.coolLinter!.excludeWords![0].pattern!;
+      final String rawRegExpStr = yamlConfig.coolLinter.excludeWords[0].pattern;
       expect(rawRegExpStr, '^Test{1}');
 
       // try to find text
@@ -108,7 +105,7 @@ void main() {
       final String rawYaml = json.encode(loadYaml(_yamlWithIncorrectWordRegExp));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      final String rawRegExpStr = yamlConfig.coolLinter!.excludeWords![0].pattern!;
+      final String rawRegExpStr = yamlConfig.coolLinter.excludeWords[0].pattern;
       expect(rawRegExpStr, 'Test{a}');
 
       // try to create RegExp
@@ -124,7 +121,7 @@ void main() {
       final String rawYaml = json.encode(loadYaml(_yamlWithNoPattern));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      final String? rawRegExpStr = yamlConfig.coolLinter?.excludeWords?[0].pattern;
+      final String rawRegExpStr = yamlConfig.coolLinter.excludeWords[0].pattern;
 
       expect(rawRegExpStr, isNull);
     });

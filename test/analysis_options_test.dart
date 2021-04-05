@@ -59,21 +59,6 @@ cool_linter:
       severity: WARNING
 ''';
 
-const String _yamlWithRegExp = '''
-cool_linter:
-  exclude_words:
-    -
-      pattern: Colors
-      hint: Use colors from design system instead!
-      severity: WARNING
-    -
-      pattern: Test?{1}
-      hint: Use Test1 instead!
-      severity: ERROR
-  exclude_folders:
-    - test/**
-''';
-
 void main() {
   group('Analysis_options.yaml', () {
     // test('parse real yaml', () {
@@ -139,33 +124,6 @@ void main() {
       final String rawRegExpStr = yamlConfig.coolLinter.excludeWords[0].pattern;
 
       expect(rawRegExpStr, isNull);
-    });
-
-    test('try parse regexp', () {
-      final String rawYaml = json.encode(loadYaml(_yamlWithRegExp));
-      final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
-
-      final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
-      if (patterns.isEmpty) {
-        return null;
-      }
-
-      final regExpPatternList = patterns.where((ExcludeWord excludeWord) {
-        return excludeWord.pattern != null;
-      }).map((ExcludeWord excludeWord) {
-        try {
-          final RegExp re = RegExp('/' + excludeWord.pattern + '/');
-
-          return re;
-        } catch (exc) {
-          print('exc = $exc');
-          return '>>>>';
-        }
-
-        // return RegExp(excludeWord.pattern.toString());
-      }).toList();
-
-      print('regExpPatternList = $regExpPatternList');
     });
   });
 }

@@ -1,6 +1,6 @@
 import 'dart:isolate';
 
-import 'package:cool_linter/plugin_starter.dart';
+import 'package:cool_linter/cool_linter.dart';
 
 void main(List<String> args, SendPort sendPort) {
   start(args, sendPort);

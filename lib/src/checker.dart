@@ -24,12 +24,6 @@ class Checker {
       return null;
     }
 
-    final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
-      return excludeWord.pattern != null;
-    }).map((ExcludeWord excludeWord) {
-      return RegExp(excludeWord.pattern.toString());
-    }).toList();
-
     final List<IncorrectLineInfo> matchListInfo = <IncorrectLineInfo>[];
 
     try {
@@ -59,16 +53,17 @@ class Checker {
           return;
         }
 
-        // patterns
-        final bool hasError = regExpPatternList.any(lineStr.contains);
-
-        if (hasError) {
-          final ExcludeWord firstExcludedWord = patterns.firstWhere((ExcludeWord excludeWord) {
+        // find first pattern
+        final ExcludeWord firstExcludedWord = patterns.firstWhere(
+          (ExcludeWord excludeWord) {
             final RegExp re = RegExp(excludeWord.pattern);
 
             return lineStr.contains(re);
-          });
+          },
+          orElse: () => null,
+        );
 
+        if (firstExcludedWord != null) {
           matchListInfo.add(IncorrectLineInfo(
             line: columnIndex + 1,
             excludeWord: firstExcludedWord,
@@ -80,7 +75,7 @@ class Checker {
 
       return matchListInfo;
     } catch (exc) {
-      return null; //<int>[];
+      return null;
     }
   }
 

@@ -30,6 +30,10 @@
   * pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
   * severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
   * hint - [optional parameter]. It is console information sentence
+
+## Attention!!!
+##  You must restart your IDE for starting plugin
+
 3. Result
 
   example:

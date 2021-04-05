@@ -1,4 +1,2 @@
-## 0.0.3
+## 0.0.5
     updated dependencies
-## 0.0.2
-    cool linter. first version

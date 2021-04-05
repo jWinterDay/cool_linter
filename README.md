@@ -6,7 +6,7 @@
 
     ```yaml
     dev_dependencies:
-      cool_linter: ^0.0.3
+      cool_linter: ^0.0.5
     ```
 
 2. Add configuration to `analysis_options.yaml`
@@ -27,9 +27,9 @@
           severity: ERROR
     ```
 
-  pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
-  severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
-  hint - [optional parameter]. It is console information sentence
+  * pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
+  * severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
+  * hint - [optional parameter]. It is console information sentence
 3. Result
 
   example:

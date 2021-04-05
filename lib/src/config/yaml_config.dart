@@ -182,18 +182,6 @@ class ExcludeWord {
     );
   }
 
-  //   factory AnalysisErrorSeverity(String name) {
-  //   switch (name) {
-  //     case 'INFO':
-  //       return INFO;
-  //     case 'WARNING':
-  //       return WARNING;
-  //     case 'ERROR':
-  //       return ERROR;
-  //   }
-  //   throw Exception('Illegal enum value: $name');
-  // }
-
   @override
   String toString() {
     return '$pattern: $hint severity: $severity';

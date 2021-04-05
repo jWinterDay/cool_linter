@@ -5,37 +5,6 @@ import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
-const String _realYaml = '''
-include: package:pedantic/analysis_options.yaml
-
-analyzer:
-  plugins:
-    - cool_linter
-
-cool_linter:
-  exclude_words:
-    -
-      pattern: Colors
-      hint: Use colors from design system instead!
-      severity: WARNING
-    -
-      pattern: Test
-      hint: Use Test1 instead!
-      severity: ERROR
-  exclude_folders:
-    - test/**
-
-# enable-experiment:
-  #   - non-nullable
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
-  errors:
-    todo: ignore
-    must_be_immutable: ignore
-
-''';
-
 const String _exampleYaml = '''
 analyzer:
   plugins:
@@ -88,6 +57,21 @@ cool_linter:
     -
       hint: Correct RegExp pattern
       severity: WARNING
+''';
+
+const String _yamlWithRegExp = '''
+cool_linter:
+  exclude_words:
+    -
+      pattern: Colors
+      hint: Use colors from design system instead!
+      severity: WARNING
+    -
+      pattern: Test?{1}
+      hint: Use Test1 instead!
+      severity: ERROR
+  exclude_folders:
+    - test/**
 ''';
 
 void main() {
@@ -152,9 +136,36 @@ void main() {
       final String rawYaml = json.encode(loadYaml(_yamlWithNoPattern));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
-      final String rawRegExpStr = yamlConfig.coolLinter?.excludeWords[0].pattern;
+      final String rawRegExpStr = yamlConfig.coolLinter.excludeWords[0].pattern;
 
       expect(rawRegExpStr, isNull);
+    });
+
+    test('try parse regexp', () {
+      final String rawYaml = json.encode(loadYaml(_yamlWithRegExp));
+      final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
+
+      final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
+      if (patterns.isEmpty) {
+        return null;
+      }
+
+      final regExpPatternList = patterns.where((ExcludeWord excludeWord) {
+        return excludeWord.pattern != null;
+      }).map((ExcludeWord excludeWord) {
+        try {
+          final RegExp re = RegExp('/' + excludeWord.pattern + '/');
+
+          return re;
+        } catch (exc) {
+          print('exc = $exc');
+          return '>>>>';
+        }
+
+        // return RegExp(excludeWord.pattern.toString());
+      }).toList();
+
+      print('regExpPatternList = $regExpPatternList');
     });
   });
 }

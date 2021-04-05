@@ -49,7 +49,7 @@
 //     final Checker checker = Checker();
 
 //     test('find two Colors', () async {
-//       final List<int> list = checker.getIncorrectLines(twoColorsString, colorsRegExp);
+//       final List<IncorrectLineInfo> list = checker.getIncorrectLines(twoColorsString, colorsRegExp);
 
 //       expect(list.length, 2);
 //       expect(list[0], 4);

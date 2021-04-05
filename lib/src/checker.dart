@@ -28,8 +28,10 @@ class Checker {
       return null;
     }
 
-    final List<RegExp> regExpPatternList = patterns.map((ExcludeWord excludeWord) {
-      return RegExp(excludeWord.pattern!);
+    final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
+      return excludeWord.pattern != null;
+    }).map((ExcludeWord excludeWord) {
+      return RegExp(excludeWord.pattern!.toString());
     }).toList();
 
     final List<IncorrectLineInfo> matchListInfo = <IncorrectLineInfo>[];
@@ -123,6 +125,8 @@ class Checker {
       );
 
       // error
+      final String hint = incorrectLineInfo.excludeWord.hint ?? '';
+
       final AnalysisError error = AnalysisError(
         AnalysisErrorSeverity(incorrectLineInfo.excludeWord.safeSeverity),
         AnalysisErrorType.LINT,
@@ -136,7 +140,7 @@ class Checker {
           // 1, // endColumn
         ),
         // 'Need fixes for cool_linter pattern: ${incorrectLineInfo.excludeWord.hint}',
-        'cool_linter. ${incorrectLineInfo.excludeWord} for pattern: ${incorrectLineInfo.excludeWord.hint}',
+        'cool_linter. $hint for pattern: ${incorrectLineInfo.excludeWord.pattern}',
         'cool_linter_needs_fixes',
       );
 

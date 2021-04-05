@@ -26,6 +26,10 @@
           pattern: Test123{1}
           severity: ERROR
     ```
+
+  pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
+  severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
+  hint - [optional parameter]. It is console information sentence
 3. Result
 
   example:

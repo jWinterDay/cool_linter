@@ -21,6 +21,8 @@ class CoolLinterPlugin extends ServerPlugin {
     ResourceProvider provider,
   ) : super(provider);
 
+  List<String> _filesFromSetPriorityFilesRequest = <String>[];
+
   final Checker _checker = Checker();
 
   @override
@@ -74,6 +76,33 @@ class CoolLinterPlugin extends ServerPlugin {
     return analysisDriver;
   }
 
+  @override
+  void contentChanged(String path) {
+    super.driverForPath(path)?.addFile(path);
+  }
+
+  @override
+  Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
+    plugin.AnalysisSetContextRootsParams parameters,
+  ) async {
+    final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
+    // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
+    // see: https://github.com/dart-code-checker/dart-code-metrics/blob/master/lib/src/obsoleted/analyzer_plugin/analyzer_plugin.dart
+    _updatePriorityFiles();
+
+    return result;
+  }
+
+  @override
+  Future<plugin.AnalysisSetPriorityFilesResult> handleAnalysisSetPriorityFiles(
+    plugin.AnalysisSetPriorityFilesParams parameters,
+  ) async {
+    _filesFromSetPriorityFilesRequest = parameters.files;
+    _updatePriorityFiles();
+
+    return plugin.AnalysisSetPriorityFilesResult();
+  }
+
   void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult, YamlConfig yamlConfig) {
     final String filePath = analysisResult.path;
 
@@ -115,9 +144,32 @@ class CoolLinterPlugin extends ServerPlugin {
     }
   }
 
-  @override
-  void contentChanged(String path) {
-    super.driverForPath(path)?.addFile(path);
+  // see: https://github.com/dart-code-checker/dart-code-metrics/blob/master/lib/src/obsoleted/analyzer_plugin/analyzer_plugin.dart
+  void _updatePriorityFiles() {
+    final Set<String> filesToFullyResolve = <String>{
+      // Ensure these go first, since they're actually considered priority; ...
+      ..._filesFromSetPriorityFilesRequest,
+
+      // ... all other files need to be analyzed, but don't trump priority
+      // ignore: avoid_as
+      for (final AnalysisDriverGeneric driver2 in driverMap.values) ...(driver2 as AnalysisDriver).addedFiles,
+    };
+
+    // From ServerPlugin.handleAnalysisSetPriorityFiles
+    final Map<AnalysisDriverGeneric, List<String>> filesByDriver = <AnalysisDriverGeneric, List<String>>{};
+
+    for (final String file in filesToFullyResolve) {
+      final plugin.ContextRoot contextRoot = contextRootContaining(file);
+
+      if (contextRoot != null) {
+        final AnalysisDriverGeneric driver = driverMap[contextRoot];
+        filesByDriver.putIfAbsent(driver, () => <String>[]).add(file);
+      }
+    }
+
+    filesByDriver.forEach((AnalysisDriverGeneric driver, List<String> files) {
+      driver.priorityFiles = files;
+    });
   }
 
   YamlConfig _getYamlConfig(AnalysisDriver driver) {

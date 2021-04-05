@@ -99,6 +99,18 @@ class CoolLinter {
   final List<ExcludeWord> excludeWords;
   // final List<String>? excludeFolders;
 
+  // List<RegExp> get regExpPatterns {
+  //   final List<ExcludeWord> patterns = excludeWords ?? <ExcludeWord>[];
+
+  //   final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
+  //     return excludeWord.pattern != null;
+  //   }).map((ExcludeWord excludeWord) {
+  //     return RegExp(excludeWord.pattern.toString());
+  //   }).toList();
+
+  //   return regExpPatternList;
+  // }
+
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {

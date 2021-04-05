@@ -6,7 +6,7 @@
 
     ```yaml
     dev_dependencies:
-      cool_linter: ^0.0.1
+      cool_linter: ^0.0.2
     ```
 
 2. Add configuration to `analysis_options.yaml`
@@ -23,7 +23,12 @@
           hint: Use colors from design system instead!
           severity: WARNING
         -
-          pattern: Test
-          hint: Use Test1 instead!
+          pattern: Test123{1}
           severity: ERROR
     ```
+3. Result
+
+  example:
+  ![Screenshot](images/analysis_options.yaml.png)
+  ![Screenshot](images/linter1.png)
+  ![Screenshot](images/linter2.png)

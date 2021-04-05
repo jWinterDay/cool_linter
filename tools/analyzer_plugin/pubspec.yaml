@@ -7,5 +7,7 @@ environment:
 
 dependencies:
   cool_linter:
-    git: https://github.com/jWinterDay/cool_linter
+    git:
+      url: https://github.com/jWinterDay/cool_linter
+      ref: f729ab865bdcb96c14377ccd50b2098df1b125f0
     

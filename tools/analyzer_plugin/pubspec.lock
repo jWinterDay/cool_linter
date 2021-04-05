@@ -68,8 +68,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f729ab865bdcb96c14377ccd50b2098df1b125f0
-      resolved-ref: f729ab865bdcb96c14377ccd50b2098df1b125f0
+      ref: "967c25544b9a98a1cb706e46e6ca8fd866032164"
+      resolved-ref: "967c25544b9a98a1cb706e46e6ca8fd866032164"
       url: "https://github.com/jWinterDay/cool_linter"
     source: git
     version: "0.0.2"

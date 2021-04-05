@@ -6,8 +6,5 @@ environment:
   sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
-  cool_linter:
-    git:
-      url: https://github.com/jWinterDay/cool_linter
-      ref: 967c25544b9a98a1cb706e46e6ca8fd866032164
+  cool_linter: ^0.0.3
     

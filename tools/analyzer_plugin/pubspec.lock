@@ -67,12 +67,10 @@ packages:
   cool_linter:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "967c25544b9a98a1cb706e46e6ca8fd866032164"
-      resolved-ref: "967c25544b9a98a1cb706e46e6ca8fd866032164"
-      url: "https://github.com/jWinterDay/cool_linter"
-    source: git
-    version: "0.0.2"
+      name: cool_linter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   crypto:
     dependency: transitive
     description:

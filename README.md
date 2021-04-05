@@ -6,7 +6,7 @@
 
     ```yaml
     dev_dependencies:
-      cool_linter: ^0.0.2
+      cool_linter: ^0.0.3
     ```
 
 2. Add configuration to `analysis_options.yaml`

@@ -16,6 +16,7 @@ dependencies:
   analyzer: '>=0.39.3 <0.42.0'
   analyzer_plugin: '>=0.2.1 <0.5.0'
   yaml: ^2.1.5
+  pub_semver: ^1.4.4
 
 dev_dependencies:
   # build_test: ^2.0.0

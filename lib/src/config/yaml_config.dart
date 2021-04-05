@@ -1,5 +1,3 @@
-// @dart=2.12
-
 import 'dart:convert';
 
 // ignore_for_file: avoid_as
@@ -18,15 +16,15 @@ class YamlConfig {
     );
   }
 
-  final Analyzer? analyzer;
-  final CoolLinter? coolLinter;
+  final Analyzer analyzer;
+  final CoolLinter coolLinter;
 
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'analyzer': analyzer == null ? null : analyzer!.toMap(),
-      'cool_linter': coolLinter == null ? null : coolLinter!.toMap(),
+      'analyzer': analyzer == null ? null : analyzer.toMap(),
+      'cool_linter': coolLinter == null ? null : coolLinter.toMap(),
     };
   }
 
@@ -53,13 +51,13 @@ class Analyzer {
     );
   }
 
-  final List<String>? plugins;
+  final List<String> plugins;
 
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'plugins': plugins == null ? null : List<dynamic>.from(plugins!.map<String>((String x) => x)),
+      'plugins': plugins == null ? null : List<dynamic>.from(plugins.map<String>((String x) => x)),
     };
   }
 
@@ -98,7 +96,7 @@ class CoolLinter {
     );
   }
 
-  final List<ExcludeWord>? excludeWords;
+  final List<ExcludeWord> excludeWords;
   // final List<String>? excludeFolders;
 
   String toJson() => json.encode(toMap());
@@ -108,7 +106,7 @@ class CoolLinter {
       'exclude_words': excludeWords == null
           ? null
           : List<dynamic>.from(
-              excludeWords!.map<Map<String, dynamic>>(
+              excludeWords.map<Map<String, dynamic>>(
                 (ExcludeWord x) => x.toMap(),
               ),
             ),
@@ -149,9 +147,9 @@ class ExcludeWord {
     );
   }
 
-  final String? pattern;
-  final String? hint;
-  final String? severity;
+  final String pattern;
+  final String hint;
+  final String severity;
 
   String toJson() => json.encode(toMap());
 

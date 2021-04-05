@@ -1,10 +1,7 @@
-// @dart=2.12
-
 import 'dart:async';
 
 // ignore_for_file: implementation_imports
 // fignore_for_file: avoid_as
-// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/analysis_options/analysis_options_provider.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -18,14 +15,6 @@ import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/utils/yaml_util.dart';
 import 'package:yaml/src/yaml_node.dart';
-// import 'package:analyzer/src/workspace/workspace.dart';
-// import 'package:analyzer_plugin/plugin/plugin.dart';
-// import 'package:analyzer_plugin/protocol/protocol_common.dart';
-// import 'package:analyzer_plugin/protocol/protocol.dart';
-// import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
-// import 'package:analyzer_plugin/protocol/protocol.dart';
-// import 'package:analyzer/src/dart/analysis/file_state.dart';
-// import 'package:cool_linter/src/checker.dart';
 
 class CoolLinterPlugin extends ServerPlugin {
   CoolLinterPlugin(
@@ -63,7 +52,7 @@ class CoolLinterPlugin extends ServerPlugin {
     final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root);
 
     // get yaml options
-    final YamlConfig? yamlConfig = _getYamlConfig(analysisDriver);
+    final YamlConfig yamlConfig = _getYamlConfig(analysisDriver);
 
     runZonedGuarded(
       () {
@@ -85,7 +74,7 @@ class CoolLinterPlugin extends ServerPlugin {
     return analysisDriver;
   }
 
-  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult, YamlConfig? yamlConfig) {
+  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult, YamlConfig yamlConfig) {
     final String filePath = analysisResult.path;
 
     try {
@@ -131,7 +120,7 @@ class CoolLinterPlugin extends ServerPlugin {
     super.driverForPath(path)?.addFile(path);
   }
 
-  YamlConfig? _getYamlConfig(AnalysisDriver driver) {
+  YamlConfig _getYamlConfig(AnalysisDriver driver) {
     try {
       final bool isEmpty = driver.contextRoot?.optionsFilePath?.isEmpty ?? true;
       if (isEmpty) {

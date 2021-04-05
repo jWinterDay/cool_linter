@@ -1,20 +1,16 @@
-// @dart=2.12
-
-// ignore_for_file: import_of_legacy_library_into_null_safe
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:meta/meta.dart';
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
-// import 'package:analyzer_plugin/protocol/protocol_common.dart';
-// import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 
 class IncorrectLineInfo {
   IncorrectLineInfo({
-    required this.line,
-    required this.excludeWord,
+    @required this.line,
+    @required this.excludeWord,
   });
 
   final int line;
@@ -22,7 +18,7 @@ class IncorrectLineInfo {
 }
 
 class Checker {
-  List<IncorrectLineInfo>? getIncorrectLines(String src, YamlConfig? yamlConfig) {
+  List<IncorrectLineInfo> getIncorrectLines(String src, YamlConfig yamlConfig) {
     final List<ExcludeWord> patterns = yamlConfig?.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {
       return null;
@@ -31,7 +27,7 @@ class Checker {
     final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
       return excludeWord.pattern != null;
     }).map((ExcludeWord excludeWord) {
-      return RegExp(excludeWord.pattern!.toString());
+      return RegExp(excludeWord.pattern.toString());
     }).toList();
 
     final List<IncorrectLineInfo> matchListInfo = <IncorrectLineInfo>[];
@@ -68,7 +64,7 @@ class Checker {
 
         if (hasError) {
           final ExcludeWord firstExcludedWord = patterns.firstWhere((ExcludeWord excludeWord) {
-            final RegExp re = RegExp(excludeWord.pattern!);
+            final RegExp re = RegExp(excludeWord.pattern);
 
             return lineStr.contains(re);
           });
@@ -89,9 +85,9 @@ class Checker {
   }
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    YamlConfig? yamlConfig,
-    required ResolvedUnitResult parseResult,
-    AnalysisErrorSeverity? errorSeverity = AnalysisErrorSeverity.WARNING,
+    YamlConfig yamlConfig,
+    @required ResolvedUnitResult parseResult,
+    AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
 
@@ -99,7 +95,7 @@ class Checker {
       return result;
     }
 
-    final List<IncorrectLineInfo>? incorrectLinesInfo = getIncorrectLines(parseResult.content!, yamlConfig);
+    final List<IncorrectLineInfo> incorrectLinesInfo = getIncorrectLines(parseResult.content, yamlConfig);
 
     if (incorrectLinesInfo == null || incorrectLinesInfo.isEmpty) {
       return result;

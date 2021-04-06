@@ -6,6 +6,8 @@ import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:glob/glob.dart';
+import 'package:cool_linter/src/config/yaml_config_extension.dart';
 
 class IncorrectLineInfo {
   IncorrectLineInfo({
@@ -81,12 +83,18 @@ class Checker {
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
     YamlConfig yamlConfig,
+    List<Glob> excludesGlobList,
     @required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
 
     if (parseResult.content == null) {
+      return result;
+    }
+
+    final bool isExcluded = yamlConfig.isExcluded(parseResult, excludesGlobList);
+    if (isExcluded) {
       return result;
     }
 
@@ -130,7 +138,6 @@ class Checker {
           // 1, // endLine
           // 1, // endColumn
         ),
-        // 'Need fixes for cool_linter pattern: ${incorrectLineInfo.excludeWord.hint}',
         'cool_linter. $hint for pattern: ${incorrectLineInfo.excludeWord.pattern}',
         'cool_linter_needs_fixes',
       );

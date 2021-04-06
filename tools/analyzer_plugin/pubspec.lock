@@ -67,9 +67,9 @@ packages:
   cool_linter:
     dependency: "direct main"
     description:
-      name: cool_linter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "/Users/jwd25/Documents/Work/flutter_projects/cool_linter"
+      relative: false
+    source: path
     version: "0.0.6"
   crypto:
     dependency: transitive

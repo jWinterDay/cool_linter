@@ -13,7 +13,10 @@ import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/yaml_config_extension.dart';
 import 'package:cool_linter/src/utils/yaml_util.dart';
+import 'package:glob/glob.dart';
+import 'package:meta/meta.dart';
 import 'package:yaml/src/yaml_node.dart';
 
 class CoolLinterPlugin extends ServerPlugin {
@@ -55,11 +58,17 @@ class CoolLinterPlugin extends ServerPlugin {
 
     // get yaml options
     final YamlConfig yamlConfig = _getYamlConfig(analysisDriver);
+    final List<Glob> excludesGlobList = yamlConfig.excludesGlobList(contextRoot.root);
 
     runZonedGuarded(
       () {
         analysisDriver.results.listen((ResolvedUnitResult analysisResult) {
-          _processResult(analysisDriver, analysisResult, yamlConfig);
+          _processResult(
+            analysisDriver,
+            analysisResult,
+            yamlConfig: yamlConfig,
+            excludesGlobList: excludesGlobList,
+          );
         });
       },
       (Object e, StackTrace stackTrace) {
@@ -103,12 +112,17 @@ class CoolLinterPlugin extends ServerPlugin {
     return plugin.AnalysisSetPriorityFilesResult();
   }
 
-  void _processResult(AnalysisDriver analysisDriver, ResolvedUnitResult analysisResult, YamlConfig yamlConfig) {
+  void _processResult(
+    AnalysisDriver analysisDriver,
+    ResolvedUnitResult analysisResult, {
+    @required YamlConfig yamlConfig,
+    @required List<Glob> excludesGlobList,
+  }) {
     final String filePath = analysisResult.path;
 
     try {
       // If there is no relevant analysis result, notify the analyzer of no errors.
-      if (analysisResult.unit == null) {
+      if (analysisResult.unit == null || analysisResult.libraryElement == null) {
         channel.sendNotification(
           plugin.AnalysisErrorsParams(
             filePath,
@@ -119,9 +133,10 @@ class CoolLinterPlugin extends ServerPlugin {
         // If there is something to analyze, do so and notify the analyzer.
         // Note that notifying with an empty set of errors is important as
         // this clears errors if they were fixed.
+
         final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
           yamlConfig: yamlConfig,
-          // pattern: RegExp('^Test{1}'),
+          excludesGlobList: excludesGlobList,
           parseResult: analysisResult,
         );
 

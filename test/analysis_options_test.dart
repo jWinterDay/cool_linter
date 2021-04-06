@@ -73,7 +73,7 @@ void main() {
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
 
       expect(yamlConfig.analyzer.plugins, <String>['cool_linter']);
-      // expect(yamlConfig.coolLinter!.excludeFolders, <String>['test/**']);
+      expect(yamlConfig.coolLinter.excludeFolders, <String>['test/**']);
 
       // Colors
       expect(yamlConfig.coolLinter.excludeWords.length, 2);

@@ -70,7 +70,7 @@ class Analyzer {
 class CoolLinter {
   CoolLinter({
     this.excludeWords,
-    // required this.excludeFolders,
+    this.excludeFolders,
   });
 
   factory CoolLinter.fromJson(String str) {
@@ -86,30 +86,18 @@ class CoolLinter {
                 (dynamic x) => ExcludeWord.fromMap(x as Map<String, dynamic>),
               ),
             ),
-      // excludeFolders: json['exclude_folders'] == null
-      //     ? null
-      //     : List<dynamic>.from(
-      //         (json['exclude_folders'] as List<dynamic>).map<String>(
-      //           (dynamic x) => x.toString(),
-      //         ),
-      //       ),
+      excludeFolders: json['exclude_folders'] == null
+          ? null
+          : List<String>.from(
+              (json['exclude_folders'] as List<dynamic>).map<String>(
+                (dynamic x) => x.toString(),
+              ),
+            ),
     );
   }
 
   final List<ExcludeWord> excludeWords;
-  // final List<String>? excludeFolders;
-
-  // List<RegExp> get regExpPatterns {
-  //   final List<ExcludeWord> patterns = excludeWords ?? <ExcludeWord>[];
-
-  //   final List<RegExp> regExpPatternList = patterns.where((ExcludeWord excludeWord) {
-  //     return excludeWord.pattern != null;
-  //   }).map((ExcludeWord excludeWord) {
-  //     return RegExp(excludeWord.pattern.toString());
-  //   }).toList();
-
-  //   return regExpPatternList;
-  // }
+  final List<String> excludeFolders;
 
   String toJson() => json.encode(toMap());
 
@@ -122,19 +110,19 @@ class CoolLinter {
                 (ExcludeWord x) => x.toMap(),
               ),
             ),
-      // 'exclude_folders': excludeFolders == null
-      //     ? null
-      //     : List<dynamic>.from(
-      //         excludeFolders!.map<String>(
-      //           (dynamic x) => x.toString(),
-      //         ),
-      //       ),
+      'exclude_folders': excludeFolders == null
+          ? null
+          : List<dynamic>.from(
+              excludeFolders.map<String>(
+                (dynamic x) => x.toString(),
+              ),
+            ),
     };
   }
 
   @override
   String toString() {
-    return 'excludeWords: $excludeWords'; //, excludeFolders: $excludeFolders';
+    return 'excludeWords: $excludeWords, excludeFolders: $excludeFolders';
   }
 }
 

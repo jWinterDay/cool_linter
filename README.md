@@ -9,7 +9,7 @@
 
     ```yaml
     dev_dependencies:
-      cool_linter: ^0.0.7 # last version of plugin
+      cool_linter: ^0.0.8 # last version of plugin
     ```
 
 ###  2. Add configuration to `analysis_options.yaml`
@@ -36,7 +36,7 @@
   * pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
   * severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
   * hint - [optional parameter]. It is console information sentence
-  * exclude_folders - this folders linter will ignore. By default included folders are:
+  * exclude_folders - this folders linter will ignore. By default excluded folders are:
 
   ```dart
   '.dart_tool/**',
@@ -58,3 +58,12 @@
   ![Screenshot](images/analysis_options.yaml.png)
   ![Screenshot](images/linter1.png)
   ![Screenshot](images/linter2.png)
+
+
+### 4. Process
+
+Platform | VSCode | Android Studio
+:------------ | :-------------| :-------------|
+support | :heavy_check_mark: | :x:
+
+Works correctly with VSCode. Android Studio has some problems. I don't know what is ¯\_(ツ)_/¯ and currently it is under progress

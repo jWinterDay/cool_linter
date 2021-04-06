@@ -1,3 +1,5 @@
+## 0.0.8
+    changed description in README
 ## 0.0.7
     exclude folders
 ## 0.0.6

@@ -29,8 +29,12 @@ extension YamlConfigExtension on YamlConfig {
   }
 
   bool isExcluded(AnalysisResult result, Iterable<Glob> excludes) {
+    if (result.path == null) {
+      return false;
+    }
+
     return excludes.any((Glob exclude) {
-      return exclude.matches(result.path);
+      return exclude.matches(result.path!);
     });
   }
 }

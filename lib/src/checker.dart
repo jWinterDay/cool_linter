@@ -1,7 +1,6 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:meta/meta.dart';
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
@@ -11,8 +10,8 @@ import 'package:cool_linter/src/config/yaml_config_extension.dart';
 
 class IncorrectLineInfo {
   IncorrectLineInfo({
-    @required this.line,
-    @required this.excludeWord,
+    required this.line,
+    required this.excludeWord,
   });
 
   final int line;
@@ -20,8 +19,8 @@ class IncorrectLineInfo {
 }
 
 class Checker {
-  List<IncorrectLineInfo> getIncorrectLines(String src, YamlConfig yamlConfig) {
-    final List<ExcludeWord> patterns = yamlConfig?.coolLinter?.excludeWords ?? <ExcludeWord>[];
+  List<IncorrectLineInfo>? getIncorrectLines(String src, YamlConfig yamlConfig) {
+    final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {
       return null;
     }
@@ -56,19 +55,24 @@ class Checker {
         }
 
         // find first pattern
-        final ExcludeWord firstExcludedWord = patterns.firstWhere(
+        final Iterable<ExcludeWord> excludedWordList = patterns.where(
           (ExcludeWord excludeWord) {
-            final RegExp re = RegExp(excludeWord.pattern);
+            if (excludeWord.pattern == null) {
+              return false;
+            }
+
+            final RegExp re = RegExp(excludeWord.pattern!);
 
             return lineStr.contains(re);
           },
-          orElse: () => null,
         );
 
-        if (firstExcludedWord != null) {
+        if (excludedWordList.isNotEmpty) {
+          final ExcludeWord firstExcluded = excludedWordList.first;
+
           matchListInfo.add(IncorrectLineInfo(
             line: columnIndex + 1,
-            excludeWord: firstExcludedWord,
+            excludeWord: firstExcluded,
           ));
         }
 
@@ -82,9 +86,9 @@ class Checker {
   }
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    YamlConfig yamlConfig,
-    List<Glob> excludesGlobList,
-    @required ResolvedUnitResult parseResult,
+    required YamlConfig yamlConfig,
+    required List<Glob> excludesGlobList,
+    required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
@@ -98,7 +102,7 @@ class Checker {
       return result;
     }
 
-    final List<IncorrectLineInfo> incorrectLinesInfo = getIncorrectLines(parseResult.content, yamlConfig);
+    final List<IncorrectLineInfo>? incorrectLinesInfo = getIncorrectLines(parseResult.content!, yamlConfig);
 
     if (incorrectLinesInfo == null || incorrectLinesInfo.isEmpty) {
       return result;
@@ -135,8 +139,8 @@ class Checker {
           1, // length
           incorrectLineInfo.line,
           1, // startColumn
-          // 1, // endLine
-          // 1, // endColumn
+          1, // endLine
+          1, //incorrectLineInfo.lineText.length, // endColumn
         ),
         'cool_linter. $hint for pattern: ${incorrectLineInfo.excludeWord.pattern}',
         'cool_linter_needs_fixes',

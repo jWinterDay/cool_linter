@@ -1,3 +1,5 @@
+## 1.0.0
+    migrate to nullsafety
 ## 0.0.8
     changed description in README
 ## 0.0.7

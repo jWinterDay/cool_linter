@@ -1,31 +1,23 @@
 name: cool_linter
-description: cool_linter
-version: 0.0.8
+description: linter for analyzing dart code by RegExp pattern
+version: 1.0.0
 homepage: https://github.com/jWinterDay/cool_linter
+repository: https://github.com/jWinterDay/cool_linter
+issue_tracker: https://github.com/jWinterDay/cool_linter/issues
 
 environment:
-  # sdk: ">=2.12.0 <3.0.0"
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  # analyzer: "^1.1.0"
-  # analyzer_plugin_fork: "^0.5.0"
-  # analyzer: ^1.3.0
-  # analyzer_plugin: ^0.5.0
-
-  analyzer: '>=0.39.3 <0.42.0'
-  analyzer_plugin: '>=0.2.1 <0.5.0'
-  yaml: ^2.1.5
-  pub_semver: ^1.4.4
+  analyzer: ^1.4.0
+  analyzer_plugin: ^0.6.0
+  collection: ^1.15.0
+  yaml: ^3.1.0
   meta: ^1.3.0
   glob: ^2.0.1
   path: ^1.8.0
 
 dev_dependencies:
-  # build_test: ^2.0.0
-  # pedantic: ^1.9.2
-  # pedantic: ^1.11.0
-  # test: ^1.16.8
-
-  test: ^1.15.3
-  pedantic: ^1.9.2
+  pub_semver: ^2.0.0
+  test: ^1.16.8
+  pedantic: ^1.11.0

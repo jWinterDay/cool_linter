@@ -9,22 +9,24 @@ class YamlConfig {
 
   factory YamlConfig.fromJson(String str) => YamlConfig.fromMap(json.decode(str) as Map<String, dynamic>);
 
-  factory YamlConfig.fromMap(Map<String, dynamic> json) {
+  factory YamlConfig.fromMap(Map<dynamic, dynamic> json) {
     return YamlConfig(
-      analyzer: json['analyzer'] == null ? null : Analyzer.fromMap(json['analyzer'] as Map<String, dynamic>),
-      coolLinter: json['cool_linter'] == null ? null : CoolLinter.fromMap(json['cool_linter'] as Map<String, dynamic>),
+      analyzer:
+          null, // TODO json['analyzer'] == null ? null : Analyzer.fromMap(json['analyzer'] as Map<String, dynamic>),
+      coolLinter:
+          null, // TODOjson['cool_linter'] == null ? null : CoolLinter.fromMap(json['cool_linter'] as Map<String, dynamic>),
     );
   }
 
-  final Analyzer analyzer;
-  final CoolLinter coolLinter;
+  final Analyzer? analyzer;
+  final CoolLinter? coolLinter;
 
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'analyzer': analyzer == null ? null : analyzer.toMap(),
-      'cool_linter': coolLinter == null ? null : coolLinter.toMap(),
+      'analyzer': analyzer?.toMap(),
+      'cool_linter': coolLinter?.toMap(),
     };
   }
 
@@ -51,13 +53,13 @@ class Analyzer {
     );
   }
 
-  final List<String> plugins;
+  final List<String>? plugins;
 
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'plugins': plugins == null ? null : List<dynamic>.from(plugins.map<String>((String x) => x)),
+      'plugins': plugins == null ? null : List<dynamic>.from(plugins!.map<String>((String x) => x)),
     };
   }
 
@@ -96,8 +98,8 @@ class CoolLinter {
     );
   }
 
-  final List<ExcludeWord> excludeWords;
-  final List<String> excludeFolders;
+  final List<ExcludeWord>? excludeWords;
+  final List<String>? excludeFolders;
 
   String toJson() => json.encode(toMap());
 
@@ -106,14 +108,14 @@ class CoolLinter {
       'exclude_words': excludeWords == null
           ? null
           : List<dynamic>.from(
-              excludeWords.map<Map<String, dynamic>>(
+              excludeWords!.map<Map<String, dynamic>>(
                 (ExcludeWord x) => x.toMap(),
               ),
             ),
       'exclude_folders': excludeFolders == null
           ? null
           : List<dynamic>.from(
-              excludeFolders.map<String>(
+              excludeFolders!.map<String>(
                 (dynamic x) => x.toString(),
               ),
             ),
@@ -147,9 +149,9 @@ class ExcludeWord {
     );
   }
 
-  final String pattern;
-  final String hint;
-  final String severity;
+  final String? pattern;
+  final String? hint;
+  final String? severity;
 
   String toJson() => json.encode(toMap());
 

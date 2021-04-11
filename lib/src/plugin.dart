@@ -1,7 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 
 // ignore_for_file: implementation_imports
 // fignore_for_file: avoid_as
+import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/workspace/workspace.dart';
+import 'package:glob/glob.dart';
+import 'package:yaml/src/yaml_node.dart';
+
+//
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/analysis_options/analysis_options_provider.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -9,15 +16,17 @@ import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/context/context_root.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
+import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
+
+//
 import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/config/yaml_config_extension.dart';
-import 'package:cool_linter/src/utils/yaml_util.dart';
-import 'package:glob/glob.dart';
-import 'package:meta/meta.dart';
-import 'package:yaml/src/yaml_node.dart';
+import 'package:yaml/yaml.dart';
+
+//
 
 class CoolLinterPlugin extends ServerPlugin {
   CoolLinterPlugin(
@@ -48,16 +57,39 @@ class CoolLinterPlugin extends ServerPlugin {
       pathContext: resourceProvider.pathContext,
     )..optionsFilePath = contextRoot.optionsFile;
 
-    final ContextBuilder contextBuilder = ContextBuilder(resourceProvider, sdkManager, null)
+    final ContextBuilder contextBuilder = ContextBuilder(
+      resourceProvider,
+      sdkManager,
+      null,
+    )
       ..analysisDriverScheduler = analysisDriverScheduler
       ..byteStore = byteStore
       ..performanceLog = performanceLog
-      ..fileContentOverlay = fileContentOverlay;
+      ..fileContentOverlay = FileContentOverlay();
 
-    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root);
+    final Workspace workspace = ContextBuilder.createWorkspace(
+      resourceProvider: resourceProvider,
+      options: ContextBuilderOptions(),
+      rootPath: contextRoot.root,
+    );
+
+    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root, workspace);
 
     // get yaml options
-    final YamlConfig yamlConfig = _getYamlConfig(analysisDriver);
+    final YamlConfig? yamlConfig = _getYamlConfig(analysisDriver);
+    if (yamlConfig == null) {
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          false,
+          // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
+          'null ept',
+          StackTrace.current.toString(),
+        ).toNotification(),
+      );
+
+      return analysisDriver;
+    }
+
     final List<Glob> excludesGlobList = yamlConfig.excludesGlobList(contextRoot.root);
 
     runZonedGuarded(
@@ -75,7 +107,7 @@ class CoolLinterPlugin extends ServerPlugin {
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
-            'Unexpected error: ${e.toString()}',
+            'cool_linter. Unexpected error: ${e.toString()}',
             stackTrace.toString(),
           ).toNotification(),
         );
@@ -115,48 +147,82 @@ class CoolLinterPlugin extends ServerPlugin {
   void _processResult(
     AnalysisDriver analysisDriver,
     ResolvedUnitResult analysisResult, {
-    @required YamlConfig yamlConfig,
-    @required List<Glob> excludesGlobList,
+    required YamlConfig yamlConfig,
+    required List<Glob> excludesGlobList,
   }) {
-    final String filePath = analysisResult.path;
-
-    try {
-      // If there is no relevant analysis result, notify the analyzer of no errors.
-      if (analysisResult.unit == null || analysisResult.libraryElement == null) {
-        channel.sendNotification(
-          plugin.AnalysisErrorsParams(
-            filePath,
-            <AnalysisError>[],
-          ).toNotification(),
-        );
-      } else {
-        // If there is something to analyze, do so and notify the analyzer.
-        // Note that notifying with an empty set of errors is important as
-        // this clears errors if they were fixed.
-
-        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-          yamlConfig: yamlConfig,
-          excludesGlobList: excludesGlobList,
-          parseResult: analysisResult,
-        );
-
-        channel.sendNotification(
-          plugin.AnalysisErrorsParams(
-            filePath,
-            checkResult.keys.toList(),
-          ).toNotification(),
-        );
-      }
-    } catch (exc, stackTrace) {
-      // Notify the analyzer that an exception happened.
+    final String? filePath = analysisResult.path;
+    if (filePath == null) {
       channel.sendNotification(
         plugin.PluginErrorParams(
           false,
-          exc.toString(),
-          stackTrace.toString(),
+          '_processResult>>>>>> filePath == null',
+          'stackTrace.toString()',
         ).toNotification(),
       );
+      //
+      return;
     }
+    //
+    final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+      yamlConfig: yamlConfig,
+      excludesGlobList: excludesGlobList,
+      parseResult: analysisResult,
+    );
+
+    channel.sendNotification(
+      plugin.PluginErrorParams(
+        false,
+        'norm >>>>>> ${checkResult.length}',
+        'stackTrace.toString()',
+      ).toNotification(),
+      // plugin.AnalysisErrorsParams(
+      //   filePath,
+      //   checkResult.keys.toList(),
+      // ).toNotification(),
+    );
+
+    // final String? filePath = analysisResult.path;
+    // if (filePath == null) {
+    //   return;
+    // }
+
+    // try {
+    //   // If there is no relevant analysis result, notify the analyzer of no errors.
+    //   if (analysisResult.unit == null) {
+    //     channel.sendNotification(
+    //       plugin.AnalysisErrorsParams(
+    //         filePath,
+    //         <AnalysisError>[],
+    //       ).toNotification(),
+    //     );
+    //   } else {
+    //     // If there is something to analyze, do so and notify the analyzer.
+    //     // Note that notifying with an empty set of errors is important as
+    //     // this clears errors if they were fixed.
+
+    //     final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+    //       yamlConfig: yamlConfig,
+    //       excludesGlobList: excludesGlobList,
+    //       parseResult: analysisResult,
+    //     );
+
+    //     channel.sendNotification(
+    //       plugin.AnalysisErrorsParams(
+    //         filePath,
+    //         checkResult.keys.toList(),
+    //       ).toNotification(),
+    //     );
+    //   }
+    // } catch (exc, stackTrace) {
+    //   // Notify the analyzer that an exception happened.
+    //   channel.sendNotification(
+    //     plugin.PluginErrorParams(
+    //       false,
+    //       exc.toString(),
+    //       stackTrace.toString(),
+    //     ).toNotification(),
+    //   );
+    // }
   }
 
   // see: https://github.com/dart-code-checker/dart-code-metrics/blob/master/lib/src/obsoleted/analyzer_plugin/analyzer_plugin.dart
@@ -174,10 +240,10 @@ class CoolLinterPlugin extends ServerPlugin {
     final Map<AnalysisDriverGeneric, List<String>> filesByDriver = <AnalysisDriverGeneric, List<String>>{};
 
     for (final String file in filesToFullyResolve) {
-      final plugin.ContextRoot contextRoot = contextRootContaining(file);
+      final plugin.ContextRoot? contextRoot = contextRootContaining(file);
 
       if (contextRoot != null) {
-        final AnalysisDriverGeneric driver = driverMap[contextRoot];
+        final AnalysisDriverGeneric driver = driverMap[contextRoot]!;
         filesByDriver.putIfAbsent(driver, () => <String>[]).add(file);
       }
     }
@@ -187,24 +253,76 @@ class CoolLinterPlugin extends ServerPlugin {
     });
   }
 
-  YamlConfig _getYamlConfig(AnalysisDriver driver) {
+  YamlConfig? _getYamlConfig(AnalysisDriver analysisDriver) {
     try {
-      final bool isEmpty = driver.contextRoot?.optionsFilePath?.isEmpty ?? true;
+      final String? optionsPath = analysisDriver.contextRoot?.optionsFilePath;
+      final bool isEmpty = optionsPath?.isEmpty ?? true;
       if (isEmpty) {
+        channel.sendNotification(
+          plugin.PluginErrorParams(
+            false,
+            'cool_linter. no analysis options file',
+            StackTrace.current.toString(),
+          ).toNotification(),
+        );
+
         return null;
       }
 
-      final File file = resourceProvider.getFile(driver.contextRoot.optionsFilePath);
+      final File file = resourceProvider.getFile(optionsPath!);
       if (!file.exists) {
+        channel.sendNotification(
+          plugin.PluginErrorParams(
+            false,
+            'cool_linter. no analysis options file content',
+            StackTrace.current.toString(),
+          ).toNotification(),
+        );
+
         return null;
       }
 
-      final YamlMap yamlMap = AnalysisOptionsProvider(driver.sourceFactory).getOptionsFromFile(file);
-      final Map<String, Object> m = yamlMapToDartMap(yamlMap);
-      final YamlConfig yamlConfig = YamlConfig.fromMap(m);
+      // TODO
 
-      return yamlConfig;
-    } catch (exc) {
+      // final dynamic yamlDyn = loadYaml(file.readAsStringSync());
+      // final YamlMap yaml = yamlDyn as YamlMap;
+      // final YamlConfig yamlConfig = YamlConfig.fromMap(yaml.value);
+      // // plugin.PluginErrorParams(
+      // //   false,
+      // //   'yamlConfig = $yamlConfig',
+      // //   StackTrace.current.toString(),
+      // // ).toNotification();
+
+      // final YamlMap yamlMap = AnalysisOptionsProvider(analysisDriver.sourceFactory).getOptionsFromFile(file);
+      // final Map<dynamic, dynamic> m = yamlMap.value;
+      // final YamlMap ym = loadYaml(file.readAsStringSync()) as YamlMap;
+      // final YamlConfig yamlConfig = YamlConfig(); // YamlConfig.fromMap(ym.value);
+      //
+      // Map m = loadYaml(file.readAsStringSync()).value as Map;
+      // final YamlConfig yamlConfig = YamlConfig.fromMap(m);
+
+      // if (yamlConfig.coolLinter?.excludeWords == null) {
+      // channel.sendNotification(
+      //   plugin.PluginErrorParams(
+      //     false,
+      //     // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
+      //     'ym = ${m} yamlConfig = $yamlConfig',
+      //     StackTrace.current.toString(),
+      //   ).toNotification(),
+      // );
+
+      // }
+
+      return null; // yamlConfig;
+    } catch (exc, stackTrace) {
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          false, // TODO
+          '$Exception when read yaml comfig: $exc',
+          stackTrace.toString(),
+        ).toNotification(),
+      );
+
       return null;
     }
   }

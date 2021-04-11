@@ -198,7 +198,7 @@ packages:
     source: hosted
     version: "1.5.0"
   pub_semver:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: pub_semver
       url: "https://pub.dartlang.org"

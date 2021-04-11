@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
 // ignore_for_file: implementation_imports
 // fignore_for_file: avoid_as
-import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/workspace/workspace.dart';
 import 'package:glob/glob.dart';
-import 'package:yaml/src/yaml_node.dart';
 
 //
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/src/analysis_options/analysis_options_provider.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/context/context_root.dart';
@@ -24,7 +20,6 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/config/yaml_config_extension.dart';
-import 'package:yaml/yaml.dart';
 
 //
 
@@ -78,15 +73,6 @@ class CoolLinterPlugin extends ServerPlugin {
     // get yaml options
     final YamlConfig? yamlConfig = _getYamlConfig(analysisDriver);
     if (yamlConfig == null) {
-      channel.sendNotification(
-        plugin.PluginErrorParams(
-          false,
-          // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
-          'null ept',
-          StackTrace.current.toString(),
-        ).toNotification(),
-      );
-
       return analysisDriver;
     }
 
@@ -152,77 +138,45 @@ class CoolLinterPlugin extends ServerPlugin {
   }) {
     final String? filePath = analysisResult.path;
     if (filePath == null) {
+      return;
+    }
+
+    try {
+      // If there is no relevant analysis result, notify the analyzer of no errors.
+      if (analysisResult.unit == null) {
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            <AnalysisError>[],
+          ).toNotification(),
+        );
+      } else {
+        // If there is something to analyze, do so and notify the analyzer.
+        // Note that notifying with an empty set of errors is important as
+        // this clears errors if they were fixed.
+        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+          yamlConfig: yamlConfig,
+          excludesGlobList: excludesGlobList,
+          parseResult: analysisResult,
+        );
+
+        channel.sendNotification(
+          plugin.AnalysisErrorsParams(
+            filePath,
+            checkResult.keys.toList(),
+          ).toNotification(),
+        );
+      }
+    } catch (exc, stackTrace) {
+      // Notify the analyzer that an exception happened.
       channel.sendNotification(
         plugin.PluginErrorParams(
           false,
-          '_processResult>>>>>> filePath == null',
-          'stackTrace.toString()',
+          exc.toString(),
+          stackTrace.toString(),
         ).toNotification(),
       );
-      //
-      return;
     }
-    //
-    final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-      yamlConfig: yamlConfig,
-      excludesGlobList: excludesGlobList,
-      parseResult: analysisResult,
-    );
-
-    channel.sendNotification(
-      plugin.PluginErrorParams(
-        false,
-        'norm >>>>>> ${checkResult.length}',
-        'stackTrace.toString()',
-      ).toNotification(),
-      // plugin.AnalysisErrorsParams(
-      //   filePath,
-      //   checkResult.keys.toList(),
-      // ).toNotification(),
-    );
-
-    // final String? filePath = analysisResult.path;
-    // if (filePath == null) {
-    //   return;
-    // }
-
-    // try {
-    //   // If there is no relevant analysis result, notify the analyzer of no errors.
-    //   if (analysisResult.unit == null) {
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         <AnalysisError>[],
-    //       ).toNotification(),
-    //     );
-    //   } else {
-    //     // If there is something to analyze, do so and notify the analyzer.
-    //     // Note that notifying with an empty set of errors is important as
-    //     // this clears errors if they were fixed.
-
-    //     final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
-    //       yamlConfig: yamlConfig,
-    //       excludesGlobList: excludesGlobList,
-    //       parseResult: analysisResult,
-    //     );
-
-    //     channel.sendNotification(
-    //       plugin.AnalysisErrorsParams(
-    //         filePath,
-    //         checkResult.keys.toList(),
-    //       ).toNotification(),
-    //     );
-    //   }
-    // } catch (exc, stackTrace) {
-    //   // Notify the analyzer that an exception happened.
-    //   channel.sendNotification(
-    //     plugin.PluginErrorParams(
-    //       false,
-    //       exc.toString(),
-    //       stackTrace.toString(),
-    //     ).toNotification(),
-    //   );
-    // }
   }
 
   // see: https://github.com/dart-code-checker/dart-code-metrics/blob/master/lib/src/obsoleted/analyzer_plugin/analyzer_plugin.dart
@@ -255,6 +209,7 @@ class CoolLinterPlugin extends ServerPlugin {
 
   YamlConfig? _getYamlConfig(AnalysisDriver analysisDriver) {
     try {
+      // ignore: deprecated_member_use
       final String? optionsPath = analysisDriver.contextRoot?.optionsFilePath;
       final bool isEmpty = optionsPath?.isEmpty ?? true;
       if (isEmpty) {
@@ -282,42 +237,25 @@ class CoolLinterPlugin extends ServerPlugin {
         return null;
       }
 
-      // TODO
+      final YamlConfig yamlConfig = YamlConfig.fromFile(file);
+      if (yamlConfig.checkCorrectMessage != null) {
+        channel.sendNotification(
+          plugin.PluginErrorParams(
+            false,
+            yamlConfig.checkCorrectMessage!,
+            // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
+            StackTrace.current.toString(),
+          ).toNotification(),
+        );
 
-      // final dynamic yamlDyn = loadYaml(file.readAsStringSync());
-      // final YamlMap yaml = yamlDyn as YamlMap;
-      // final YamlConfig yamlConfig = YamlConfig.fromMap(yaml.value);
-      // // plugin.PluginErrorParams(
-      // //   false,
-      // //   'yamlConfig = $yamlConfig',
-      // //   StackTrace.current.toString(),
-      // // ).toNotification();
+        return null;
+      }
 
-      // final YamlMap yamlMap = AnalysisOptionsProvider(analysisDriver.sourceFactory).getOptionsFromFile(file);
-      // final Map<dynamic, dynamic> m = yamlMap.value;
-      // final YamlMap ym = loadYaml(file.readAsStringSync()) as YamlMap;
-      // final YamlConfig yamlConfig = YamlConfig(); // YamlConfig.fromMap(ym.value);
-      //
-      // Map m = loadYaml(file.readAsStringSync()).value as Map;
-      // final YamlConfig yamlConfig = YamlConfig.fromMap(m);
-
-      // if (yamlConfig.coolLinter?.excludeWords == null) {
-      // channel.sendNotification(
-      //   plugin.PluginErrorParams(
-      //     false,
-      //     // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
-      //     'ym = ${m} yamlConfig = $yamlConfig',
-      //     StackTrace.current.toString(),
-      //   ).toNotification(),
-      // );
-
-      // }
-
-      return null; // yamlConfig;
+      return yamlConfig;
     } catch (exc, stackTrace) {
       channel.sendNotification(
         plugin.PluginErrorParams(
-          false, // TODO
+          false,
           '$Exception when read yaml comfig: $exc',
           stackTrace.toString(),
         ).toNotification(),

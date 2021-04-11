@@ -64,12 +64,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
-  cool_linter:
-    dependency: "direct main"
     description:
-      path: "/Users/jwd25/Documents/Work/flutter_projects/cool_linter"
-      relative: false
-    source: path
+      name: cool_linter
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.0"
   crypto:
     dependency: transitive

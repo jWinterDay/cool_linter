@@ -1,6 +1,10 @@
+[![Pub Version](https://badgen.net/pub/v/cool_linter)](https://pub.dev/packages/cool_linter/)
+[![Dart SDK Version](https://badgen.net/pub/sdk-version/cool_linter)](https://pub.dev/packages/cool_linter/)
+[![Pub popularity](https://badgen.net/pub/popularity/cool_linter)](https://pub.dev/packages/cool_linter/score)
+
 # Cool linter
 
-  This is a custom linter for dart/flutter code. It can set linter for exclude some of words. This words you can set
+  This is a custom linter [package](https://pub.dev/packages/cool_linter) for dart/flutter code. It can set linter for exclude some of words. This words you can set
   in analysis_options.yaml by example below
 
 ## Usage

@@ -13,7 +13,7 @@
 
     ```yaml
     dev_dependencies:
-      cool_linter: ^1.0.0 # last version of plugin
+      cool_linter: ^1.0.1 # last version of plugin
     ```
 
 ###  2. Add configuration to `analysis_options.yaml`

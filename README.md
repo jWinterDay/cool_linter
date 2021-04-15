@@ -62,12 +62,3 @@
   ![Screenshot](images/analysis_options.yaml.png)
   ![Screenshot](images/linter1.png)
   ![Screenshot](images/linter2.png)
-
-
-### 4. Process
-
-Platform | VSCode | Android Studio
-:------------ | :-------------| :-------------|
-support | :heavy_check_mark: | :x:
-
-Works correctly with VSCode. Android Studio has some problems. I don't know what is ¯\_(ツ)_/¯ and currently it is under progress

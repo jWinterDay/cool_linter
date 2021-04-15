@@ -1,9 +1,9 @@
 name: cool_linter_plugin_loader
 description: cool linter plugin loader
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  cool_linter: ^1.0.1
+  cool_linter: ^1.0.2

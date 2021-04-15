@@ -93,7 +93,7 @@ class Checker {
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
 
-    if (parseResult.content == null) {
+    if (parseResult.content == null || parseResult.path == null) {
       return result;
     }
 
@@ -117,7 +117,7 @@ class Checker {
           'Apply fixes for cool_linter.',
           edits: <SourceFileEdit>[
             SourceFileEdit(
-              'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+              parseResult.path!,
               1, //parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
               edits: <SourceEdit>[
                 SourceEdit(1, 2, 'cool_linter. need to replace by pattern:'), // $pattern'),
@@ -134,7 +134,7 @@ class Checker {
         AnalysisErrorSeverity(incorrectLineInfo.excludeWord.safeSeverity),
         AnalysisErrorType.LINT,
         Location(
-          'TODO fn', //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
+          parseResult.path!,
           1, // offset
           1, // length
           incorrectLineInfo.line,

@@ -1,3 +1,5 @@
+## 1.0.2
+    fix filepath
 ## 1.0.0
     migrate to nullsafety
 ## 0.0.8

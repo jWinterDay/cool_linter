@@ -10,6 +10,7 @@ const List<String> kDefaultExcludedFolders = <String>[
   'packages/**',
   'ios/**',
   'macos/**',
+  'android/**',
   'web/**',
   'linux/**',
   'windows/**',

@@ -19,6 +19,8 @@ class IncorrectLineInfo {
 }
 
 class Checker {
+  const Checker();
+
   List<IncorrectLineInfo>? getIncorrectLines(String src, YamlConfig yamlConfig) {
     final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {

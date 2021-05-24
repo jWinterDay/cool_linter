@@ -1,3 +1,5 @@
+## 1.0.3
+    added extended folders to exclude
 ## 1.0.2
     fix filepath
 ## 1.0.0

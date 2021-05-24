@@ -20,6 +20,7 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/config/yaml_config_extension.dart';
+import 'package:path/path.dart' as p;
 
 //
 
@@ -30,7 +31,7 @@ class CoolLinterPlugin extends ServerPlugin {
 
   List<String> _filesFromSetPriorityFilesRequest = <String>[];
 
-  final Checker _checker = Checker();
+  static const Checker _checker = Checker();
 
   @override
   List<String> get fileGlobsToAnalyze => const <String>['*.dart'];
@@ -46,9 +47,30 @@ class CoolLinterPlugin extends ServerPlugin {
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
+    // extended excluded files
+    final List<String> extendedExcludedFolders = <String>[
+      '.dart_tool',
+      '.vscode',
+      'packages',
+      'ios',
+      'macos',
+      'android',
+      'web',
+      'linux',
+      'windows',
+      'go',
+    ].map((String f) {
+      final Glob glob = Glob(p.join(contextRoot.root, f));
+
+      return glob.toString();
+    }).toList();
+
     final ContextRoot root = ContextRoot(
       contextRoot.root,
-      contextRoot.exclude,
+      <String>[
+        ...contextRoot.exclude,
+        ...extendedExcludedFolders,
+      ],
       pathContext: resourceProvider.pathContext,
     )..optionsFilePath = contextRoot.optionsFile;
 

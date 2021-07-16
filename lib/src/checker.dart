@@ -32,7 +32,6 @@ class Checker {
 
     final List<RuleMessage> errorMessageList = regExpRule.check(
       parseResult: parseResult,
-      // path: parseResult.path!,
       yamlConfig: yamlConfig,
     );
 

@@ -99,19 +99,20 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   /// custom check
   @override
   List<RuleMessage> check({
-    // required String path,
-    // CompilationUnit? compilationUnit,
     required ResolvedUnitResult parseResult,
     required YamlConfig yamlConfig,
   }) {
     final String? path = parseResult.path;
-    // TODO
     if (path == null) {
       return <RuleMessage>[];
     }
 
     final _Visitor visitor = _Visitor(this);
     parseResult.unit?.visitChildren(visitor);
+
+    //
+    // visitor.rule
+    //
 
     // return _visitor.missingInvocations
     //     .map((invocation) => createIssue(
@@ -129,6 +130,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
 
   @override
   void registerNodeProcessors(NodeLintRegistry registry, LinterContext context) {
+    print('-----registerNodeProcessors');
     final _Visitor visitor = _Visitor(this);
 
     registry.addDeclaredIdentifier(this, visitor);
@@ -153,6 +155,7 @@ class _Visitor extends SimpleAstVisitor<void> {
 
   @override
   void visitDeclaredIdentifier(DeclaredIdentifier node) {
+    print('-----visitDeclaredIdentifier');
     // if (node.type == null) {
     //   rule.reportLintForToken(node.keyword);
     // }
@@ -160,6 +163,7 @@ class _Visitor extends SimpleAstVisitor<void> {
 
   @override
   void visitListLiteral(ListLiteral literal) {
+    print('-----visitListLiteral');
     // checkLiteral(literal);
   }
 
@@ -217,5 +221,7 @@ class _Visitor extends SimpleAstVisitor<void> {
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
     super.visitMethodDeclaration(node);
+
+    print('---visitMethodDeclaration');
   }
 }

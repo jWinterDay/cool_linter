@@ -1,78 +1,45 @@
-// import 'package:cool_linter/src/checker.dart';
-// import 'package:test/test.dart';
+import 'dart:convert';
 
-// void main() {
-//   const String twoColorsString = r'''
-// import 'package:flutter/material.dart';
+import 'package:cool_linter/src/checker.dart';
+import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
-// class B {
-//   void test() {
-//     final t = Colors.accents;
-//     final t2 = Colors.white;
-//     final t2 = Color(0xFF123456);
-//     final t3 = Color.fromARGB(1, 2, 3, 4);
-//   }
-// }
-// ''';
+void main() {
+  group('find lines by patterns', () {
+    const Checker checker = Checker();
 
-//   const String twoColorsInOneLineString = r'''
-// import 'package:flutter/material.dart';
+    final YamlConfig yamlConfig = YamlConfig.fromJson(
+      json.encode(
+        loadYaml(r'''
+            cool_linter:
+              exclude_words:
+                -
+                  pattern: Color
+                  hint: Correct RegExp pattern
+                  severity: WARNING
+            '''),
+      ),
+    );
 
-// class B {
-//   void test() {
-//     final t = Colors.accents; final t2 = Colors.white;
-//   }
-// }
-// ''';
+    test('find 4 Colors', () async {
+      const String twoColorsString = r'''
+        import 'package:flutter/material.dart';
 
-//   const String noColorsString = r'''
-// import 'package:flutter/material.dart';
+        class B {
+          void test() {
+            final t = Colors.accents;
+            final t2 = Colors.white;
+            final t2 = Color(0xFF123456);
+            final t3 = Color.fromARGB(1, 2, 3, 4);
+          }
+        }
+        ''';
 
-// class B {
-//   void test() {}
-// }
-// ''';
+      final List<IncorrectLineInfo>? list = checker.getIncorrectLines(twoColorsString, yamlConfig);
 
-//   const String excludeCommentString = r'''
-// import 'package:flutter/material.dart';
-
-// class B {
-//   // final t = Colors.accents;
-//   void test() {}
-//   /// final t2 = Colors.accents;
-//   void test2() {}
-// }
-// ''';
-
-//   group('find lines by patterns', () {
-//     final RegExp colorsRegExp = RegExp(r'\sColors\.');
-//     final Checker checker = Checker();
-
-//     test('find two Colors', () async {
-//       final List<IncorrectLineInfo> list = checker.getIncorrectLines(twoColorsString, colorsRegExp);
-
-//       expect(list.length, 2);
-//       expect(list[0], 4);
-//       expect(list[1], 5);
-//     });
-
-//     test('find two Colors in one line', () async {
-//       final List<int> list = checker.getIncorrectLines(twoColorsInOneLineString, colorsRegExp);
-
-//       expect(list.length, 1);
-//       expect(list[0], 4);
-//     });
-
-//     test('no Colors', () async {
-//       final List<int> list = checker.getIncorrectLines(noColorsString, colorsRegExp);
-
-//       expect(list, isEmpty);
-//     });
-
-//     test('exclude comments', () async {
-//       final List<int> list = checker.getIncorrectLines(excludeCommentString, colorsRegExp);
-
-//       expect(list, isEmpty);
-//     });
-//   });
-// }
+      expect(list, isNotNull);
+      expect(list?.length, 4);
+    });
+  });
+}

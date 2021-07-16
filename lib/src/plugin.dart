@@ -44,7 +44,7 @@ class CoolLinterPlugin extends ServerPlugin {
 
   List<String> _filesFromSetPriorityFilesRequest = <String>[];
 
-  static const Checker _checker = Checker();
+  static final Checker _checker = Checker();
 
   @override
   List<String> get fileGlobsToAnalyze => const <String>['*.dart'];

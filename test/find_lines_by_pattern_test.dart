@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
+import 'package:cool_linter/src/rules/rule.dart';
+import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
-  group('find lines by patterns', () {
-    const Checker checker = Checker();
+  group('regexp find lines by patterns', () {
+    final Rule regExpChecker = RegExpRule();
 
     final YamlConfig yamlConfig = YamlConfig.fromJson(
       json.encode(
@@ -22,7 +25,7 @@ void main() {
       ),
     );
 
-    test('find 4 Colors', () async {
+    test('regexp_rule find 4 Colors', () async {
       const String twoColorsString = r'''
         import 'package:flutter/material.dart';
 
@@ -36,10 +39,15 @@ void main() {
         }
         ''';
 
-      final List<IncorrectLineInfo>? list = checker.getIncorrectLines(twoColorsString, yamlConfig);
+      final List<RuleMessage> list = regExpChecker.check(
+        content: twoColorsString,
+        path: '',
+        yamlConfig: yamlConfig,
+      );
 
-      expect(list, isNotNull);
-      expect(list?.length, 4);
+      print('list = $list');
+
+      expect(list.length, 4);
     });
   });
 }

@@ -1,34 +1,15 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
-import 'package:pub_semver/pub_semver.dart';
-import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
-import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:glob/glob.dart';
 import 'package:cool_linter/src/config/yaml_config_extension.dart';
 
-class IncorrectLineInfo {
-  IncorrectLineInfo({
-    required this.line,
-    required this.excludeWord,
-  });
-
-  final int line;
-  final ExcludeWord excludeWord;
-
-  @override
-  String toString() {
-    return 'line: $line excludeWord: $excludeWord';
-  }
-}
-
 class Checker {
-  Checker();
-
-  final RegExpRule _regExpRule = RegExpRule();
+  const Checker();
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
     required YamlConfig yamlConfig,
@@ -47,9 +28,12 @@ class Checker {
       return result;
     }
 
-    final List<RuleMessage> errorMessageList = _regExpRule.check(
+    final RegExpRule regExpRule = RegExpRule();
+
+    final List<RuleMessage> errorMessageList = regExpRule.check(
       content: parseResult.content!,
-      path: parseResult.path!,
+      parseResult: parseResult,
+      // path: parseResult.path!,
       yamlConfig: yamlConfig,
     );
 

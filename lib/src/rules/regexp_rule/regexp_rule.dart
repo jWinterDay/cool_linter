@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/rules/rule.dart';
@@ -10,9 +11,17 @@ import 'package:pub_semver/pub_semver.dart';
 class RegExpRule extends Rule {
   List<RuleMessage> _getIncorrectLines({
     required String content,
-    required String path,
+    // required String path,
+    // CompilationUnit? compilationUnit,
+    required ResolvedUnitResult parseResult,
     required YamlConfig yamlConfig,
   }) {
+    final String? path = parseResult.path;
+    // TODO
+    if (path == null) {
+      return <RuleMessage>[];
+    }
+
     final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {
       return const <RuleMessage>[];
@@ -95,12 +104,20 @@ class RegExpRule extends Rule {
   @override
   List<RuleMessage> check({
     required String content,
-    required String path,
+    // required String path,
+    required ResolvedUnitResult parseResult,
     required YamlConfig yamlConfig,
   }) {
+    final String? path = parseResult.path;
+    // TODO
+    if (path == null) {
+      return <RuleMessage>[];
+    }
+
     return _getIncorrectLines(
       content: content,
-      path: path,
+      parseResult: parseResult,
+      // path: path,
       yamlConfig: yamlConfig,
     );
   }

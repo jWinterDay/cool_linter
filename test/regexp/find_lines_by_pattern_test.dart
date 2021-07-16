@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cool_linter/src/checker.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
@@ -8,9 +7,11 @@ import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
+import '../utils/mock_resolve_unit_result.dart';
+
 void main() {
   group('regexp find lines by patterns', () {
-    final Rule regExpChecker = RegExpRule();
+    final Rule regExpRule = RegExpRule();
 
     final YamlConfig yamlConfig = YamlConfig.fromJson(
       json.encode(
@@ -39,15 +40,13 @@ void main() {
         }
         ''';
 
-      final List<RuleMessage> list = regExpChecker.check(
+      final List<RuleMessage> list = regExpRule.check(
         content: twoColorsString,
-        path: '',
+        parseResult: MockResolvedUnitResult(),
         yamlConfig: yamlConfig,
       );
 
-      print('list = $list');
-
-      expect(list.length, 4);
+      expect(list, hasLength(4));
     });
   });
 }

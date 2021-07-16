@@ -10,46 +10,6 @@ import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 
 /// https://github.com/dart-lang/linter/blob/master/lib/src/rules/always_specify_types.dart
-
-const String _desc = r'Specify type annotations.';
-
-const String _details = r'''
-From the [flutter style guide](https://flutter.dev/style-guide/):
-**DO** specify type annotations.
-Avoid `var` when specifying that a type is unknown and short-hands that elide
-type annotations.  Use `dynamic` if you are being explicit that the type is
-unknown.  Use `Object` if you are being explicit that you want an object that
-implements `==` and `hashCode`.
-**GOOD:**
-```dart
-int foo = 10;
-final Bar bar = Bar();
-String baz = 'hello';
-const int quux = 20;
-```
-**BAD:**
-```dart
-var foo = 10;
-final bar = Bar();
-const quux = 20;
-```
-NOTE: Using the the `@optionalTypeArgs` annotation in the `meta` package, API
-authors can special-case type variables whose type needs to by dynamic but whose
-declaration should be treated as optional.  For example, suppose you have a
-`Key` object whose type parameter you'd like to treat as optional.  Using the
-`@optionalTypeArgs` would look like this:
-```dart
-import 'package:meta/meta.dart';
-@optionalTypeArgs
-class Key<T> {
- ...
-}
-main() {
-  Key s = Key(); // OK!
-}
-```
-''';
-
 /// The name of `meta` library, used to define analysis annotations.
 String _metaLibName = 'meta';
 
@@ -71,9 +31,9 @@ bool _isOptionalTypeArgs(Element? element) =>
 class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   AlwaysSpecifyTypesRule()
       : super(
-          name: 'always_specify_types',
-          description: _desc,
-          details: _details,
+          name: 'cl_always_specify_types',
+          description: 'Specify type annotations.',
+          details: 'https://flutter.dev/style-guide',
           group: Group.style,
         );
 
@@ -84,17 +44,6 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       'omit_local_variable_types',
     ];
   }
-
-  // void registerNodeProcessors(NodeLintRegistry registry, LinterContext context) {
-  //   var visitor = _Visitor(this);
-
-  //   registry.addDeclaredIdentifier(this, visitor);
-  //   registry.addListLiteral(this, visitor);
-  //   registry.addSetOrMapLiteral(this, visitor);
-  //   registry.addSimpleFormalParameter(this, visitor);
-  //   registry.addTypeName(this, visitor);
-  //   registry.addVariableDeclarationList(this, visitor);
-  // }
 
   /// custom check
   @override
@@ -110,6 +59,8 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     final _Visitor visitor = _Visitor(this);
     parseResult.unit?.visitChildren(visitor);
 
+    print('after visit visitor = ${visitor.toString()}');
+
     //
     // visitor.rule
     //
@@ -124,6 +75,9 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     //           message: _warningMessage,
     //         ))
     //     .toList(growable: false);
+
+    // LintRule rule;
+    // rule.reportLint(node);
 
     return <RuleMessage>[];
   }
@@ -142,86 +96,86 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   }
 }
 
-class _Visitor extends SimpleAstVisitor<void> {
+class _Visitor extends RecursiveAstVisitor<void> {
+  //} SimpleAstVisitor<void> {
   _Visitor(this.rule);
 
   final Rule rule;
 
-  // void checkLiteral(TypedLiteral literal) {
-  //   if (literal.typeArguments == null) {
-  //     rule.reportLintForToken(literal.beginToken);
+  void checkLiteral(TypedLiteral literal) {
+    if (literal.typeArguments == null) {
+      rule.reportLintForToken(literal.beginToken);
+    }
+  }
+
+  // @override
+  // void visitDeclaredIdentifier(DeclaredIdentifier node) {
+  //   print('-----visitDeclaredIdentifier');
+  //   if (node.type == null) {
+  //     rule.reportLintForToken(node.keyword);
   //   }
   // }
 
-  @override
-  void visitDeclaredIdentifier(DeclaredIdentifier node) {
-    print('-----visitDeclaredIdentifier');
-    // if (node.type == null) {
-    //   rule.reportLintForToken(node.keyword);
-    // }
-  }
+  // @override
+  // void visitListLiteral(ListLiteral literal) {
+  //   print('-----visitListLiteral');
+  //   checkLiteral(literal);
+  // }
 
-  @override
-  void visitListLiteral(ListLiteral literal) {
-    print('-----visitListLiteral');
-    // checkLiteral(literal);
-  }
+  // void visitNamedType(NamedType namedType) {
+  //   print('--visitNamedType');
+  //   final DartType? type = namedType.type;
 
-  void visitNamedType(NamedType namedType) {
-    final DartType? type = namedType.type;
+  //   if (type is InterfaceType) {
+  //     final TypeParameterizedElement element = type.aliasElement ?? type.element;
 
-    if (type is InterfaceType) {
-      final TypeParameterizedElement element = type.aliasElement ?? type.element;
+  //     if (element.typeParameters.isNotEmpty &&
+  //         namedType.typeArguments == null &&
+  //         namedType.parent is! IsExpression &&
+  //         !_isOptionallyParameterized(element)) {
+  //       rule.reportLint(namedType);
+  //     }
+  //   }
+  // }
 
-      if (element.typeParameters.isNotEmpty &&
-          namedType.typeArguments == null &&
-          namedType.parent is! IsExpression &&
-          !_isOptionallyParameterized(element)) {
-        // TODO
-        // rule.reportLint(namedType);
-      }
-    }
-  }
+  // @override
+  // void visitSetOrMapLiteral(SetOrMapLiteral literal) {
+  //   checkLiteral(literal);
+  // }
 
-  @override
-  void visitSetOrMapLiteral(SetOrMapLiteral literal) {
-    // TODO
-    // checkLiteral(literal);
-  }
+  // @override
+  // void visitSimpleFormalParameter(SimpleFormalParameter param) {
+  //   print('---visitSimpleFormalParameter');
+  //   final SimpleIdentifier? identifier = param.identifier;
 
-  @override
-  void visitSimpleFormalParameter(SimpleFormalParameter param) {
-    final SimpleIdentifier? identifier = param.identifier;
+  //   if (identifier != null && param.type == null) {
+  //     //} && !isJustUnderscores(identifier.name)) {
+  //     if (param.keyword != null) {
+  //       rule.reportLintForToken(param.keyword);
+  //     } else {
+  //       rule.reportLint(param);
+  //     }
+  //   }
+  // }
 
-    if (identifier != null && param.type == null) {
-      //} && !isJustUnderscores(identifier.name)) {
-      if (param.keyword != null) {
-        // TODO
-        // rule.reportLintForToken(param.keyword);
-      } else {
-        // TODO
-        // rule.reportLint(param);
-      }
-    }
-  }
-
-  @override
-  void visitTypeName(NamedType typeName) {
-    visitNamedType(typeName);
-  }
+  // @override
+  // void visitTypeName(NamedType typeName) {
+  //   print('---visitTypeName typeName = $typeName');
+  //   visitNamedType(typeName);
+  // }
 
   @override
   void visitVariableDeclarationList(VariableDeclarationList list) {
     if (list.type == null) {
-      // TODO
+      print('----list = ${list.type} > ${list.keyword} > ${list}');
       // rule.reportLintForToken(list.keyword);
     }
   }
 
-  @override
-  void visitMethodDeclaration(MethodDeclaration node) {
-    super.visitMethodDeclaration(node);
+  // @override
+  // void visitMethodDeclaration(MethodDeclaration node) {
+  //   super.visitMethodDeclaration(node);
 
-    print('---visitMethodDeclaration');
-  }
+  //   print('---visitMethodDeclaration');
+  // }
 }

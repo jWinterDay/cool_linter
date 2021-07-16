@@ -26,7 +26,7 @@ analyzer:
     - pubspec.yaml
 
     - lib/src/generated/**
-    # - test_driver/lib/**
+    - test/**/**test_data.dart
     
 
 linter:

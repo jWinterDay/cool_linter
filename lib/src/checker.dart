@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';

@@ -4,7 +4,7 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:cool_linter/src/config/yaml_config.dart';
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, LinterContext, NodeLintRegistry, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
 
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
@@ -28,11 +28,14 @@ bool _isOptionalTypeArgs(Element? element) =>
     element.name == _optionalTypeArgsVarName &&
     element.library.name == _metaLibName;
 
+final RegExp _underscores = RegExp(r'^[_]+$');
+bool isJustUnderscores(String name) => _underscores.hasMatch(name);
+
 class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   AlwaysSpecifyTypesRule()
       : super(
-          name: 'cl_always_specify_types',
-          description: 'Specify type annotations.',
+          name: 'cool_linter_always_specify_types',
+          description: 'cool_linter specify type annotations.',
           details: 'https://flutter.dev/style-guide',
           group: Group.style,
         );
@@ -61,121 +64,100 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
 
     print('after visit visitor = ${visitor.toString()}');
 
-    //
-    // visitor.rule
-    //
-
-    // return _visitor.missingInvocations
-    //     .map((invocation) => createIssue(
-    //           rule: this,
-    //           location: nodeLocation(
-    //             node: invocation,
-    //             source: source,
-    //           ),
-    //           message: _warningMessage,
-    //         ))
-    //     .toList(growable: false);
-
-    // LintRule rule;
-    // rule.reportLint(node);
-
     return <RuleMessage>[];
   }
 
-  @override
-  void registerNodeProcessors(NodeLintRegistry registry, LinterContext context) {
-    print('-----registerNodeProcessors');
-    final _Visitor visitor = _Visitor(this);
+  // @override
+  // void registerNodeProcessors(NodeLintRegistry registry, LinterContext context) {
+  //   print('-----registerNodeProcessors');
+  //   final _Visitor visitor = _Visitor(this);
 
-    registry.addDeclaredIdentifier(this, visitor);
-    registry.addListLiteral(this, visitor);
-    registry.addSetOrMapLiteral(this, visitor);
-    registry.addSimpleFormalParameter(this, visitor);
-    registry.addTypeName(this, visitor);
-    registry.addVariableDeclarationList(this, visitor);
-  }
+  //   registry.addDeclaredIdentifier(this, visitor);
+  //   registry.addListLiteral(this, visitor);
+  //   registry.addSetOrMapLiteral(this, visitor);
+  //   registry.addSimpleFormalParameter(this, visitor);
+  //   registry.addTypeName(this, visitor);
+  //   registry.addVariableDeclarationList(this, visitor);
+  // }
 }
 
 class _Visitor extends RecursiveAstVisitor<void> {
+  //} SimpleAstVisitor<void> {
   //} SimpleAstVisitor<void> {
   _Visitor(this.rule);
 
   final Rule rule;
 
-  void checkLiteral(TypedLiteral literal) {
+  void _checkLiteral(TypedLiteral literal) {
     if (literal.typeArguments == null) {
-      rule.reportLintForToken(literal.beginToken);
+      print('++++ _checkLiteral: ${literal.typeArguments}');
     }
   }
 
-  // @override
-  // void visitDeclaredIdentifier(DeclaredIdentifier node) {
-  //   print('-----visitDeclaredIdentifier');
-  //   if (node.type == null) {
-  //     rule.reportLintForToken(node.keyword);
-  //   }
-  // }
+  @override
+  void visitDeclaredIdentifier(DeclaredIdentifier node) {
+    if (node.type == null) {
+      print('++++ visitDeclaredIdentifier: ${node}');
+    }
+  }
 
-  // @override
-  // void visitListLiteral(ListLiteral literal) {
-  //   print('-----visitListLiteral');
-  //   checkLiteral(literal);
-  // }
+  @override
+  void visitListLiteral(ListLiteral literal) {
+    _checkLiteral(literal);
+  }
 
-  // void visitNamedType(NamedType namedType) {
-  //   print('--visitNamedType');
-  //   final DartType? type = namedType.type;
+  void visitNamedType(NamedType namedType) {
+    final DartType? type = namedType.type;
 
-  //   if (type is InterfaceType) {
-  //     final TypeParameterizedElement element = type.aliasElement ?? type.element;
+    if (type is InterfaceType) {
+      final TypeParameterizedElement element = type.aliasElement ?? type.element;
 
-  //     if (element.typeParameters.isNotEmpty &&
-  //         namedType.typeArguments == null &&
-  //         namedType.parent is! IsExpression &&
-  //         !_isOptionallyParameterized(element)) {
-  //       rule.reportLint(namedType);
-  //     }
-  //   }
-  // }
+      if (element.typeParameters.isNotEmpty &&
+          namedType.typeArguments == null &&
+          namedType.parent is! IsExpression &&
+          !_isOptionallyParameterized(element)) {
+        print('@@@@@@@@@ visitNamedType $namedType element = $element');
+      }
+    }
+  }
 
-  // @override
-  // void visitSetOrMapLiteral(SetOrMapLiteral literal) {
-  //   checkLiteral(literal);
-  // }
+  @override
+  void visitSetOrMapLiteral(SetOrMapLiteral literal) {
+    _checkLiteral(literal);
+  }
 
-  // @override
-  // void visitSimpleFormalParameter(SimpleFormalParameter param) {
-  //   print('---visitSimpleFormalParameter');
-  //   final SimpleIdentifier? identifier = param.identifier;
+  @override
+  void visitSimpleFormalParameter(SimpleFormalParameter param) {
+    final SimpleIdentifier? identifier = param.identifier;
 
-  //   if (identifier != null && param.type == null) {
-  //     //} && !isJustUnderscores(identifier.name)) {
-  //     if (param.keyword != null) {
-  //       rule.reportLintForToken(param.keyword);
-  //     } else {
-  //       rule.reportLint(param);
-  //     }
-  //   }
-  // }
+    if (identifier != null && param.type == null && !isJustUnderscores(identifier.name)) {
+      if (param.keyword != null) {
+        print('&&&&& reportLintForToken $param');
+      } else {
+        print('====== reportLint $param ${param.identifier?.name}');
+      }
+    }
+  }
 
-  // @override
-  // void visitTypeName(NamedType typeName) {
-  //   print('---visitTypeName typeName = $typeName');
-  //   visitNamedType(typeName);
-  // }
+  @override
+  void visitTypeName(NamedType typeName) {
+    visitNamedType(typeName);
+  }
 
   @override
   void visitVariableDeclarationList(VariableDeclarationList list) {
     if (list.type == null) {
       print('----list = ${list.type} > ${list.keyword} > ${list}');
-      // rule.reportLintForToken(list.keyword);
     }
   }
 
-  // @override
-  // void visitMethodDeclaration(MethodDeclaration node) {
-  //   super.visitMethodDeclaration(node);
+  @override
+  void visitGenericFunctionType(GenericFunctionType node) {
+    print('visitGenericFunctionType $node');
+  }
 
-  //   print('---visitMethodDeclaration');
-  // }
+  @override
+  void visitGenericTypeAlias(GenericTypeAlias node) {
+    print('visitGenericTypeAlias $node');
+  }
 }

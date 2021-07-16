@@ -4,6 +4,7 @@ Map<String, String> map = {}; //LINT
 List<String> strings = []; //LINT
 Set<String> set = {}; //LINT
 
+final List<int> a = [];
 List list; // LINT
 List<List> lists; //LINT
 List<int> ints; //OK
@@ -13,9 +14,14 @@ final int xx = 3;
 const y = 2; //LINT
 const int yy = 3;
 
+final bl = false;
+
+Map testMap;
 a(var x) {} //LINT
+// for test comment under
+a2(_) {} //LINT
 b(s) {} //LINT [3:1]
-c(int x) {}
+c(int x) {} // for test comment right
 d(final x) {} //LINT
 e(final int x) {}
 

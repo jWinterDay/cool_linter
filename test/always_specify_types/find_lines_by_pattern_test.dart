@@ -11,29 +11,16 @@ import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart';
 
-const String _kExamplePath = 'test/always_specify_types/test_data.dart';
+import '../utils/resolved_unit_util.dart';
+
+const String _kTestDataPath = 'test/always_specify_types/test_data.dart';
 
 void main() {
   late ResolvedUnitResult resolvedUnitResult;
 
   group('regexp find lines by patterns', () {
     setUp(() async {
-      final File file = File(_kExamplePath);
-      if (!file.existsSync()) {
-        throw ArgumentError(
-          'Unable to find a file for the given path: $_kExamplePath',
-        );
-      }
-
-      final String filePath = normalize(file.absolute.path);
-      final SomeResolvedUnitResult parseResult = await resolveFile2(path: filePath);
-      if (parseResult is! ResolvedUnitResult) {
-        throw ArgumentError(
-          'Unable to correctly resolve file for given path: $_kExamplePath',
-        );
-      }
-
-      resolvedUnitResult = parseResult;
+      resolvedUnitResult = await getResolvedUnitResult(_kTestDataPath);
     });
 
     final Rule specifyTypesRule = AlwaysSpecifyTypesRule();
@@ -51,22 +38,7 @@ void main() {
     );
 
     test('specify types', () async {
-      const String testClass = r'''
-        class B {
-          final _a = 2;
-
-          void test() {
-            final t = 1;
-            final t2 = 'test';
-            final t3 = [1,2,3];
-            final List<int> t4 = [1,2,3];
-            final List<int> noWarnings = <int>[1,2,3];
-          }
-        }
-        ''';
-
       final List<RuleMessage> list = specifyTypesRule.check(
-        content: testClass,
         parseResult: resolvedUnitResult,
         yamlConfig: yamlConfig,
       );

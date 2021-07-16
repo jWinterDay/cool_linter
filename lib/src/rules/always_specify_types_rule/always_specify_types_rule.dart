@@ -99,7 +99,6 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   /// custom check
   @override
   List<RuleMessage> check({
-    required String content,
     // required String path,
     // CompilationUnit? compilationUnit,
     required ResolvedUnitResult parseResult,

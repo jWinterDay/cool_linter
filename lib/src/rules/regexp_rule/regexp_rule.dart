@@ -10,7 +10,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 class RegExpRule extends Rule {
   List<RuleMessage> _getIncorrectLines({
-    required String content,
+    // required String content,
     // required String path,
     // CompilationUnit? compilationUnit,
     required ResolvedUnitResult parseResult,
@@ -21,6 +21,8 @@ class RegExpRule extends Rule {
     if (path == null) {
       return <RuleMessage>[];
     }
+
+    final String content = parseResult.content!;
 
     final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {
@@ -103,8 +105,6 @@ class RegExpRule extends Rule {
 
   @override
   List<RuleMessage> check({
-    required String content,
-    // required String path,
     required ResolvedUnitResult parseResult,
     required YamlConfig yamlConfig,
   }) {
@@ -115,7 +115,6 @@ class RegExpRule extends Rule {
     }
 
     return _getIncorrectLines(
-      content: content,
       parseResult: parseResult,
       // path: path,
       yamlConfig: yamlConfig,

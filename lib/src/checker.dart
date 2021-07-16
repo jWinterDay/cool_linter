@@ -16,15 +16,20 @@ class IncorrectLineInfo {
 
   final int line;
   final ExcludeWord excludeWord;
+
+  @override
+  String toString() {
+    return 'line: $line excludeWord: $excludeWord';
+  }
 }
 
 class Checker {
   const Checker();
 
-  List<IncorrectLineInfo>? getIncorrectLines(String src, YamlConfig yamlConfig) {
+  List<IncorrectLineInfo> getIncorrectLines(String src, YamlConfig yamlConfig) {
     final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
     if (patterns.isEmpty) {
-      return null;
+      return <IncorrectLineInfo>[];
     }
 
     final List<IncorrectLineInfo> matchListInfo = <IncorrectLineInfo>[];
@@ -44,7 +49,9 @@ class Checker {
       int columnIndex = 0;
 
       lineStarts.forEach((int lineStartIndex) {
-        if (lineStartIndex == 0) return;
+        if (lineStartIndex == 0) {
+          return;
+        }
 
         final String lineStr = src.substring(prevIndex, lineStartIndex);
         prevIndex = lineStartIndex;
@@ -83,7 +90,7 @@ class Checker {
 
       return matchListInfo;
     } catch (exc) {
-      return null;
+      return <IncorrectLineInfo>[];
     }
   }
 
@@ -104,9 +111,9 @@ class Checker {
       return result;
     }
 
-    final List<IncorrectLineInfo>? incorrectLinesInfo = getIncorrectLines(parseResult.content!, yamlConfig);
+    final List<IncorrectLineInfo> incorrectLinesInfo = getIncorrectLines(parseResult.content!, yamlConfig);
 
-    if (incorrectLinesInfo == null || incorrectLinesInfo.isEmpty) {
+    if (incorrectLinesInfo.isEmpty) {
       return result;
     }
 

@@ -1,20 +1,33 @@
 import 'dart:async';
 
 // ignore_for_file: implementation_imports
-// fignore_for_file: avoid_as
-import 'package:analyzer/src/workspace/workspace.dart';
+// import 'package:analyzer/src/workspace/workspace.dart';
+import 'package:analyzer/dart/analysis/analysis_context.dart';
+import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:glob/glob.dart';
 
 //
+import 'package:analyzer/dart/analysis/context_builder.dart';
+import 'package:analyzer/dart/analysis/context_locator.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/context/context_root.dart';
+
 import 'package:analyzer/src/dart/analysis/driver.dart';
+
+import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
-import 'package:analyzer/src/dart/analysis/file_state.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
+import 'package:analyzer_plugin/protocol/protocol_common.dart' as plugin;
+
+// import 'package:analyzer/dart/analysis/results.dart';
+// import 'package:analyzer/file_system/file_system.dart';
+// // import 'package:analyzer/src/context/builder.dart';
+// import 'package:analyzer/src/context/context_root.dart';
+// import 'package:analyzer/src/dart/analysis/driver.dart';
+// import 'package:analyzer_plugin/plugin/plugin.dart';
+// import 'package:analyzer/src/dart/analysis/file_state.dart';
+// import 'package:analyzer_plugin/protocol/protocol_common.dart';
+// import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 
 //
 import 'package:cool_linter/src/checker.dart';
@@ -65,46 +78,49 @@ class CoolLinterPlugin extends ServerPlugin {
       return glob.toString();
     }).toList();
 
-    final ContextRoot root = ContextRoot(
-      contextRoot.root,
-      <String>[
+    final String rootPath = contextRoot.root;
+    final List<ContextRoot> locator = ContextLocator(resourceProvider: resourceProvider).locateRoots(
+      includedPaths: <String>[rootPath],
+      excludedPaths: <String>[
         ...contextRoot.exclude,
         ...extendedExcludedFolders,
       ],
-      pathContext: resourceProvider.pathContext,
-    )..optionsFilePath = contextRoot.optionsFile;
-
-    final ContextBuilder contextBuilder = ContextBuilder(
-      resourceProvider,
-      sdkManager,
-      null,
-    )
-      ..analysisDriverScheduler = analysisDriverScheduler
-      ..byteStore = byteStore
-      ..performanceLog = performanceLog
-      ..fileContentOverlay = FileContentOverlay();
-
-    final Workspace workspace = ContextBuilder.createWorkspace(
-      resourceProvider: resourceProvider,
-      options: ContextBuilderOptions(),
-      rootPath: contextRoot.root,
+      optionsFile: contextRoot.optionsFile,
     );
 
-    final AnalysisDriver analysisDriver = contextBuilder.buildDriver(root, workspace);
+    if (locator.isEmpty) {
+      final StateError error = StateError('Unexpected empty context');
+      channel.sendNotification(plugin.PluginErrorParams(
+        true,
+        error.message,
+        error.stackTrace.toString(),
+      ).toNotification());
+
+      throw error;
+    }
+
+    final ContextBuilder builder = ContextBuilder(
+      resourceProvider: resourceProvider,
+    );
+
+    final AnalysisContext analysisContext = builder.createContext(contextRoot: locator.first);
+    // ignore: avoid_as
+    final DriverBasedAnalysisContext context = analysisContext as DriverBasedAnalysisContext;
+    final AnalysisDriver dartDriver = context.driver;
 
     // get yaml options
-    final YamlConfig? yamlConfig = _getYamlConfig(analysisDriver);
+    final YamlConfig? yamlConfig = _getYamlConfig(dartDriver);
     if (yamlConfig == null) {
-      return analysisDriver;
+      return dartDriver;
     }
 
     final List<Glob> excludesGlobList = yamlConfig.excludesGlobList(contextRoot.root);
 
     runZonedGuarded(
       () {
-        analysisDriver.results.listen((ResolvedUnitResult analysisResult) {
+        dartDriver.results.listen((ResolvedUnitResult analysisResult) {
           _processResult(
-            analysisDriver,
+            dartDriver,
             analysisResult,
             yamlConfig: yamlConfig,
             excludesGlobList: excludesGlobList,
@@ -122,7 +138,7 @@ class CoolLinterPlugin extends ServerPlugin {
       },
     );
 
-    return analysisDriver;
+    return dartDriver;
   }
 
   @override
@@ -169,14 +185,14 @@ class CoolLinterPlugin extends ServerPlugin {
         channel.sendNotification(
           plugin.AnalysisErrorsParams(
             filePath,
-            <AnalysisError>[],
+            <plugin.AnalysisError>[],
           ).toNotification(),
         );
       } else {
         // If there is something to analyze, do so and notify the analyzer.
         // Note that notifying with an empty set of errors is important as
         // this clears errors if they were fixed.
-        final Map<AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+        final Map<plugin.AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
           yamlConfig: yamlConfig,
           excludesGlobList: excludesGlobList,
           parseResult: analysisResult,
@@ -232,9 +248,11 @@ class CoolLinterPlugin extends ServerPlugin {
   YamlConfig? _getYamlConfig(AnalysisDriver analysisDriver) {
     try {
       // ignore: deprecated_member_use
-      final String? optionsPath = analysisDriver.contextRoot?.optionsFilePath;
-      final bool isEmpty = optionsPath?.isEmpty ?? true;
-      if (isEmpty) {
+      final File? optionsPath = analysisDriver.analysisContext?.contextRoot.optionsFile;
+      // final bool isEmpty = optionsPath?.isEmpty ?? true;
+      final bool exists = optionsPath?.exists ?? false;
+
+      if (!exists) {
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
@@ -246,20 +264,20 @@ class CoolLinterPlugin extends ServerPlugin {
         return null;
       }
 
-      final File file = resourceProvider.getFile(optionsPath!);
-      if (!file.exists) {
-        channel.sendNotification(
-          plugin.PluginErrorParams(
-            false,
-            'cool_linter. no analysis options file content',
-            StackTrace.current.toString(),
-          ).toNotification(),
-        );
+      // final File file = resourceProvider.getFile(optionsPath!);
+      // if (!file.exists) {
+      //   channel.sendNotification(
+      //     plugin.PluginErrorParams(
+      //       false,
+      //       'cool_linter. no analysis options file content',
+      //       StackTrace.current.toString(),
+      //     ).toNotification(),
+      //   );
 
-        return null;
-      }
+      //   return null;
+      // }
 
-      final YamlConfig yamlConfig = YamlConfig.fromFile(file);
+      final YamlConfig yamlConfig = YamlConfig.fromFile(optionsPath!);
       if (yamlConfig.checkCorrectMessage != null) {
         channel.sendNotification(
           plugin.PluginErrorParams(

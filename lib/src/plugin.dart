@@ -4,6 +4,7 @@ import 'dart:async';
 // import 'package:analyzer/src/workspace/workspace.dart';
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
+import 'package:cool_linter/src/utils/utils.dart';
 import 'package:glob/glob.dart';
 
 //
@@ -61,18 +62,7 @@ class CoolLinterPlugin extends ServerPlugin {
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
     // extended excluded files
-    final List<String> extendedExcludedFolders = <String>[
-      '.dart_tool',
-      '.vscode',
-      'packages',
-      'ios',
-      'macos',
-      'android',
-      'web',
-      'linux',
-      'windows',
-      'go',
-    ].map((String f) {
+    final List<String> extendedExcludedFolders = kDefaultExcludedFolders.map((String f) {
       final Glob glob = Glob(p.join(contextRoot.root, f));
 
       return glob.toString();

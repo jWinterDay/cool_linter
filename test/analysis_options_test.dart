@@ -9,32 +9,32 @@ void main() {
   group('Analysis_options.yaml', () {
     test('parse yaml', () {
       const String _exampleYaml = '''
-analyzer:
-  plugins:
-    - cool_linter
+        analyzer:
+          plugins:
+            - cool_linter
 
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
+          strong-mode:
+            implicit-casts: false
+            implicit-dynamic: false
 
-cool_linter:
-  exclude_words:
-    -
-      pattern: Colors
-      hint: Use colors from design system instead!
-      severity: WARNING
-    -
-      pattern: Test
-      hint: Use Test1 instead!
-      severity: ERROR
-  exclude_folders:
-    - test/**
+        cool_linter:
+          exclude_words:
+            -
+              pattern: Colors
+              hint: Use colors from design system instead!
+              severity: WARNING
+            -
+              pattern: Test
+              hint: Use Test1 instead!
+              severity: ERROR
+          exclude_folders:
+            - test/**
 
-linter:
-  rules:
-    - always_put_control_body_on_new_line
-    - always_put_required_named_parameters_first
-''';
+        linter:
+          rules:
+            - always_put_control_body_on_new_line
+            - always_put_required_named_parameters_first
+        ''';
 
       final String rawYaml = json.encode(loadYaml(_exampleYaml));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
@@ -55,13 +55,13 @@ linter:
 
     test('pattern as correct RegExp', () {
       const String _yamlWithCorrectWordRegExp = '''
-cool_linter:
-  exclude_words:
-    -
-      pattern: ^Test{1}
-      hint: Correct RegExp pattern
-      severity: WARNING
-''';
+        cool_linter:
+          exclude_words:
+            -
+              pattern: ^Test{1}
+              hint: Correct RegExp pattern
+              severity: WARNING
+        ''';
 
       final String rawYaml = json.encode(loadYaml(_yamlWithCorrectWordRegExp));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
@@ -78,13 +78,13 @@ cool_linter:
 
     test('pattern as incorrect RegExp', () {
       const String _yamlWithIncorrectWordRegExp = '''
-cool_linter:
-  exclude_words:
-    -
-      pattern: Test{a}
-      hint: Correct RegExp pattern
-      severity: WARNING
-''';
+        cool_linter:
+          exclude_words:
+            -
+              pattern: Test{a}
+              hint: Correct RegExp pattern
+              severity: WARNING
+        ''';
 
       final String rawYaml = json.encode(loadYaml(_yamlWithIncorrectWordRegExp));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
@@ -103,12 +103,12 @@ cool_linter:
 
     test('no pattern', () {
       const String _yamlWithNoPattern = '''
-cool_linter:
-  exclude_words:
-    -
-      hint: Correct RegExp pattern
-      severity: WARNING
-''';
+        cool_linter:
+          exclude_words:
+            -
+              hint: Correct RegExp pattern
+              severity: WARNING
+        ''';
 
       final String rawYaml = json.encode(loadYaml(_yamlWithNoPattern));
       final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);

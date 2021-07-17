@@ -1,10 +1,5 @@
-// ignore_for_file: import_of_legacy_library_into_null_safe
-import 'dart:convert';
-
 import 'package:cool_linter/src/config/analysis_settings.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:test/test.dart';
-import 'package:yaml/yaml.dart';
 
 import 'utils/convert_yaml_to_map.dart';
 
@@ -39,22 +34,21 @@ void main() {
       expect(analysisSettings.coolLinter?.regexpExclude.first.hint, 'Hint');
       expect(analysisSettings.coolLinter?.regexpExclude.first.severity, 'WARNING');
     });
-  });
 
-  test('no cool_linter settings', () {
-    const String yaml = '''
+    test('no cool_linter settings', () {
+      const String yaml = '''
       linter:
         rules:
           always_declare_return_types: true
         ''';
 
-    final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
 
-    expect(analysisSettings.coolLinter, isNull);
-  });
+      expect(analysisSettings.coolLinter, isNull);
+    });
 
-  test('parse only regexp exclude', () {
-    const String yaml = '''
+    test('parse only regexp exclude', () {
+      const String yaml = '''
         cool_linter:
           regexp_exclude:
             -
@@ -63,10 +57,40 @@ void main() {
               severity: WARNING
         ''';
 
-    final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
 
-    expect(analysisSettings.coolLinter?.types, hasLength(0));
-    expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
-    expect(analysisSettings.coolLinter?.excludeFolders, hasLength(0));
+      expect(analysisSettings.coolLinter?.types, hasLength(0));
+      expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
+      expect(analysisSettings.coolLinter?.excludeFolders, hasLength(0));
+    });
+
+    test('parse only always specify types', () {
+      const String yaml = '''
+        cool_linter:
+          always_specify_types:
+            - typed_literal
+        ''';
+
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+
+      expect(analysisSettings.coolLinter?.types, hasLength(1));
+      expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));
+      expect(analysisSettings.coolLinter?.excludeFolders, hasLength(0));
+    });
+
+    test('parse only exclude folders', () {
+      const String yaml = '''
+        cool_linter:
+          exclude_folders:
+            - test/**
+            - test2/**
+        ''';
+
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+
+      expect(analysisSettings.coolLinter?.types, hasLength(0));
+      expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));
+      expect(analysisSettings.coolLinter?.excludeFolders, hasLength(2));
+    });
   });
 }

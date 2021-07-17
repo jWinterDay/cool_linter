@@ -19,8 +19,10 @@ Map<String, dynamic> _$_$_AnalysisSettingsToJson(_$_AnalysisSettings instance) =
 _$_CoolLinter _$_$_CoolLinterFromJson(Map<String, dynamic> json) {
   return _$_CoolLinter(
     types: (json['always_specify_types'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
-    regexpExclude:
-        (json['regexp_exclude'] as List<dynamic>).map((e) => ExcludeWords.fromJson(e as Map<String, dynamic>)).toList(),
+    regexpExclude: (json['regexp_exclude'] as List<dynamic>?)
+            ?.map((e) => ExcludeWords.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [],
     excludeFolders: (json['exclude_folders'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
   );
 }

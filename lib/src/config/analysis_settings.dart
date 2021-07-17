@@ -48,7 +48,9 @@ class CoolLinter with _$CoolLinter {
 
   const factory CoolLinter({
     @Default(<String>[]) @JsonKey(name: 'always_specify_types', defaultValue: <String>[]) List<String> types,
-    @Default(<ExcludeWords>[]) @JsonKey(name: 'regexp_exclude') List<ExcludeWords> regexpExclude,
+    @Default(<ExcludeWords>[])
+    @JsonKey(name: 'regexp_exclude', defaultValue: <ExcludeWords>[])
+        List<ExcludeWords> regexpExclude,
     @Default(<String>[]) @JsonKey(name: 'exclude_folders', defaultValue: <String>[]) List<String> excludeFolders,
   }) = _CoolLinter;
 

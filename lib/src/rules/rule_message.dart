@@ -4,11 +4,12 @@ import 'package:meta/meta.dart';
 @immutable
 class RuleMessage {
   const RuleMessage({
-    required this.severityName,
+    this.severityName = 'INFO',
     required this.location,
     required this.code,
     required this.message,
     required this.changeMessage,
+    this.addInfo,
   });
 
   /// error
@@ -22,6 +23,8 @@ class RuleMessage {
 
   /// error
   final String code;
+
+  final String? addInfo;
 
   /// fix
   final String changeMessage;

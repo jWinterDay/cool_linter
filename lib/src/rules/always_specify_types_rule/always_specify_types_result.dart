@@ -17,4 +17,16 @@ class AlwaysSpecifyTypesResult {
 
   final AstNode astNode;
   final ResultType resultType;
+
+  String get resultTypeAsString => resultType.toString().split('.')[1];
+
+  @override
+  String toString() {
+    final StringBuffer sb = StringBuffer();
+
+    sb.writeln('resultType: $resultType');
+    sb.writeln('astNode: ${astNode.toString()}');
+
+    return sb.toString();
+  }
 }

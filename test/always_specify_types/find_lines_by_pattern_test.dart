@@ -43,7 +43,27 @@ void main() {
         yamlConfig: yamlConfig,
       );
 
-      expect(list, hasLength(0));
+      // typedLiteral
+      final Iterable<RuleMessage> typedLiteralList = list.where((RuleMessage e) => e.addInfo == 'typedLiteral');
+      expect(typedLiteralList, hasLength(3));
+
+      // typeName
+      final Iterable<RuleMessage> typeNameList = list.where((RuleMessage e) => e.addInfo == 'typeName');
+      expect(typeNameList, hasLength(4));
+
+      // variableDeclarationList
+      final Iterable<RuleMessage> varDecList = list.where((RuleMessage e) => e.addInfo == 'variableDeclarationList');
+      expect(varDecList, hasLength(10));
+
+      // simpleFormalParameter
+      final Iterable<RuleMessage> simpleFParList = list.where((RuleMessage e) => e.addInfo == 'simpleFormalParameter');
+      expect(simpleFParList, hasLength(5));
+
+      // list.forEach((RuleMessage e) {
+      //   print('${e.addInfo} > ${e.location.startLine}');
+      // });
+
+      expect(list, hasLength(24));
     });
   });
 }

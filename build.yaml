@@ -1,0 +1,11 @@
+targets:
+  $default:
+    sources:
+      include:
+        - $package$
+        - lib/$lib$
+        - lib/**
+      exclude:
+        - test/**
+        - tools/**
+        - scripts/**

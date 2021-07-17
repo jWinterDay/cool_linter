@@ -24,7 +24,8 @@ analyzer:
     - macos/**
     - pubspec.lock
     - pubspec.yaml
-
+    - lib/**/*.freezed.dart
+    - lib/**/*.g.dart
     - lib/src/generated/**
     - test/**/**test_data.dart
     

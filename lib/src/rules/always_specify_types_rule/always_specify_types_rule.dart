@@ -45,7 +45,6 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     return visitor.visitorRuleMessages.map((AlwaysSpecifyTypesResult result) {
       final int offset = result.astNode.offset;
       final int end = result.astNode.end;
-      // final Uri sourceUrl = Uri.file(parseResult.path!);
 
       // ignore: always_specify_types
       final offsetLocation = parseResult.lineInfo.getLocation(offset);

@@ -5,6 +5,7 @@ import 'package:cool_linter/src/config/yaml_config.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
+/// Deprecated: old tests
 void main() {
   group('Analysis_options.yaml', () {
     test('parse yaml', () {

@@ -8,7 +8,6 @@ import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
-import '../utils/mock_resolve_unit_result.dart';
 import '../utils/resolved_unit_util.dart';
 
 const String _kTestDataPath = 'test/regexp/test_data.dart';

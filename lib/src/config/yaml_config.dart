@@ -1,76 +1,63 @@
 import 'dart:convert';
 
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:yaml/yaml.dart';
+
 // ignore_for_file: avoid_as
 class YamlConfig {
   YamlConfig({
-    required this.analyzer,
-    required this.coolLinter,
+    this.coolLinter,
   });
 
   factory YamlConfig.fromJson(String str) => YamlConfig.fromMap(json.decode(str) as Map<String, dynamic>);
 
-  factory YamlConfig.fromMap(Map<String, dynamic> json) {
+  factory YamlConfig.fromMap(Map<dynamic, dynamic> json) {
     return YamlConfig(
-      analyzer: json['analyzer'] == null ? null : Analyzer.fromMap(json['analyzer'] as Map<String, dynamic>),
       coolLinter: json['cool_linter'] == null ? null : CoolLinter.fromMap(json['cool_linter'] as Map<String, dynamic>),
     );
   }
 
-  final Analyzer? analyzer;
+  factory YamlConfig.fromFile(File file) {
+    final String rawYaml = json.encode(loadYaml(file.readAsStringSync()));
+    final YamlConfig yamlConfig = YamlConfig.fromJson(rawYaml);
+
+    return yamlConfig;
+  }
+
   final CoolLinter? coolLinter;
 
   String toJson() => json.encode(toMap());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'analyzer': analyzer == null ? null : analyzer!.toMap(),
-      'cool_linter': coolLinter == null ? null : coolLinter!.toMap(),
+      'cool_linter': coolLinter?.toMap(),
     };
+  }
+
+  /// return null if correct
+  String? get checkCorrectMessage {
+    // exclude word list
+    if (coolLinter?.excludeWords == null) {
+      return 'exclude_words param list cannot be null';
+    }
+
+    if (coolLinter!.excludeWords!.isEmpty) {
+      return 'exclude_words param list cannot be empty';
+    }
+
+    return null;
   }
 
   @override
   String toString() {
-    return 'analyzer: $analyzer, coolLinter: $coolLinter';
-  }
-}
-
-class Analyzer {
-  Analyzer({
-    required this.plugins,
-  });
-
-  factory Analyzer.fromJson(String str) {
-    return Analyzer.fromMap(json.decode(str) as Map<String, dynamic>);
-  }
-
-  factory Analyzer.fromMap(Map<String, dynamic> json) {
-    return Analyzer(
-      plugins: json['plugins'] == null
-          ? null
-          : List<String>.from((json['plugins'] as List<dynamic>).map<String>((dynamic x) => x.toString())),
-    );
-  }
-
-  final List<String>? plugins;
-
-  String toJson() => json.encode(toMap());
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'plugins': plugins == null ? null : List<dynamic>.from(plugins!.map<String>((String x) => x)),
-    };
-  }
-
-  @override
-  String toString() {
-    return 'plugins: $plugins';
+    return 'coolLinter: $coolLinter';
   }
 }
 
 class CoolLinter {
   CoolLinter({
-    required this.excludeWords,
-    required this.excludeFolders,
+    this.excludeWords,
+    this.excludeFolders,
   });
 
   factory CoolLinter.fromJson(String str) {
@@ -88,7 +75,7 @@ class CoolLinter {
             ),
       excludeFolders: json['exclude_folders'] == null
           ? null
-          : List<dynamic>.from(
+          : List<String>.from(
               (json['exclude_folders'] as List<dynamic>).map<String>(
                 (dynamic x) => x.toString(),
               ),
@@ -97,7 +84,7 @@ class CoolLinter {
   }
 
   final List<ExcludeWord>? excludeWords;
-  final List<dynamic>? excludeFolders;
+  final List<String>? excludeFolders;
 
   String toJson() => json.encode(toMap());
 
@@ -130,8 +117,8 @@ const String defaultSeverity = 'warning';
 
 class ExcludeWord {
   ExcludeWord({
-    required this.pattern,
-    required this.hint,
+    this.pattern,
+    this.hint,
     this.severity = defaultSeverity,
   });
 
@@ -159,6 +146,25 @@ class ExcludeWord {
       'hint': hint,
       'severity': severity == null ? defaultSeverity : hint,
     };
+  }
+
+  static final List<String> possibleSeverityValues = <String>[
+    'INFO',
+    'WARNING',
+    'ERROR',
+  ];
+
+  static const String defaultSeverityVal = 'WARNING';
+
+  String get safeSeverity {
+    return possibleSeverityValues.firstWhere(
+      (String val) {
+        return val == severity;
+      },
+      orElse: () {
+        return defaultSeverityVal;
+      },
+    );
   }
 
   @override

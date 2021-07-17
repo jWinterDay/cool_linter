@@ -3,16 +3,16 @@ include: package:pedantic/analysis_options.yaml
 analyzer:
   enable-experiment:
     - non-nullable
-  # strong-mode:
-  #   implicit-casts: false
-  #   implicit-dynamic: false
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
   errors:
     todo: ignore
     must_be_immutable: ignore
   exclude:
     - .gitignore
     - .vscode/**
-    - android
+    - android/**
     - assets/**
     - scripts/**
     - build.yaml
@@ -24,16 +24,17 @@ analyzer:
     - macos/**
     - pubspec.lock
     - pubspec.yaml
-
+    - lib/**/*.freezed.dart
+    - lib/**/*.g.dart
     - lib/src/generated/**
-    # - test_driver/lib/**
+    - test/**/**test_data.dart
     
 
 linter:
   rules:
     always_declare_return_types: true
     always_require_non_null_named_parameters: true
-    always_use_package_imports: true
+    always_use_package_imports: false
     annotate_overrides: true
     avoid_as: true
     avoid_catching_errors: true

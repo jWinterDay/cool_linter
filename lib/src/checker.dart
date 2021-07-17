@@ -1,107 +1,74 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:pub_semver/pub_semver.dart';
-import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_common.dart';
-import 'package:analyzer_plugin_fork/protocol/protocol_generated.dart';
-// import 'package:analyzer_plugin/protocol/protocol_common.dart';
-// import 'package:analyzer_plugin/protocol/protocol_generated.dart';
-import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
+import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart';
+import 'package:glob/glob.dart';
+import 'package:cool_linter/src/config/yaml_config_extension.dart';
 
 class Checker {
-  List<int> getIncorrectLines(String src, Pattern pattern) {
-    final ParseStringResult parseResult = parseString(
-      content: src,
-      featureSet: FeatureSet.fromEnableFlags2(
-        sdkLanguageVersion: Version.parse('2.12.0'),
-        flags: <String>[],
-      ),
-      throwIfDiagnostics: false,
-    );
-
-    final List<int> lineStarts = parseResult.lineInfo.lineStarts;
-    int prevIndex = 0;
-    int columnIndex = 0;
-    final List<int> matchIndexList = <int>[];
-
-    lineStarts.forEach((int lineStartIndex) {
-      if (lineStartIndex == 0) return;
-
-      final String lineStr = src.substring(prevIndex, lineStartIndex);
-      prevIndex = lineStartIndex;
-
-      // is comment
-      final bool isComment = lineStr.trimLeft().startsWith('//');
-
-      if (!isComment && lineStr.contains(pattern)) {
-        matchIndexList.add(columnIndex);
-      }
-
-      columnIndex++;
-    });
-
-    return matchIndexList;
-  }
+  const Checker();
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    required Pattern pattern,
-    // required ParseStringResult parseResult,
+    required YamlConfig yamlConfig,
+    required List<Glob> excludesGlobList,
     required ResolvedUnitResult parseResult,
-    AnalysisErrorSeverity? errorSeverity = AnalysisErrorSeverity.WARNING,
+    AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
     final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
 
-    if (parseResult.content == null) {
+    if (parseResult.content == null || parseResult.path == null) {
       return result;
     }
 
-    // final List<int> incorrectLines = getIncorrectLines(parseResult.content!, pattern);
+    final bool isExcluded = yamlConfig.isExcluded(parseResult, excludesGlobList);
+    if (isExcluded) {
+      return result;
+    }
 
-    // if (incorrectLines.isEmpty) {
-    //   return result;
-    // }
+    final RegExpRule regExpRule = RegExpRule();
+
+    final List<RuleMessage> errorMessageList = regExpRule.check(
+      parseResult: parseResult,
+      yamlConfig: yamlConfig,
+    );
+
+    if (errorMessageList.isEmpty) {
+      return result;
+    }
 
     // loop through all wrong lines
+    errorMessageList.forEach((RuleMessage errorMessage) {
+      // fix
+      final PrioritizedSourceChange fix = PrioritizedSourceChange(
+        1000000,
+        SourceChange(
+          'Apply fixes for cool_linter.',
+          edits: <SourceFileEdit>[
+            SourceFileEdit(
+              parseResult.path!,
+              1, //parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+              edits: <SourceEdit>[
+                SourceEdit(1, 2, errorMessage.changeMessage),
+              ],
+            )
+          ],
+        ),
+      );
 
-    // final units = parseResult.libraryElement.units.first.source;
+      // error
+      final AnalysisError error = AnalysisError(
+        AnalysisErrorSeverity(errorMessage.severityName),
+        AnalysisErrorType.LINT,
+        errorMessage.location,
+        errorMessage.message,
+        errorMessage.code,
+      );
 
-    // parseResult.unit.declaredElement.source
+      result[error] = fix;
+    });
 
-    // incorrectLines.forEach((int lineIndex) {
-    final PrioritizedSourceChange fix = PrioritizedSourceChange(
-      1000000,
-      SourceChange(
-        'Apply fixes for cool_linter.',
-        edits: <SourceFileEdit>[
-          SourceFileEdit(
-            'TODO fn', // parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-            parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
-            edits: <SourceEdit>[
-              SourceEdit(1, 2, 'cool_linter. need to replace by pattern: $pattern'),
-            ],
-          )
-        ],
-      ),
-    );
-
-    final AnalysisError error = AnalysisError(
-      errorSeverity ?? AnalysisErrorSeverity.WARNING,
-      AnalysisErrorType.LINT,
-      Location(
-        'TODO fn', //parseResult.unit?.declaredElement?.source.fullName ?? 'todo filename',
-        1, // offset
-        1, // length
-        666, //lineIndex, // startLine
-        1, // startColumn
-        // 1, // endLine
-        // 1, // endColumn
-      ),
-      'Need fixes for cool_linter pattern: $pattern',
-      'cool_linter_needs_fixes',
-    );
-
-    result[error] = fix;
-    // });
-
-    return result as Map<AnalysisError, PrioritizedSourceChange>;
+    return result;
   }
 }

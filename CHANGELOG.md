@@ -1,0 +1,14 @@
+## 1.0.3
+    added extended folders to exclude
+## 1.0.2
+    fix filepath
+## 1.0.0
+    migrate to nullsafety
+## 0.0.8
+    changed description in README
+## 0.0.7
+    exclude folders
+## 0.0.6
+    analyze on startup
+## 0.0.5
+    updated dependencies

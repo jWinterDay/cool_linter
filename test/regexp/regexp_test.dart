@@ -43,9 +43,5 @@ void main() {
 
       expect(list, hasLength(1));
     });
-
-    test('failed test', () async {
-      expect(false, true);
-    });
   });
 }

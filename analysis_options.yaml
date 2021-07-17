@@ -33,7 +33,7 @@ linter:
   rules:
     always_declare_return_types: true
     always_require_non_null_named_parameters: true
-    always_use_package_imports: true
+    always_use_package_imports: false
     annotate_overrides: true
     avoid_as: true
     avoid_catching_errors: true

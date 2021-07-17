@@ -4,10 +4,9 @@ Map<String, String> map = {}; //LINT
 List<String> strings = []; //LINT
 Set<String> set = {}; //LINT
 
-final List<int> a = [];
-List list; // LINT
-List<List> lists; //LINT
-List<int> ints; //OK
+List? list; // LINT
+List<List>? lists; //LINT
+List<int>? ints; //OK
 
 final x = 1; //LINT [1:5]
 final int xx = 3;
@@ -16,7 +15,12 @@ const int yy = 3;
 
 final bl = false;
 
-Map testMap;
+int? lvar;
+
+/*fsdfsd **/
+final Map? testMap;
+
+/// fsdfd
 a(var x) {} //LINT
 // for test comment under
 a2(_) {} //LINT
@@ -25,6 +29,7 @@ c(int x) {} // for test comment right
 d(final x) {} //LINT
 e(final int x) {}
 
+// simple class comment
 @optionalTypeArgs
 class P<T> {}
 
@@ -33,6 +38,7 @@ void g<T>() {}
 
 //https://github.com/dart-lang/linter/issues/851
 void test() {
+  /// method comment
   g<dynamic>(); //OK
   g(); //OK
 }

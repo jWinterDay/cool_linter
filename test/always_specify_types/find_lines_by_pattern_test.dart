@@ -38,7 +38,6 @@ void main() {
     );
 
     test('specify types', () async {
-      isJustUnderscores('fds');
       final List<RuleMessage> list = specifyTypesRule.check(
         parseResult: resolvedUnitResult,
         yamlConfig: yamlConfig,

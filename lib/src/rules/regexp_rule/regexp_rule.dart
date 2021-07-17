@@ -9,6 +9,23 @@ import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class RegExpRule extends Rule {
+  @override
+  List<RuleMessage> check({
+    required ResolvedUnitResult parseResult,
+    required YamlConfig yamlConfig,
+  }) {
+    final String? path = parseResult.path;
+    if (path == null) {
+      return <RuleMessage>[];
+    }
+
+    return _getIncorrectLines(
+      parseResult: parseResult,
+      // path: path,
+      yamlConfig: yamlConfig,
+    );
+  }
+
   List<RuleMessage> _getIncorrectLines({
     // required String content,
     // required String path,
@@ -101,23 +118,5 @@ class RegExpRule extends Rule {
     } catch (exc) {
       return const <RuleMessage>[];
     }
-  }
-
-  @override
-  List<RuleMessage> check({
-    required ResolvedUnitResult parseResult,
-    required YamlConfig yamlConfig,
-  }) {
-    final String? path = parseResult.path;
-    // TODO
-    if (path == null) {
-      return <RuleMessage>[];
-    }
-
-    return _getIncorrectLines(
-      parseResult: parseResult,
-      // path: path,
-      yamlConfig: yamlConfig,
-    );
   }
 }

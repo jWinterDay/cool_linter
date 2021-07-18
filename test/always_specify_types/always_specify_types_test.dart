@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
@@ -25,7 +26,14 @@ void main() {
         AnalysisSettingsUtil.convertYamlToMap(
           r'''
           cool_linter:
-            exclude_words:
+            always_specify_types:
+              - typed_literal
+              - declared_identifier
+              - set_or_map_literal
+              - simple_formal_parameter
+              - type_name
+              - variable_declaration_list
+            regexp_exclude:
               -
                 pattern: Color
                 hint: Correct RegExp pattern
@@ -40,24 +48,28 @@ void main() {
       );
 
       // typedLiteral
-      final Iterable<RuleMessage> typedLiteralList = list.where((RuleMessage e) => e.addInfo == 'typedLiteral');
+      final Iterable<RuleMessage> typedLiteralList = list.where((RuleMessage e) {
+        return e.code == kOptionNameOfResultType[ResultType.typedLiteral];
+      });
       expect(typedLiteralList, hasLength(3));
 
       // typeName
-      final Iterable<RuleMessage> typeNameList = list.where((RuleMessage e) => e.addInfo == 'typeName');
+      final Iterable<RuleMessage> typeNameList = list.where((RuleMessage e) {
+        return e.code == kOptionNameOfResultType[ResultType.typeName];
+      });
       expect(typeNameList, hasLength(4));
 
       // variableDeclarationList
-      final Iterable<RuleMessage> varDecList = list.where((RuleMessage e) => e.addInfo == 'variableDeclarationList');
+      final Iterable<RuleMessage> varDecList = list.where((RuleMessage e) {
+        return e.code == kOptionNameOfResultType[ResultType.variableDeclarationList];
+      });
       expect(varDecList, hasLength(10));
 
       // simpleFormalParameter
-      final Iterable<RuleMessage> simpleFParList = list.where((RuleMessage e) => e.addInfo == 'simpleFormalParameter');
+      final Iterable<RuleMessage> simpleFParList = list.where((RuleMessage e) {
+        return e.code == kOptionNameOfResultType[ResultType.simpleFormalParameter];
+      });
       expect(simpleFParList, hasLength(5));
-
-      // list.forEach((RuleMessage e) {
-      //   print('${e.addInfo} > ${e.location.startLine}');
-      // });
 
       expect(list, hasLength(24));
     });

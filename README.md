@@ -24,7 +24,14 @@
         - cool_linter
 
     cool_linter:
-      exclude_words:
+      always_specify_types:
+        - typed_literal
+        - declared_identifier
+        - set_or_map_literal
+        - simple_formal_parameter
+        - type_name
+        - variable_declaration_list
+      regexp_exclude:
         -
           pattern: Colors
           hint: Use colors from design system instead!
@@ -36,11 +43,23 @@
         - test/**
         - lib/ku/**
     ```
+1. ### always_specify_types linter:
+  [always_specify_types](https://dart-lang.github.io/linter/lints/always_specify_types.html)
+  This rule is like dart core linter rule, but you can choose which of this subrules want to use:
+    * typed_literal
+    * declared_identifier
+    * set_or_map_literal
+    * simple_formal_parameter
+    * type_name
+    * variable_declaration_list
 
-  * pattern - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
-  * severity - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
-  * hint - [optional parameter]. It is console information sentence
-  * exclude_folders - this folders linter will ignore. By default excluded folders are:
+  Also you can choose exclude folders for this rule. See `exclude_folders`
+
+2. ### regexp_exclude linter:
+  * `pattern` - RegExp-pattern, for example: Test123{1}, ^Test123$ and others
+  * `severity` - [optional parameter]. It is console information level. May be WARNING, INFO, ERROR. Default is WARNING
+  * `hint` - [optional parameter]. It is console information sentence
+  * `exclude_folders` - this folders linter will ignore. By default excluded folders are:
 
   ```dart
   '.dart_tool/**',

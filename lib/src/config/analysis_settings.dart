@@ -40,6 +40,20 @@ class AnalysisSettings with _$AnalysisSettings {
   }) = _AnalysisSettings;
 
   factory AnalysisSettings.fromJson(Map<String, dynamic> json) => _$AnalysisSettingsFromJson(json);
+
+  /// return null if correct
+  // String? get checkCorrectMessage {
+  //   // exclude word list
+  //   if (coolLinter?. excludeWords == null) {
+  //     return 'exclude_words param list cannot be null';
+  //   }
+
+  //   if (coolLinter!.excludeWords!.isEmpty) {
+  //     return 'exclude_words param list cannot be empty';
+  //   }
+
+  //   return null;
+  // }
 }
 
 @freezed
@@ -48,57 +62,24 @@ class CoolLinter with _$CoolLinter {
 
   const factory CoolLinter({
     @Default(<String>[]) @JsonKey(name: 'always_specify_types', defaultValue: <String>[]) List<String> types,
-    @Default(<ExcludeWords>[])
-    @JsonKey(name: 'regexp_exclude', defaultValue: <ExcludeWords>[])
-        List<ExcludeWords> regexpExclude,
+    @Default(<ExcludeWord>[])
+    @JsonKey(name: 'regexp_exclude', defaultValue: <ExcludeWord>[])
+        List<ExcludeWord> regexpExclude,
     @Default(<String>[]) @JsonKey(name: 'exclude_folders', defaultValue: <String>[]) List<String> excludeFolders,
   }) = _CoolLinter;
 
   factory CoolLinter.fromJson(Map<String, dynamic> json) => _$CoolLinterFromJson(json);
 }
 
-// @freezed
-// class AlwaysSpecifyTypes with _$AlwaysSpecifyTypes {
-//   const AlwaysSpecifyTypes._();
-
-//   const factory AlwaysSpecifyTypes({
-//     @Default(<String>[]) List<String> types,
-//   }) = _AlwaysSpecifyTypes;
-
-//   factory AlwaysSpecifyTypes.fromJson(Map<String, dynamic> json) => _$AlwaysSpecifyTypesFromJson(json);
-// }
-
-// @freezed
-// class RegexpExclude with _$RegexpExclude {
-//   const RegexpExclude._();
-
-//   const factory RegexpExclude({
-//     @JsonKey(name: 'exclude_words') List<ExcludeWords>? excludeWords,
-//   }) = _RegexpExclude;
-
-//   factory RegexpExclude.fromJson(Map<String, dynamic> json) => _$RegexpExcludeFromJson(json);
-// }
-
 @freezed
-class ExcludeWords with _$ExcludeWords {
-  const ExcludeWords._();
+class ExcludeWord with _$ExcludeWord {
+  const ExcludeWord._();
 
-  const factory ExcludeWords(
+  const factory ExcludeWord(
     String pattern, {
     @Default('') String hint,
     @Default('WARNING') String severity,
-  }) = _ExcludeWords;
+  }) = _ExcludeWord;
 
-  factory ExcludeWords.fromJson(Map<String, dynamic> json) => _$ExcludeWordsFromJson(json);
+  factory ExcludeWord.fromJson(Map<String, dynamic> json) => _$ExcludeWordFromJson(json);
 }
-
-// @freezed
-// class ExcludeFolders with _$ExcludeFolders {
-//   const ExcludeFolders._();
-
-//   const factory ExcludeFolders({
-//     @Default(<String>[]) List<String> folders,
-//   }) = _ExcludeFolders;
-
-//   factory ExcludeFolders.fromJson(Map<String, dynamic> json) => _$ExcludeFoldersFromJson(json);
-// }

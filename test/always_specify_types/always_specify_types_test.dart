@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/utils.dart';
 import 'package:test/test.dart';
-import 'package:yaml/yaml.dart';
 
 import '../utils/resolved_unit_util.dart';
 
@@ -21,23 +19,24 @@ void main() {
     });
 
     final Rule specifyTypesRule = AlwaysSpecifyTypesRule();
-    final YamlConfig yamlConfig = YamlConfig.fromJson(
-      json.encode(
-        loadYaml(r'''
-            cool_linter:
-              exclude_words:
-                -
-                  pattern: Color
-                  hint: Correct RegExp pattern
-                  severity: WARNING
-            '''),
-      ),
-    );
 
     test('specify types', () async {
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
+        AnalysisSettingsUtil.convertYamlToMap(
+          r'''
+          cool_linter:
+            exclude_words:
+              -
+                pattern: Color
+                hint: Correct RegExp pattern
+                severity: WARNING
+        ''',
+        ),
+      );
+
       final List<RuleMessage> list = specifyTypesRule.check(
         parseResult: resolvedUnitResult,
-        yamlConfig: yamlConfig,
+        analysisSettings: analysisSettings,
       );
 
       // typedLiteral

@@ -1,17 +1,17 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
+import 'package:cool_linter/src/utils/utils.dart';
 import 'package:glob/glob.dart';
-import 'package:cool_linter/src/config/yaml_config_extension.dart';
 
 class Checker {
   const Checker();
 
   Map<AnalysisError, PrioritizedSourceChange> checkResult({
-    required YamlConfig yamlConfig,
+    required AnalysisSettings analysisSettings,
     required List<Glob> excludesGlobList,
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
@@ -22,7 +22,7 @@ class Checker {
       return result;
     }
 
-    final bool isExcluded = yamlConfig.isExcluded(parseResult, excludesGlobList);
+    final bool isExcluded = AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
     if (isExcluded) {
       return result;
     }
@@ -31,7 +31,7 @@ class Checker {
 
     final List<RuleMessage> errorMessageList = regExpRule.check(
       parseResult: parseResult,
-      yamlConfig: yamlConfig,
+      analysisSettings: analysisSettings,
     );
 
     if (errorMessageList.isEmpty) {

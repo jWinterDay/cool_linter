@@ -1,8 +1,7 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
 
@@ -32,7 +31,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
-    required YamlConfig yamlConfig,
+    required AnalysisSettings analysisSettings,
   }) {
     final String? path = parseResult.path;
     if (path == null) {

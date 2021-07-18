@@ -181,8 +181,8 @@ class _$CoolLinterTearOff {
   _CoolLinter call(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
           List<String> types = const <String>[],
-      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[])
-          List<ExcludeWords> regexpExclude = const <ExcludeWords>[],
+      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+          List<ExcludeWord> regexpExclude = const <ExcludeWord>[],
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
           List<String> excludeFolders = const <String>[]}) {
     return _CoolLinter(
@@ -204,8 +204,8 @@ const $CoolLinter = _$CoolLinterTearOff();
 mixin _$CoolLinter {
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
   List<String> get types => throw _privateConstructorUsedError;
-  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[])
-  List<ExcludeWords> get regexpExclude => throw _privateConstructorUsedError;
+  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+  List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError;
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   List<String> get excludeFolders => throw _privateConstructorUsedError;
 
@@ -219,7 +219,7 @@ abstract class $CoolLinterCopyWith<$Res> {
   factory $CoolLinterCopyWith(CoolLinter value, $Res Function(CoolLinter) then) = _$CoolLinterCopyWithImpl<$Res>;
   $Res call(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
-      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[]) List<ExcludeWords> regexpExclude,
+      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders});
 }
 
@@ -245,7 +245,7 @@ class _$CoolLinterCopyWithImpl<$Res> implements $CoolLinterCopyWith<$Res> {
       regexpExclude: regexpExclude == freezed
           ? _value.regexpExclude
           : regexpExclude // ignore: cast_nullable_to_non_nullable
-              as List<ExcludeWords>,
+              as List<ExcludeWord>,
       excludeFolders: excludeFolders == freezed
           ? _value.excludeFolders
           : excludeFolders // ignore: cast_nullable_to_non_nullable
@@ -260,7 +260,7 @@ abstract class _$CoolLinterCopyWith<$Res> implements $CoolLinterCopyWith<$Res> {
   @override
   $Res call(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
-      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[]) List<ExcludeWords> regexpExclude,
+      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders});
 }
 
@@ -286,7 +286,7 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
       regexpExclude: regexpExclude == freezed
           ? _value.regexpExclude
           : regexpExclude // ignore: cast_nullable_to_non_nullable
-              as List<ExcludeWords>,
+              as List<ExcludeWord>,
       excludeFolders: excludeFolders == freezed
           ? _value.excludeFolders
           : excludeFolders // ignore: cast_nullable_to_non_nullable
@@ -299,12 +299,9 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
 @JsonSerializable()
 class _$_CoolLinter extends _CoolLinter {
   const _$_CoolLinter(
-      {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
-          this.types = const <String>[],
-      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[])
-          this.regexpExclude = const <ExcludeWords>[],
-      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
-          this.excludeFolders = const <String>[]})
+      {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) this.types = const <String>[],
+      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) this.regexpExclude = const <ExcludeWord>[],
+      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) this.excludeFolders = const <String>[]})
       : super._();
 
   factory _$_CoolLinter.fromJson(Map<String, dynamic> json) => _$_$_CoolLinterFromJson(json);
@@ -313,8 +310,8 @@ class _$_CoolLinter extends _CoolLinter {
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
   final List<String> types;
   @override
-  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[])
-  final List<ExcludeWords> regexpExclude;
+  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+  final List<ExcludeWord> regexpExclude;
   @override
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   final List<String> excludeFolders;
@@ -355,7 +352,7 @@ class _$_CoolLinter extends _CoolLinter {
 abstract class _CoolLinter extends CoolLinter {
   const factory _CoolLinter(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
-      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[]) List<ExcludeWords> regexpExclude,
+      @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders}) = _$_CoolLinter;
   const _CoolLinter._() : super._();
 
@@ -365,8 +362,8 @@ abstract class _CoolLinter extends CoolLinter {
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
   List<String> get types => throw _privateConstructorUsedError;
   @override
-  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWords>[])
-  List<ExcludeWords> get regexpExclude => throw _privateConstructorUsedError;
+  @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+  List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError;
   @override
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   List<String> get excludeFolders => throw _privateConstructorUsedError;
@@ -375,55 +372,54 @@ abstract class _CoolLinter extends CoolLinter {
   _$CoolLinterCopyWith<_CoolLinter> get copyWith => throw _privateConstructorUsedError;
 }
 
-ExcludeWords _$ExcludeWordsFromJson(Map<String, dynamic> json) {
-  return _ExcludeWords.fromJson(json);
+ExcludeWord _$ExcludeWordFromJson(Map<String, dynamic> json) {
+  return _ExcludeWord.fromJson(json);
 }
 
 /// @nodoc
-class _$ExcludeWordsTearOff {
-  const _$ExcludeWordsTearOff();
+class _$ExcludeWordTearOff {
+  const _$ExcludeWordTearOff();
 
-  _ExcludeWords call(String pattern, {String hint = '', String severity = 'WARNING'}) {
-    return _ExcludeWords(
+  _ExcludeWord call(String pattern, {String hint = '', String severity = 'WARNING'}) {
+    return _ExcludeWord(
       pattern,
       hint: hint,
       severity: severity,
     );
   }
 
-  ExcludeWords fromJson(Map<String, Object> json) {
-    return ExcludeWords.fromJson(json);
+  ExcludeWord fromJson(Map<String, Object> json) {
+    return ExcludeWord.fromJson(json);
   }
 }
 
 /// @nodoc
-const $ExcludeWords = _$ExcludeWordsTearOff();
+const $ExcludeWord = _$ExcludeWordTearOff();
 
 /// @nodoc
-mixin _$ExcludeWords {
+mixin _$ExcludeWord {
   String get pattern => throw _privateConstructorUsedError;
   String get hint => throw _privateConstructorUsedError;
   String get severity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $ExcludeWordsCopyWith<ExcludeWords> get copyWith => throw _privateConstructorUsedError;
+  $ExcludeWordCopyWith<ExcludeWord> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ExcludeWordsCopyWith<$Res> {
-  factory $ExcludeWordsCopyWith(ExcludeWords value, $Res Function(ExcludeWords) then) =
-      _$ExcludeWordsCopyWithImpl<$Res>;
+abstract class $ExcludeWordCopyWith<$Res> {
+  factory $ExcludeWordCopyWith(ExcludeWord value, $Res Function(ExcludeWord) then) = _$ExcludeWordCopyWithImpl<$Res>;
   $Res call({String pattern, String hint, String severity});
 }
 
 /// @nodoc
-class _$ExcludeWordsCopyWithImpl<$Res> implements $ExcludeWordsCopyWith<$Res> {
-  _$ExcludeWordsCopyWithImpl(this._value, this._then);
+class _$ExcludeWordCopyWithImpl<$Res> implements $ExcludeWordCopyWith<$Res> {
+  _$ExcludeWordCopyWithImpl(this._value, this._then);
 
-  final ExcludeWords _value;
+  final ExcludeWord _value;
   // ignore: unused_field
-  final $Res Function(ExcludeWords) _then;
+  final $Res Function(ExcludeWord) _then;
 
   @override
   $Res call({
@@ -449,21 +445,20 @@ class _$ExcludeWordsCopyWithImpl<$Res> implements $ExcludeWordsCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$ExcludeWordsCopyWith<$Res> implements $ExcludeWordsCopyWith<$Res> {
-  factory _$ExcludeWordsCopyWith(_ExcludeWords value, $Res Function(_ExcludeWords) then) =
-      __$ExcludeWordsCopyWithImpl<$Res>;
+abstract class _$ExcludeWordCopyWith<$Res> implements $ExcludeWordCopyWith<$Res> {
+  factory _$ExcludeWordCopyWith(_ExcludeWord value, $Res Function(_ExcludeWord) then) =
+      __$ExcludeWordCopyWithImpl<$Res>;
   @override
   $Res call({String pattern, String hint, String severity});
 }
 
 /// @nodoc
-class __$ExcludeWordsCopyWithImpl<$Res> extends _$ExcludeWordsCopyWithImpl<$Res>
-    implements _$ExcludeWordsCopyWith<$Res> {
-  __$ExcludeWordsCopyWithImpl(_ExcludeWords _value, $Res Function(_ExcludeWords) _then)
-      : super(_value, (v) => _then(v as _ExcludeWords));
+class __$ExcludeWordCopyWithImpl<$Res> extends _$ExcludeWordCopyWithImpl<$Res> implements _$ExcludeWordCopyWith<$Res> {
+  __$ExcludeWordCopyWithImpl(_ExcludeWord _value, $Res Function(_ExcludeWord) _then)
+      : super(_value, (v) => _then(v as _ExcludeWord));
 
   @override
-  _ExcludeWords get _value => super._value as _ExcludeWords;
+  _ExcludeWord get _value => super._value as _ExcludeWord;
 
   @override
   $Res call({
@@ -471,7 +466,7 @@ class __$ExcludeWordsCopyWithImpl<$Res> extends _$ExcludeWordsCopyWithImpl<$Res>
     Object? hint = freezed,
     Object? severity = freezed,
   }) {
-    return _then(_ExcludeWords(
+    return _then(_ExcludeWord(
       pattern == freezed
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
@@ -490,10 +485,10 @@ class __$ExcludeWordsCopyWithImpl<$Res> extends _$ExcludeWordsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ExcludeWords extends _ExcludeWords {
-  const _$_ExcludeWords(this.pattern, {this.hint = '', this.severity = 'WARNING'}) : super._();
+class _$_ExcludeWord extends _ExcludeWord {
+  const _$_ExcludeWord(this.pattern, {this.hint = '', this.severity = 'WARNING'}) : super._();
 
-  factory _$_ExcludeWords.fromJson(Map<String, dynamic> json) => _$_$_ExcludeWordsFromJson(json);
+  factory _$_ExcludeWord.fromJson(Map<String, dynamic> json) => _$_$_ExcludeWordFromJson(json);
 
   @override
   final String pattern;
@@ -506,13 +501,13 @@ class _$_ExcludeWords extends _ExcludeWords {
 
   @override
   String toString() {
-    return 'ExcludeWords(pattern: $pattern, hint: $hint, severity: $severity)';
+    return 'ExcludeWord(pattern: $pattern, hint: $hint, severity: $severity)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _ExcludeWords &&
+        (other is _ExcludeWord &&
             (identical(other.pattern, pattern) || const DeepCollectionEquality().equals(other.pattern, pattern)) &&
             (identical(other.hint, hint) || const DeepCollectionEquality().equals(other.hint, hint)) &&
             (identical(other.severity, severity) || const DeepCollectionEquality().equals(other.severity, severity)));
@@ -527,19 +522,19 @@ class _$_ExcludeWords extends _ExcludeWords {
 
   @JsonKey(ignore: true)
   @override
-  _$ExcludeWordsCopyWith<_ExcludeWords> get copyWith => __$ExcludeWordsCopyWithImpl<_ExcludeWords>(this, _$identity);
+  _$ExcludeWordCopyWith<_ExcludeWord> get copyWith => __$ExcludeWordCopyWithImpl<_ExcludeWord>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_ExcludeWordsToJson(this);
+    return _$_$_ExcludeWordToJson(this);
   }
 }
 
-abstract class _ExcludeWords extends ExcludeWords {
-  const factory _ExcludeWords(String pattern, {String hint, String severity}) = _$_ExcludeWords;
-  const _ExcludeWords._() : super._();
+abstract class _ExcludeWord extends ExcludeWord {
+  const factory _ExcludeWord(String pattern, {String hint, String severity}) = _$_ExcludeWord;
+  const _ExcludeWord._() : super._();
 
-  factory _ExcludeWords.fromJson(Map<String, dynamic> json) = _$_ExcludeWords.fromJson;
+  factory _ExcludeWord.fromJson(Map<String, dynamic> json) = _$_ExcludeWord.fromJson;
 
   @override
   String get pattern => throw _privateConstructorUsedError;
@@ -549,5 +544,5 @@ abstract class _ExcludeWords extends ExcludeWords {
   String get severity => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$ExcludeWordsCopyWith<_ExcludeWords> get copyWith => throw _privateConstructorUsedError;
+  _$ExcludeWordCopyWith<_ExcludeWord> get copyWith => throw _privateConstructorUsedError;
 }

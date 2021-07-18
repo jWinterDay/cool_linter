@@ -1,3 +1,5 @@
+## 1.1.1
+    updated readme
 ## 1.1.0
     added always_specify_types
 ## 1.0.3

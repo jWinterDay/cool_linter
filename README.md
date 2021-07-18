@@ -46,12 +46,12 @@
 1. ### always_specify_types linter:
   [always_specify_types](https://dart-lang.github.io/linter/lints/always_specify_types.html)
   This rule is like dart core linter rule, but you can choose which of this subrules want to use:
-    * typed_literal
-    * declared_identifier
-    * set_or_map_literal
-    * simple_formal_parameter
-    * type_name
-    * variable_declaration_list
+  * typed_literal
+  * declared_identifier
+  * set_or_map_literal
+  * simple_formal_parameter
+  * type_name
+  * variable_declaration_list
 
   Also you can choose exclude folders for this rule. See `exclude_folders`
 

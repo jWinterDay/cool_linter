@@ -41,9 +41,13 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     final AlwaysSpecifyTypesVisitor visitor = AlwaysSpecifyTypesVisitor(this);
     parseResult.unit?.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.map((AlwaysSpecifyTypesResult result) {
-      final int offset = result.astNode.offset;
-      final int end = result.astNode.end;
+    final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
+
+    return visitor.visitorRuleMessages.where((AlwaysSpecifyTypesResult typesResult) {
+      return analysisTypes.contains(typesResult.resultTypeAsString);
+    }).map((AlwaysSpecifyTypesResult typesResult) {
+      final int offset = typesResult.astNode.offset;
+      final int end = typesResult.astNode.end;
 
       // ignore: always_specify_types
       final offsetLocation = parseResult.lineInfo.getLocation(offset);
@@ -51,10 +55,11 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       final endLocation = parseResult.lineInfo.getLocation(end);
 
       return RuleMessage(
-        message: 'cool_linter. always specify type: $result',
-        code: 'cool_linter_needs_fixes',
-        changeMessage: 'cool_linter. always_specify_type for type: $result',
-        addInfo: result.resultTypeAsString,
+        severityName: 'WARNING',
+        message: 'cool_linter. always specify rule: ${typesResult.resultTypeAsString}',
+        code: typesResult.resultTypeAsString,
+        changeMessage: 'cool_linter. always_specify_type for rule: ${typesResult.resultTypeAsString}',
+        addInfo: typesResult.resultTypeAsString,
         location: Location(
           parseResult.path!, // file
           offset, // offset

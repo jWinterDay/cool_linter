@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/utils.dart';
 import 'package:test/test.dart';
-import 'package:yaml/yaml.dart';
 
 import '../utils/resolved_unit_util.dart';
 
@@ -22,23 +20,21 @@ void main() {
   group('regexp find lines by patterns', () {
     final Rule regExpRule = RegExpRule();
 
-    final YamlConfig yamlConfig = YamlConfig.fromJson(
-      json.encode(
-        loadYaml(r'''
-            cool_linter:
-              exclude_words:
-                -
-                  pattern: TestClass
-                  hint: Correct test class name pattern
-                  severity: WARNING
-            '''),
-      ),
-    );
+    test('regexp_rule find one regexp rule', () async {
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(
+        '''
+          cool_linter:
+            regexp_exclude:
+              -
+                pattern: TestClass
+                hint: Correct test class name pattern
+                severity: WARNING
+          ''',
+      ));
 
-    test('regexp_rule find 4 Colors', () async {
       final List<RuleMessage> list = regExpRule.check(
         parseResult: resolvedUnitResult,
-        yamlConfig: yamlConfig,
+        analysisSettings: analysisSettings,
       );
 
       expect(list, hasLength(1));

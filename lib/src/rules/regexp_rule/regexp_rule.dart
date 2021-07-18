@@ -1,9 +1,8 @@
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:cool_linter/src/config/yaml_config.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -12,7 +11,7 @@ class RegExpRule extends Rule {
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
-    required YamlConfig yamlConfig,
+    required AnalysisSettings analysisSettings,
   }) {
     final String? path = parseResult.path;
     if (path == null) {
@@ -22,7 +21,7 @@ class RegExpRule extends Rule {
     return _getIncorrectLines(
       parseResult: parseResult,
       // path: path,
-      yamlConfig: yamlConfig,
+      analysisSettings: analysisSettings,
     );
   }
 
@@ -31,17 +30,17 @@ class RegExpRule extends Rule {
     // required String path,
     // CompilationUnit? compilationUnit,
     required ResolvedUnitResult parseResult,
-    required YamlConfig yamlConfig,
+    required AnalysisSettings analysisSettings,
   }) {
     final String? path = parseResult.path;
-    // TODO
     if (path == null) {
       return <RuleMessage>[];
     }
 
     final String content = parseResult.content!;
 
-    final List<ExcludeWord> patterns = yamlConfig.coolLinter?.excludeWords ?? <ExcludeWord>[];
+    final List<ExcludeWord> patterns = analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
+
     if (patterns.isEmpty) {
       return const <RuleMessage>[];
     }
@@ -80,11 +79,7 @@ class RegExpRule extends Rule {
         // find first pattern
         final Iterable<ExcludeWord> excludedWordList = patterns.where(
           (ExcludeWord excludeWord) {
-            if (excludeWord.pattern == null) {
-              return false;
-            }
-
-            final RegExp re = RegExp(excludeWord.pattern!);
+            final RegExp re = RegExp(excludeWord.pattern);
 
             return lineStr.contains(re);
           },
@@ -92,10 +87,10 @@ class RegExpRule extends Rule {
 
         if (excludedWordList.isNotEmpty) {
           final ExcludeWord firstExcluded = excludedWordList.first;
-          final String hint = firstExcluded.hint ?? '';
+          final String hint = firstExcluded.hint;
 
           matchListInfo.add(RuleMessage(
-            severityName: firstExcluded.safeSeverity,
+            severityName: firstExcluded.severity,
             message: 'cool_linter. $hint for pattern: ${firstExcluded.pattern}',
             code: 'cool_linter_needs_fixes',
             location: Location(

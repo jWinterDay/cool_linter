@@ -1,7 +1,6 @@
 import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/utils/utils.dart';
 import 'package:test/test.dart';
-
-import 'utils/convert_yaml_to_map.dart';
 
 void main() {
   group('AnalysisSettings.dart', () {
@@ -24,7 +23,7 @@ void main() {
             - test/**
         ''';
 
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(yaml));
 
       expect(analysisSettings.coolLinter?.types, hasLength(6));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
@@ -42,7 +41,7 @@ void main() {
           always_declare_return_types: true
         ''';
 
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(yaml));
 
       expect(analysisSettings.coolLinter, isNull);
     });
@@ -57,7 +56,7 @@ void main() {
               severity: WARNING
         ''';
 
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(yaml));
 
       expect(analysisSettings.coolLinter?.types, hasLength(0));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
@@ -71,7 +70,7 @@ void main() {
             - typed_literal
         ''';
 
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(yaml));
 
       expect(analysisSettings.coolLinter?.types, hasLength(1));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));
@@ -86,7 +85,7 @@ void main() {
             - test2/**
         ''';
 
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(convertYamlToMap(yaml));
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(yaml));
 
       expect(analysisSettings.coolLinter?.types, hasLength(0));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));

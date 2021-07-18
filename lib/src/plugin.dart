@@ -125,12 +125,22 @@ class CoolLinterPlugin extends ServerPlugin {
   Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
     plugin.AnalysisSetContextRootsParams parameters,
   ) async {
-    final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
-    // The super-call adds files to the driver, so we need to prioritize them so they get analyzed.
-    // see: https://github.com/dart-code-checker/dart-code-metrics/blob/master/lib/src/obsoleted/analyzer_plugin/analyzer_plugin.dart
-    _updatePriorityFiles();
+    try {
+      final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
+      _updatePriorityFiles();
 
-    return result;
+      return result;
+    } catch (exc, stackTrace) {
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          false,
+          exc.toString(),
+          stackTrace.toString(),
+        ).toNotification(),
+      );
+
+      rethrow;
+    }
   }
 
   @override
@@ -253,12 +263,17 @@ class CoolLinterPlugin extends ServerPlugin {
 
       final AnalysisSettings? analysisSettings = AnalysisSettingsUtil.getAnalysisSettingsFromFile(optionsPath);
 
-      if (analysisSettings?.coolLinter != null) {
+      if (analysisSettings?.coolLinter == null) {
+        final StringBuffer sb = StringBuffer()
+          ..writeln('Wrong cool_linter configuration')
+          ..writeln('No valid cool_linter settings in analysis_options.yaml')
+          ..writeln('See https://pub.dev/packages/cool_linter')
+          ..writeln('analysis_options.yaml: $analysisSettings');
+
         channel.sendNotification(
           plugin.PluginErrorParams(
             false,
-            'Wrong cool_linter configuration. See https://pub.dev/packages/cool_linter',
-            // 'Failed to read yaml config in analysis_options.yaml. See https://pub.dev/packages/cool_linter how to include settings',
+            sb.toString(),
             StackTrace.current.toString(),
           ).toNotification(),
         );
@@ -271,7 +286,7 @@ class CoolLinterPlugin extends ServerPlugin {
       channel.sendNotification(
         plugin.PluginErrorParams(
           false,
-          '$Exception when read yaml comfig: $exc',
+          '$Exception when read yaml config: $exc',
           stackTrace.toString(),
         ).toNotification(),
       );

@@ -1,3 +1,7 @@
+## 1.1.1
+    updated readme
+## 1.1.0
+    added always_specify_types
 ## 1.0.3
     added extended folders to exclude
 ## 1.0.2

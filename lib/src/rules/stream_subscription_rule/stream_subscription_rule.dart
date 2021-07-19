@@ -5,7 +5,6 @@ import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
-import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
 
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
@@ -21,14 +20,6 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
           details: 'https://github.com/jWinterDay/cool_linter',
           group: Group.style,
         );
-
-  // @override
-  // List<String> get incompatibleRules {
-  //   return const <String>[
-  //     'avoid_types_on_closure_parameters',
-  //     'omit_local_variable_types',
-  //   ];
-  // }
 
   /// custom check
   @override
@@ -48,8 +39,6 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
     parseResult.unit?.visitChildren(visitor);
-
-    // final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
 
     return visitor.visitorRuleMessages.map((StreamSubscriptionResult visitorMessage) {
       final int offset = visitorMessage.astNode.offset;

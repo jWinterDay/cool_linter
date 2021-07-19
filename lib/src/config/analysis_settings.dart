@@ -33,19 +33,34 @@ class AnalysisSettings with _$AnalysisSettings {
 
   factory AnalysisSettings.fromJson(Map<String, dynamic> json) => _$AnalysisSettingsFromJson(json);
 
-  /// return null if correct
-  // String? get checkCorrectMessage {
-  //   // exclude word list
-  //   if (coolLinter?. excludeWords == null) {
-  //     return 'exclude_words param list cannot be null';
-  //   }
+  /// use `always_specify_stream_subscription` rule
+  bool get useAlwaysSpecifyStreamSub {
+    return coolLinter?.extendedRules.contains('always_specify_stream_subscription') ?? false;
+  }
 
-  //   if (coolLinter!.excludeWords!.isEmpty) {
-  //     return 'exclude_words param list cannot be empty';
-  //   }
+  /// `always_specify_types` rule list
+  static final List<String> alwaysSpecifyTypeRuleNameList = <String>[
+    'typed_literal',
+    'declared_identifier',
+    'set_or_map_literal',
+    'simple_formal_parameter',
+    'type_name',
+    'variable_declaration_list',
+  ];
 
-  //   return null;
-  // }
+  /// use `always_specify_types` rule
+  bool get useAlwaysSpecifyTypes {
+    final List<String> typeNameList = coolLinter?.types ?? <String>[];
+
+    final bool containsAnyOfRuleList = typeNameList.any(alwaysSpecifyTypeRuleNameList.contains);
+
+    return containsAnyOfRuleList;
+  }
+
+  /// use `regexp_exclude` rule
+  bool get useRegexpExclude {
+    return coolLinter?.regexpExclude.isNotEmpty ?? false;
+  }
 }
 
 @freezed

@@ -43,15 +43,21 @@ void main() {
         ),
       );
 
+      // yaml
       expect(analysisSettings.coolLinter!.extendedRules, hasLength(1));
       expect(analysisSettings.coolLinter!.extendedRules.first, 'always_specify_stream_subscription');
 
+      // checker
       final List<RuleMessage> ruleMessageList = specifyStreamSubscriptionRule.check(
         parseResult: resolvedUnitResult,
         analysisSettings: analysisSettings,
       );
 
-      print('ruleMessageList = $ruleMessageList');
+      expect(ruleMessageList, hasLength(5));
+
+      // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
+      //   print('>> $element');
+      // });
     });
   });
 }

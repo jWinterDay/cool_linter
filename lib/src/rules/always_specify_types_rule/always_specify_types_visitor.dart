@@ -20,10 +20,11 @@ bool _isOptionallyParameterized(TypeParameterizedElement element) {
   return metadata.any((ElementAnnotation a) => _isOptionalTypeArgs(a.element));
 }
 
-bool _isOptionalTypeArgs(Element? element) =>
-    element is PropertyAccessorElement &&
-    element.name == _optionalTypeArgsVarName &&
-    element.library.name == _metaLibName;
+bool _isOptionalTypeArgs(Element? element) {
+  return element is PropertyAccessorElement &&
+      element.name == _optionalTypeArgsVarName &&
+      element.library.name == _metaLibName;
+}
 
 final RegExp _underscores = RegExp(r'^[_]+$');
 bool isJustUnderscores(String name) => _underscores.hasMatch(name);

@@ -9,6 +9,7 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:cool_linter/src/utils/utils.dart';
 import 'package:glob/glob.dart';
 
+// TODO: add if exists in analysis options
 final List<Rule> kRulesList = <Rule>[
   RegExpRule(),
   AlwaysSpecifyTypesRule(),

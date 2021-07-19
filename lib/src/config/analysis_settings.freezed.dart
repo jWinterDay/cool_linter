@@ -184,11 +184,14 @@ class _$CoolLinterTearOff {
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
           List<ExcludeWord> regexpExclude = const <ExcludeWord>[],
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
-          List<String> excludeFolders = const <String>[]}) {
+          List<String> excludeFolders = const <String>[],
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
+          List<String> extendedRules = const <String>[]}) {
     return _CoolLinter(
       types: types,
       regexpExclude: regexpExclude,
       excludeFolders: excludeFolders,
+      extendedRules: extendedRules,
     );
   }
 
@@ -202,12 +205,15 @@ const $CoolLinter = _$CoolLinterTearOff();
 
 /// @nodoc
 mixin _$CoolLinter {
+// always_specify_types
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
-  List<String> get types => throw _privateConstructorUsedError;
+  List<String> get types => throw _privateConstructorUsedError; // regexp_exclude
   @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
-  List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError;
+  List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError; // exclude_folders
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
-  List<String> get excludeFolders => throw _privateConstructorUsedError;
+  List<String> get excludeFolders => throw _privateConstructorUsedError; // extended_rules
+  @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
+  List<String> get extendedRules => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -220,7 +226,8 @@ abstract class $CoolLinterCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
-      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders});
+      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules});
 }
 
 /// @nodoc
@@ -236,6 +243,7 @@ class _$CoolLinterCopyWithImpl<$Res> implements $CoolLinterCopyWith<$Res> {
     Object? types = freezed,
     Object? regexpExclude = freezed,
     Object? excludeFolders = freezed,
+    Object? extendedRules = freezed,
   }) {
     return _then(_value.copyWith(
       types: types == freezed
@@ -250,6 +258,10 @@ class _$CoolLinterCopyWithImpl<$Res> implements $CoolLinterCopyWith<$Res> {
           ? _value.excludeFolders
           : excludeFolders // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      extendedRules: extendedRules == freezed
+          ? _value.extendedRules
+          : extendedRules // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -261,7 +273,8 @@ abstract class _$CoolLinterCopyWith<$Res> implements $CoolLinterCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
-      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders});
+      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules});
 }
 
 /// @nodoc
@@ -277,6 +290,7 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
     Object? types = freezed,
     Object? regexpExclude = freezed,
     Object? excludeFolders = freezed,
+    Object? extendedRules = freezed,
   }) {
     return _then(_CoolLinter(
       types: types == freezed
@@ -291,6 +305,10 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
           ? _value.excludeFolders
           : excludeFolders // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      extendedRules: extendedRules == freezed
+          ? _value.extendedRules
+          : extendedRules // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -301,24 +319,28 @@ class _$_CoolLinter extends _CoolLinter {
   const _$_CoolLinter(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) this.types = const <String>[],
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) this.regexpExclude = const <ExcludeWord>[],
-      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) this.excludeFolders = const <String>[]})
+      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) this.excludeFolders = const <String>[],
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) this.extendedRules = const <String>[]})
       : super._();
 
   factory _$_CoolLinter.fromJson(Map<String, dynamic> json) => _$_$_CoolLinterFromJson(json);
 
-  @override
+  @override // always_specify_types
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
   final List<String> types;
-  @override
+  @override // regexp_exclude
   @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
   final List<ExcludeWord> regexpExclude;
-  @override
+  @override // exclude_folders
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   final List<String> excludeFolders;
+  @override // extended_rules
+  @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
+  final List<String> extendedRules;
 
   @override
   String toString() {
-    return 'CoolLinter(types: $types, regexpExclude: $regexpExclude, excludeFolders: $excludeFolders)';
+    return 'CoolLinter(types: $types, regexpExclude: $regexpExclude, excludeFolders: $excludeFolders, extendedRules: $extendedRules)';
   }
 
   @override
@@ -329,7 +351,9 @@ class _$_CoolLinter extends _CoolLinter {
             (identical(other.regexpExclude, regexpExclude) ||
                 const DeepCollectionEquality().equals(other.regexpExclude, regexpExclude)) &&
             (identical(other.excludeFolders, excludeFolders) ||
-                const DeepCollectionEquality().equals(other.excludeFolders, excludeFolders)));
+                const DeepCollectionEquality().equals(other.excludeFolders, excludeFolders)) &&
+            (identical(other.extendedRules, extendedRules) ||
+                const DeepCollectionEquality().equals(other.extendedRules, extendedRules)));
   }
 
   @override
@@ -337,7 +361,8 @@ class _$_CoolLinter extends _CoolLinter {
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(types) ^
       const DeepCollectionEquality().hash(regexpExclude) ^
-      const DeepCollectionEquality().hash(excludeFolders);
+      const DeepCollectionEquality().hash(excludeFolders) ^
+      const DeepCollectionEquality().hash(extendedRules);
 
   @JsonKey(ignore: true)
   @override
@@ -353,20 +378,24 @@ abstract class _CoolLinter extends CoolLinter {
   const factory _CoolLinter(
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
-      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders}) = _$_CoolLinter;
+      @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules}) = _$_CoolLinter;
   const _CoolLinter._() : super._();
 
   factory _CoolLinter.fromJson(Map<String, dynamic> json) = _$_CoolLinter.fromJson;
 
-  @override
+  @override // always_specify_types
   @JsonKey(name: 'always_specify_types', defaultValue: const <String>[])
   List<String> get types => throw _privateConstructorUsedError;
-  @override
+  @override // regexp_exclude
   @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
   List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError;
-  @override
+  @override // exclude_folders
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   List<String> get excludeFolders => throw _privateConstructorUsedError;
+  @override // extended_rules
+  @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
+  List<String> get extendedRules => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$CoolLinterCopyWith<_CoolLinter> get copyWith => throw _privateConstructorUsedError;

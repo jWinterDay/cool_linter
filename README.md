@@ -78,15 +78,15 @@ cool_linter:
 3. ### extended_rules. always_specify_stream_subscription linter:
   Always use `StreamSubscription` for Stream.listen();
 
-  WARNING:
+  CORRECT:
 
   ```dart
   final Stream<String> stream2 = Stream<String>.value('value');
   final StreamSubscription<String> sub = stream2.listen((_) {}); // OK
   ```
 
-  CORRECT:
-  
+  WARNING:
+
   ```dart
   final Stream<String> stream1 = Stream<String>.value('value');
   stream1.listen((String ttt) {}); // LINT

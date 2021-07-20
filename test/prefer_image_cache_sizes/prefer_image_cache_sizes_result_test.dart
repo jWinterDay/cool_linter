@@ -3,7 +3,6 @@ import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/prefer_image_cache_sizes/prefer_image_cache_sizes_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
-import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscription_rule.dart';
 import 'package:cool_linter/src/utils/utils.dart';
 import 'package:test/test.dart';
 

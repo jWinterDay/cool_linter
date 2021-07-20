@@ -52,16 +52,16 @@ void main() {
       expect(existsRule, isTrue);
 
       // checker
-      // final List<RuleMessage> ruleMessageList = specifyStreamSubscriptionRule.check(
-      //   parseResult: resolvedUnitResult,
-      //   analysisSettings: analysisSettings,
-      // );
+      final List<RuleMessage> ruleMessageList = preferImageCacheSizesRule.check(
+        parseResult: resolvedUnitResult,
+        analysisSettings: analysisSettings,
+      );
 
       // expect(ruleMessageList, hasLength(5));
 
-      // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
-      //   print('>> $element');
-      // });
+      ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
+        print('>> $element');
+      });
     });
   });
 }

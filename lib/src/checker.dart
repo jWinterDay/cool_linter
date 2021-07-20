@@ -1,18 +1,22 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:cool_linter/src/config/analysis_settings.dart';
-import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
-import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
-import 'package:cool_linter/src/rules/rule.dart';
-import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:analyzer_plugin/protocol/protocol_generated.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/rule.dart';
+import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/utils.dart';
 import 'package:glob/glob.dart';
 
-final List<Rule> kRulesList = <Rule>[
-  RegExpRule(),
-  AlwaysSpecifyTypesRule(),
-];
+import 'rules/always_specify_types_rule/always_specify_types_rule.dart';
+import 'rules/regexp_rule/regexp_rule.dart';
+import 'rules/stream_subscription_rule/stream_subscription_rule.dart';
+
+// TODO: add if exists in analysis options
+// final List<Rule> kRulesList = <Rule>[
+//   RegExpRule(),
+//   AlwaysSpecifyTypesRule(),
+//   StreamSubscriptionRule(),
+// ];
 
 class Checker {
   const Checker();
@@ -33,6 +37,13 @@ class Checker {
     if (isExcluded) {
       return result;
     }
+
+    // rules using
+    final List<Rule> kRulesList = <Rule>[
+      if (analysisSettings.useRegexpExclude) RegExpRule(),
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+    ];
 
     final Iterable<RuleMessage> errorMessageList = kRulesList.map((Rule rule) {
       return rule.check(

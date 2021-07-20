@@ -11,10 +11,10 @@
 
 ### 1. Add dependency to `pubspec.yaml`
 
-    ```yaml
-    dev_dependencies:
-      cool_linter: ^1.0.1 # last version of plugin
-    ```
+```yaml
+dev_dependencies:
+  cool_linter: ^1.2.0 # last version of plugin
+```
 
 ###  2. Add configuration to `analysis_options.yaml`
 
@@ -24,6 +24,8 @@ analyzer:
     - cool_linter
 
 cool_linter:
+  extended_rules:
+    - always_specify_stream_subscription
   always_specify_types:
     - typed_literal
     - declared_identifier
@@ -71,6 +73,23 @@ cool_linter:
   'linux/**',
   'windows/**',
   'go/**',
+  ```
+
+3. ### extended_rules. always_specify_stream_subscription linter:
+  Always use `StreamSubscription` for Stream.listen();
+
+  CORRECT:
+
+  ```dart
+  final Stream<String> stream2 = Stream<String>.value('value');
+  final StreamSubscription<String> sub = stream2.listen((_) {}); // OK
+  ```
+
+  WARNING:
+
+  ```dart
+  final Stream<String> stream1 = Stream<String>.value('value');
+  stream1.listen((String ttt) {}); // LINT
   ```
 
 ## Attention!!!

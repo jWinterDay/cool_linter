@@ -20,7 +20,7 @@ const Map<ResultType, String> kOptionNameOfResultType = <ResultType, String>{
 };
 
 class AlwaysSpecifyTypesResult {
-  AlwaysSpecifyTypesResult({
+  const AlwaysSpecifyTypesResult({
     required this.astNode,
     required this.resultType,
   });
@@ -32,10 +32,9 @@ class AlwaysSpecifyTypesResult {
 
   @override
   String toString() {
-    final StringBuffer sb = StringBuffer();
-
-    sb.writeln('resultType: $resultType');
-    sb.writeln('astNode: ${astNode.toString()}');
+    final StringBuffer sb = StringBuffer()
+      ..writeln('resultType: $resultType')
+      ..writeln('astNode: ${astNode.toString()}');
 
     return sb.toString();
   }

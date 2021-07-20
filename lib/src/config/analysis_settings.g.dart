@@ -24,6 +24,7 @@ _$_CoolLinter _$_$_CoolLinterFromJson(Map<String, dynamic> json) {
             .toList() ??
         [],
     excludeFolders: (json['exclude_folders'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+    extendedRules: (json['extended_rules'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
   );
 }
 
@@ -31,6 +32,7 @@ Map<String, dynamic> _$_$_CoolLinterToJson(_$_CoolLinter instance) => <String, d
       'always_specify_types': instance.types,
       'regexp_exclude': instance.regexpExclude,
       'exclude_folders': instance.excludeFolders,
+      'extended_rules': instance.extendedRules,
     };
 
 _$_ExcludeWord _$_$_ExcludeWordFromJson(Map<String, dynamic> json) {

@@ -92,6 +92,35 @@ cool_linter:
   stream1.listen((String ttt) {}); // LINT
   ```
 
+4. ### extended_rules. **prefer_image_cache_sizes** linter:
+  Always use cacheWidth and cacheHeight if possible for avoid possible memory leak.
+  Use it for Image.asset, Image.memory, Image.file, Image.network
+
+
+  CORRECT:
+
+  ```dart
+  Image.asset(
+    asset!,
+    cacheWidth: 100,
+    cacheHeight: 100,
+    width: 100,
+    height: 100
+    fit: BoxFit.cover,
+  )
+  ```
+
+  WARNING:
+
+  ```dart
+  Image.asset(
+    asset!,
+    width: 100,
+    height: 100
+    fit: BoxFit.cover,
+  )
+  ```
+
 ## Attention!!!
 ###  You must restart your IDE for starting plugin
 

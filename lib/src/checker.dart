@@ -8,15 +8,9 @@ import 'package:cool_linter/src/utils/utils.dart';
 import 'package:glob/glob.dart';
 
 import 'rules/always_specify_types_rule/always_specify_types_rule.dart';
+import 'rules/prefer_image_cache_sizes/prefer_image_cache_sizes_rule.dart';
 import 'rules/regexp_rule/regexp_rule.dart';
 import 'rules/stream_subscription_rule/stream_subscription_rule.dart';
-
-// TODO: add if exists in analysis options
-// final List<Rule> kRulesList = <Rule>[
-//   RegExpRule(),
-//   AlwaysSpecifyTypesRule(),
-//   StreamSubscriptionRule(),
-// ];
 
 class Checker {
   const Checker();
@@ -43,6 +37,7 @@ class Checker {
       if (analysisSettings.useRegexpExclude) RegExpRule(),
       if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
       if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      if (analysisSettings.usePreferImageCacheSizes) PreferImageCacheSizesRule(),
     ];
 
     final Iterable<RuleMessage> errorMessageList = kRulesList.map((Rule rule) {

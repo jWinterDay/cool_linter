@@ -23,7 +23,7 @@ dependencies:
 
 dev_dependencies:
   test: ^1.17.10
-  pedantic: ^1.11.1
+  flutter_lints: ^1.0.4
   freezed: ^0.14.2
   build_runner: ^2.0.4
   build: ^2.0.0

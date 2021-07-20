@@ -38,6 +38,11 @@ class AnalysisSettings with _$AnalysisSettings {
     return coolLinter?.extendedRules.contains('always_specify_stream_subscription') ?? false;
   }
 
+  /// use `prefer_image_cache_sizes` rule
+  bool get usePreferImageCacheSizes {
+    return coolLinter?.extendedRules.contains('prefer_image_cache_sizes') ?? false;
+  }
+
   /// `always_specify_types` rule list
   static final List<String> alwaysSpecifyTypeRuleNameList = <String>[
     'typed_literal',

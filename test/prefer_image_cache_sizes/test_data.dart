@@ -1,43 +1,53 @@
 // import 'package:flutter/widgets.dart';
-final Image im1 = Image.asset(
-  '',
-  cacheWidth: 15,
-  cacheHeight: 15,
-  fit: BoxFit.cover,
-);
-
-final Image im2 = Image.asset(
-  '',
-  cacheWidth: 15,
-  fit: BoxFit.cover,
-);
-
-final Image im3 = Image.asset(
-  '',
-  cacheHeight: 15,
-  fit: BoxFit.cover,
-);
-
-final Image im4 = Image.asset(
-  '',
-  fit: BoxFit.cover,
-);
-
-final Center complexWidget1 = Center(
-  child: Image.asset(
-    '',
-    fit: BoxFit.cover,
-  ),
-);
-
-final Center complexWidget2 = Center(
-  child: Image.asset(
+class TestWidget {
+  final Image im1 = Image.asset(
     '',
     cacheWidth: 15,
     cacheHeight: 15,
     fit: BoxFit.cover,
-  ),
-);
+  );
+
+  final Image im2 = Image.asset(
+    '',
+    cacheWidth: 15,
+    fit: BoxFit.cover,
+  );
+
+  final Image im3 = Image.asset(
+    '',
+    cacheHeight: 15,
+    fit: BoxFit.cover,
+  );
+
+  final Image im4 = Image.asset(
+    '',
+    fit: BoxFit.cover,
+  );
+
+  final Center complexWidget1 = Center(
+    child: Image.asset(
+      '',
+      fit: BoxFit.cover,
+    ),
+  );
+
+  final Center complexWidget2 = Center(
+    child: Image.asset(
+      '',
+      cacheWidth: 15,
+      cacheHeight: 15,
+      fit: BoxFit.cover,
+    ),
+  );
+
+  void build() {
+    final Image im2 = Image.asset(
+      '',
+      cacheWidth: 15,
+      fit: BoxFit.cover,
+    );
+  }
+}
 
 // ============ custom classes
 class TestImage {
@@ -60,3 +70,9 @@ List<dynamic> someList = <dynamic>[
 ];
 
 final t = TestImage('t');
+
+class TestWidget2 {
+  int? test() {
+    return TestImage('fdfds', cacheHeight: 1).cacheHeight;
+  }
+}

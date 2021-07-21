@@ -306,10 +306,10 @@ class PreferImageCacheSizesVisitor extends RecursiveAstVisitor<void> {
     print('visitCatchClause>> $node');
   }
 
-  @override
-  void visitClassDeclaration(ClassDeclaration node) {
-    print('visitClassDeclaration>> $node');
-  }
+  // @override
+  // void visitClassDeclaration(ClassDeclaration node) {
+  //   print('visitClassDeclaration>> $node');
+  // }
 
   @override
   void visitClassTypeAlias(ClassTypeAlias node) {
@@ -788,7 +788,13 @@ class PreferImageCacheSizesVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) {
-    print('visitTopLevelVariableDeclaration>> $node');
+    print('visitTopLevelVariableDeclaration>> ${node}');
+
+    // node.variables.
+    // .forEach((e) {
+    //   final t = '${e.}';
+    //   print('t = $t');
+    // });
   }
 
   @override

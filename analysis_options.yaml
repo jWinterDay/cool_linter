@@ -25,7 +25,7 @@ analyzer:
     - lib/**/*.freezed.dart
     - lib/**/*.g.dart
     - lib/src/generated/**
-    # - test/**/**test_data.dart
+    - test/**/**test_data.dart
     
 
 linter:

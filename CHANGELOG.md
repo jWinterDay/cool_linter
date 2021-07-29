@@ -1,3 +1,5 @@
+## 1.2.1
+    always_specify_stream_subscription rule fix
 ## 1.2.0
     new rule always_specify_stream_subscription
 ## 1.1.1

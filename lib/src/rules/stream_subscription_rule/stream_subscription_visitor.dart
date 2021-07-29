@@ -19,7 +19,8 @@ class StreamSubscriptionVisitor extends RecursiveAstVisitor<void> {
   void visitExpressionStatement(ExpressionStatement node) {
     super.visitExpressionStatement(node);
 
-    if (node.expression.staticType?.element?.displayName == _kStreamSubscriptionName) {
+    if (node.expression is MethodInvocation &&
+        node.expression.staticType?.element?.displayName == _kStreamSubscriptionName) {
       _visitorRuleMessages.add(StreamSubscriptionResult(
         astNode: node,
       ));

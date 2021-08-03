@@ -3,7 +3,7 @@ import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
-import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
+import 'package:cool_linter/src/rules/prefer_trailing_comma/prefer_trailing_comma_result.dart';
 
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
@@ -19,14 +19,6 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
           group: Group.style,
         );
 
-  // @override
-  // List<String> get incompatibleRules {
-  //   return const <String>[
-  //     'avoid_types_on_closure_parameters',
-  //     'omit_local_variable_types',
-  //   ];
-  // }
-
   /// custom check
   @override
   List<RuleMessage> check({
@@ -38,12 +30,13 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
-    final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(this);
+    final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(
+      this,
+      lineInfo: parseResult.lineInfo,
+    );
     parseResult.unit?.visitChildren(visitor);
 
-    // final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
-
-    return visitor.visitorRuleMessages.map((typesResult) {
+    return visitor.visitorRuleMessages.map((PreferTrailingCommaResult typesResult) {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 

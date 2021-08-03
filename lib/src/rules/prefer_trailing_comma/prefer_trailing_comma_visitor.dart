@@ -1,170 +1,100 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/syntactic_entity.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/source/line_info.dart';
 
 import 'package:cool_linter/src/rules/rule.dart';
 
 import 'prefer_trailing_comma_result.dart';
 
-/// https://github.com/dart-lang/linter/blob/master/lib/src/rules/always_specify_types.dart
-/// The name of `meta` library, used to define analysis annotations.
-String _metaLibName = 'meta';
-
-/// The name of the top-level variable used to mark a Class as having optional type args.
-String _optionalTypeArgsVarName = 'optionalTypeArgs';
-
-bool _isOptionallyParameterized(TypeParameterizedElement element) {
-  final List<ElementAnnotation> metadata = element.metadata;
-
-  return metadata.any((ElementAnnotation a) => _isOptionalTypeArgs(a.element));
-}
-
-bool _isOptionalTypeArgs(Element? element) {
-  return element is PropertyAccessorElement &&
-      element.name == _optionalTypeArgsVarName &&
-      element.library.name == _metaLibName;
-}
-
-final RegExp _underscores = RegExp(r'^[_]+$');
-bool isJustUnderscores(String name) => _underscores.hasMatch(name);
-
 class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
-  PreferTrailingCommaVisitor(this.rule);
+  PreferTrailingCommaVisitor(
+    this.rule, {
+    this.breakpoint = 2,
+    required this.lineInfo,
+  });
 
   final Rule rule;
+
+  final int breakpoint;
+  final LineInfo lineInfo;
 
   final List<PreferTrailingCommaResult> _visitorRuleMessages = <PreferTrailingCommaResult>[];
   List<PreferTrailingCommaResult> get visitorRuleMessages => _visitorRuleMessages;
 
-  // void _checkLiteral(TypedLiteral literal) {
-  //   if (literal.typeArguments == null) {
-  //     _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //       astNode: literal,
-  //     ));
-  //     // print('((((++++)))) _checkLiteral: ${literal} | ${literal.parent} ${literal.typeArguments}');
-  //   }
-  // }
+  @override
+  void visitArgumentList(ArgumentList node) {
+    super.visitArgumentList(node);
 
-  // // @override
-  // // void visitMethodDeclaration(MethodDeclaration node) {
-  // //   super.visitMethodDeclaration(node);
+    _visitNodeList(node.arguments, node.leftParenthesis, node.rightParenthesis);
+  }
 
-  // //   print('[#####################] visitMethodDeclaration: ${node}');
-  // // }
+  @override
+  void visitFormalParameterList(FormalParameterList node) {
+    super.visitFormalParameterList(node);
 
-  // // ---
-  // @override
-  // void visitDeclaredIdentifier(DeclaredIdentifier node) {
-  //   super.visitDeclaredIdentifier(node);
+    _visitNodeList(
+      node.parameters,
+      node.leftParenthesis,
+      node.rightParenthesis,
+    );
+  }
 
-  //   if (node.type == null) {
-  //     _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //       astNode: node,
-  //     ));
-  //     // print('++++ visitDeclaredIdentifier: ${node}');
-  //   }
-  // }
+  @override
+  void visitEnumDeclaration(EnumDeclaration node) {
+    super.visitEnumDeclaration(node);
 
-  // // ---
-  // @override
-  // void visitListLiteral(ListLiteral node) {
-  //   super.visitListLiteral(node);
+    _visitNodeList(node.constants, node.leftBracket, node.rightBracket);
+  }
 
-  //   _checkLiteral(node);
-  // }
+  @override
+  void visitListLiteral(ListLiteral node) {
+    super.visitListLiteral(node);
 
-  // void visitNamedType(TypeName node) {
-  //   final DartType? type = node.type;
+    _visitNodeList(node.elements, node.leftBracket, node.rightBracket);
+  }
 
-  //   if (type is InterfaceType) {
-  //     final TypeParameterizedElement element = type.aliasElement ?? type.element;
+  @override
+  void visitSetOrMapLiteral(SetOrMapLiteral node) {
+    super.visitSetOrMapLiteral(node);
 
-  //     if (element.typeParameters.isNotEmpty &&
-  //         node.typeArguments == null &&
-  //         node.parent is! IsExpression &&
-  //         !_isOptionallyParameterized(element)) {
-  //       _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //         astNode: node,
-  //       ));
-  //       // print('@@@@@@@@@ visitNamedType $namedType element = $element');
-  //     }
-  //   }
-  // }
+    _visitNodeList(node.elements, node.leftBracket, node.rightBracket);
+  }
 
-  // // ---
-  // @override
-  // void visitSetOrMapLiteral(SetOrMapLiteral node) {
-  //   super.visitSetOrMapLiteral(node);
+  void _visitNodeList(
+    Iterable<AstNode> nodes,
+    Token leftBracket,
+    Token rightBracket,
+  ) {
+    if (nodes.isEmpty) {
+      return;
+    }
 
-  //   _checkLiteral(node);
-  // }
+    final AstNode last = nodes.last;
 
-  // // ---
-  // @override
-  // void visitSimpleFormalParameter(SimpleFormalParameter node) {
-  //   super.visitSimpleFormalParameter(node);
+    if (last.endToken.next?.type != TokenType.COMMA &&
+        (!_isLastItemMultiLine(last, leftBracket, rightBracket) &&
+                _getLineNumber(leftBracket) != _getLineNumber(rightBracket) ||
+            nodes.length >= breakpoint)) {
+      _visitorRuleMessages.add(PreferTrailingCommaResult(
+        astNode: last,
+      ));
+    }
+  }
 
-  //   final SimpleIdentifier? identifier = node.identifier;
+  bool _isLastItemMultiLine(
+    AstNode node,
+    Token leftBracket,
+    Token rightBracket,
+  ) {
+    return _getLineNumber(leftBracket) == lineInfo.getLocation(node.offset).lineNumber &&
+        _getLineNumber(rightBracket) == lineInfo.getLocation(node.end).lineNumber;
+  }
 
-  //   if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
-  //     if (node.keyword != null) {
-  //       _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //         astNode: node,
-  //         resultType: ResultType.simpleFormalParameter,
-  //       ));
-  //       // print('&&&&& reportLintForToken $node');
-  //     } else {
-  //       _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //         astNode: node,
-  //         resultType: ResultType.simpleFormalParameter,
-  //       ));
-  //       // print('====== reportLint $node ${node.identifier?.name}');
-  //     }
-  //   }
-  // }
-
-  // // ---
-  // @override
-  // void visitTypeName(TypeName node) {
-  //   super.visitTypeName(node);
-
-  //   visitNamedType(node);
-  // }
-
-  // // ---
-  // @override
-  // void visitVariableDeclarationList(VariableDeclarationList node) {
-  //   super.visitVariableDeclarationList(node);
-
-  //   if (node.type == null) {
-  //     _visitorRuleMessages.add(PreferTrailingCommaResult(
-  //       astNode: node,
-  //       resultType: ResultType.variableDeclarationList,
-  //     ));
-
-  //     // print('----list = ${list.type} > ${list.keyword} > ${list}');
-  //   }
-  // }
-
-  // @override
-  // void visitGenericFunctionType(GenericFunctionType node) {
-  //   super.visitGenericFunctionType(node);
-
-  //   print('visitGenericFunctionType $node');
-  // }
-
-  // @override
-  // void visitGenericTypeAlias(GenericTypeAlias node) {
-  //   super.visitGenericTypeAlias(node);
-
-  //   print('visitGenericTypeAlias $node');
-  // }
-
-  // @override
-  // void visitVariableDeclaration(VariableDeclaration node) {
-  //   super.visitVariableDeclaration(node);
-
-  //   print('[FFFFFFFF] visitVariableDeclaration $node');
-  // }
+  int _getLineNumber(SyntacticEntity entity) {
+    return lineInfo.getLocation(entity.offset).lineNumber;
+  }
 }

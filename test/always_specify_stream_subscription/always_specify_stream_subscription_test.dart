@@ -3,7 +3,7 @@ import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscription_rule.dart';
-import 'package:cool_linter/src/utils/utils.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:test/test.dart';
 
 import '../utils/resolved_unit_util.dart';

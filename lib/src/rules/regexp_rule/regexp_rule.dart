@@ -9,6 +9,9 @@ import 'package:pub_semver/pub_semver.dart';
 
 class RegExpRule extends Rule {
   @override
+  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?regexp_exclude');
+
+  @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,

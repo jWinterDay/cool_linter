@@ -19,6 +19,9 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
           group: Group.style,
         );
 
+  @override
+  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?prefer_trailing_comma');
+
   /// custom check
   @override
   List<RuleMessage> check({

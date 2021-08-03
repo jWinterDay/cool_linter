@@ -53,7 +53,7 @@ void main() {
         analysisSettings: analysisSettings,
       );
 
-      expect(ruleMessageList, hasLength(5));
+      expect(ruleMessageList, hasLength(6));
 
       // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
       //   print('>> $element');

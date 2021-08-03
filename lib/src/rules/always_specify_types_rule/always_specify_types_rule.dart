@@ -20,6 +20,9 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
         );
 
   @override
+  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?cool_linter_always_specify_types');
+
+  @override
   List<String> get incompatibleRules {
     return const <String>[
       'avoid_types_on_closure_parameters',

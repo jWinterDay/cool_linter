@@ -78,6 +78,7 @@ class AnalyzeCommand extends Command<void> {
 
     print('----arg = ${arg?.arguments}');
 
+    // TODO
     const List<String> folderToAnalyseList = <String>['lib'];
     final String rootFolder = Directory.current.path;
     // final File analysisOptionsFile = File(p.absolute(rootFolder, 'analysis_options.yaml'));

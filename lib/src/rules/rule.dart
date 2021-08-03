@@ -7,13 +7,13 @@ import 'package:analyzer/src/lint/linter.dart' show LintRule, Group; //, LinterC
 abstract class Rule extends LintRule {
   Rule()
       : super(
-          name: 'cl_always_specify_types',
-          description: 'Specify type annotations.',
+          name: 'cool_linter_rule',
+          description: 'cool linter rule',
           details: 'https://flutter.dev/style-guide',
           group: Group.style,
         );
 
-  // Rule() : super();
+  RegExp get regExpSuppression;
 
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,

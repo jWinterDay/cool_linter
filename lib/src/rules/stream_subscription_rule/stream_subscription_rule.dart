@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
@@ -21,26 +23,51 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
           group: Group.style,
         );
 
+  @override
+  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_stream_subscription');
+
   /// custom check
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,
   }) {
+    // path
     final String? path = parseResult.path;
     if (path == null) {
       return <RuleMessage>[];
     }
+    // content
+    if (parseResult.content == null) {
+      return <RuleMessage>[];
+    }
+    final String content = parseResult.content!;
 
-    final StreamSubscription<void> sub1 = Stream<void>.periodic(const Duration(seconds: 1), (_) {}).listen((_) {
-      // do nothing
+    final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
+
+    // places of [// ignore: always_specify_stream_subscription] comment
+    final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
+      // ignore: always_specify_types
+      final loc = parseResult.lineInfo.getLocation(match.start);
+
+      return loc.lineNumber;
     });
-    sub1.cancel();
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
     parseResult.unit?.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.map((StreamSubscriptionResult visitorMessage) {
+    return visitor.visitorRuleMessages.where((StreamSubscriptionResult visitorMessage) {
+      final int offset = visitorMessage.astNode.offset;
+      // ignore: always_specify_types
+      final offsetLocation = parseResult.lineInfo.getLocation(offset);
+      final int warningLineNumber = offsetLocation.lineNumber;
+
+      final bool willIgnoreNextLine = ignoreColumnList.any((int ignoreLineNumber) {
+        return ignoreLineNumber + 1 == warningLineNumber;
+      });
+
+      return !willIgnoreNextLine;
+    }).map((StreamSubscriptionResult visitorMessage) {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;
 

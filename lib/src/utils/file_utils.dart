@@ -7,7 +7,8 @@ abstract class FileUtil {
   static Set<String> getDartFilesFromFolders(
     Iterable<String> folders,
     String rootFolder, {
-    Iterable<Glob> globalExcludes = const <Glob>[],
+    Iterable<String> excludedExtensions = const <String>[],
+    // Iterable<Glob> globalExcludes = const <Glob>[],
   }) {
     return folders.expand((String directory) {
       return Glob('$directory/**.dart')
@@ -17,7 +18,13 @@ abstract class FileUtil {
             followLinks: false,
           )
           .whereType<File>()
-          .map((File entity) {
+          .where((File file) {
+        final bool excluded = excludedExtensions.any((String excludedExtension) {
+          return file.path.endsWith(excludedExtension);
+        });
+
+        return !excluded;
+      }).map((File entity) {
         return entity.path;
       });
     }).toSet();

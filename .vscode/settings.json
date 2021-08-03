@@ -1,14 +1,14 @@
 {
-  "emeraldwalk.runonsave": {
-    "commands": [
-        {
-            "match": "\\.dart$",
-            "isAsync": true,
-            "cmd": "bash ${workspaceFolder}/scripts/run_on_save_take_screenshot.sh ${fileBasename}"
-            //  "echo '>> dart ${workspaceFolder} | ${workspaceFolder} | ${file} | ${fileBasename} | ${fileDirname}'"
-        },
-    ]
-  },
+  // "emeraldwalk.runonsave": {
+  //   "commands": [
+  //       {
+  //           "match": "\\.dart$",
+  //           "isAsync": true,
+  //           "cmd": "bash ${workspaceFolder}/scripts/run_on_save_take_screenshot.sh ${fileBasename}"
+  //           //  "echo '>> dart ${workspaceFolder} | ${workspaceFolder} | ${file} | ${fileBasename} | ${fileDirname}'"
+  //       },
+  //   ]
+  // },
   // "dart.doNotFormat": [
   //   "**/generated/**",
   // ],
@@ -21,6 +21,10 @@
     "**/.g.dart": false
   },
   "dart.lineLength": 120,
+  "dart.doNotFormat": [
+    "**/test/prefer_trailing_comma/test_data.dart",
+    "**/test/prefer_trailing_comma/test_data_extended.dart",
+  ],
   "[dart]": {
     "editor.formatOnSave": true,
     "editor.detectIndentation": false,

@@ -1,15 +1,12 @@
-import 'dart:async';
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/src/generated/source.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
-
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 
 import 'stream_subscription_result.dart';
 import 'stream_subscription_visitor.dart';
@@ -37,36 +34,21 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
     if (path == null) {
       return <RuleMessage>[];
     }
-    // content
-    if (parseResult.content == null) {
+
+    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
-    final String content = parseResult.content!;
-
-    final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
-
-    // places of [// ignore: always_specify_stream_subscription] comment
-    final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
-      // ignore: always_specify_types
-      final loc = parseResult.lineInfo.getLocation(match.start);
-
-      return loc.lineNumber;
-    });
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
     parseResult.unit?.visitChildren(visitor);
 
     return visitor.visitorRuleMessages.where((StreamSubscriptionResult visitorMessage) {
-      final int offset = visitorMessage.astNode.offset;
-      // ignore: always_specify_types
-      final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      final int warningLineNumber = offsetLocation.lineNumber;
-
-      final bool willIgnoreNextLine = ignoreColumnList.any((int ignoreLineNumber) {
-        return ignoreLineNumber + 1 == warningLineNumber;
-      });
-
-      return !willIgnoreNextLine;
+      return visitorMessage.filterByIgnore(
+        ignoreColumnList: ignoreColumnList,
+        parseResult: parseResult,
+        visitorMessage: visitorMessage,
+      );
     }).map((StreamSubscriptionResult visitorMessage) {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;

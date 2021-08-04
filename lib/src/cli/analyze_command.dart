@@ -116,6 +116,10 @@ class AnalyzeCommand extends Command<void> {
         messageList.forEach((RuleMessage message) {
           print('----${message.message} > ${message.location.file} > ${message.location.startLine}');
         });
+
+        if (messageList.isNotEmpty) {
+          exit(1);
+        }
       });
     });
   }

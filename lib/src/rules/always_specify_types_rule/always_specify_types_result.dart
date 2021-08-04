@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:cool_linter/src/rules/ast_analyze_result.dart';
 
 enum ResultType {
   typedLiteral,
@@ -19,14 +20,19 @@ const Map<ResultType, String> kOptionNameOfResultType = <ResultType, String>{
   ResultType.variableDeclarationList: 'variable_declaration_list',
 };
 
-class AlwaysSpecifyTypesResult {
-  const AlwaysSpecifyTypesResult({
-    required this.astNode,
-    required this.resultType,
-  });
+class AlwaysSpecifyTypesResult extends AstAnalyzeResult {
+  AlwaysSpecifyTypesResult({
+    required AstNode astNode,
+  }) : super(astNode: astNode);
 
-  final AstNode astNode;
-  final ResultType resultType;
+  AlwaysSpecifyTypesResult.withType({
+    required AstNode astNode,
+    required ResultType type,
+  }) : super(astNode: astNode) {
+    resultType = type;
+  }
+
+  late ResultType resultType;
 
   String get resultTypeAsString => kOptionNameOfResultType[resultType] ?? 'Unknown';
 

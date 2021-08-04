@@ -69,3 +69,24 @@ final secondMap = {
   // LINT
   'and another string for length exceed': 'and another string for length exceed'
 };
+
+enum FirstEnum {
+  firstItem,
+  secondItem,
+  thirdItem,
+  forthItem,
+  fifthItem,
+  // ignore: prefer_trailing_comma
+  sixthItem // LINT
+}
+
+enum FirstEnum {
+  firstItem,
+  secondItem,
+  thirdItem,
+  forthItem,
+  fifthItem,
+  // ignore: prefer_trailing_comma
+
+  sixthItem // LINT
+}

@@ -1,12 +1,13 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
 import 'package:cool_linter/src/rules/prefer_trailing_comma/prefer_trailing_comma_result.dart';
-
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 
 import 'prefer_trailing_comma_visitor.dart';
 
@@ -33,13 +34,24 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
+    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    if (ignoreColumnList == null) {
+      return <RuleMessage>[];
+    }
+
     final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(
       this,
       lineInfo: parseResult.lineInfo,
     );
     parseResult.unit?.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.map((PreferTrailingCommaResult typesResult) {
+    return visitor.visitorRuleMessages.where((PreferTrailingCommaResult visitorMessage) {
+      return visitorMessage.filterByIgnore(
+        ignoreColumnList: ignoreColumnList,
+        parseResult: parseResult,
+        visitorMessage: visitorMessage,
+      );
+    }).map((PreferTrailingCommaResult typesResult) {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 

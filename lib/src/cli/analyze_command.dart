@@ -9,8 +9,11 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
+import 'package:cool_linter/src/rules/prefer_trailing_comma/prefer_trailing_comma_rule.dart';
+import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscription_rule.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:cool_linter/src/utils/ansi_colors.dart';
 import 'package:cool_linter/src/utils/file_utils.dart';
@@ -46,15 +49,21 @@ class AnalyzeCommand extends Command<void> {
   String get invocation => '${runner?.executableName} $name [arguments] <directories>';
 
   // TODO
-  static final List<Rule> _rules = <Rule>[
+  static final Set<Rule> _rules = <Rule>{
     AlwaysSpecifyTypesRule(),
-  ];
+    PreferTrailingCommaRule(),
+    // RegExpRule(),
+    StreamSubscriptionRule(),
+  };
 
   // TODO
   static final AnalysisSettings _analysisSettings = AnalysisSettings.fromJson(
     AnalysisSettingsUtil.convertYamlToMap(
       r'''
           cool_linter:
+            extended_rules:
+              - always_specify_stream_subscription
+              - prefer_trailing_comma
             always_specify_types:
               - typed_literal
               - declared_identifier
@@ -65,6 +74,12 @@ class AnalyzeCommand extends Command<void> {
         ''',
     ),
   );
+
+  // regexp_exclude:
+  //             -
+  //               pattern: TestClass
+  //               hint: Wrong name
+  //               severity: WARNING
 
   @override
   Future<void> run() async {
@@ -92,8 +107,14 @@ class AnalyzeCommand extends Command<void> {
 
     // print
     final IOSink iosink = stdout;
-    analysisContext.contexts.forEach((AnalysisContext analysisContext) {
-      filePaths.forEach((String path) async {
+    bool wasError = false;
+
+    final Iterable<AnalysisContext> singleContextList = analysisContext.contexts.take(1);
+
+    await Future.forEach(singleContextList, (AnalysisContext analysisContext) async {
+      await Future.forEach(filePaths, (String path) async {
+        // print('----path = $path');
+
         final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
 
         if (unit is! ResolvedUnitResult) {
@@ -109,14 +130,18 @@ class AnalyzeCommand extends Command<void> {
           return e;
         });
 
-        messageList.forEach((RuleMessage message) {
+        await Future.forEach(messageList, (RuleMessage message) async {
           iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         });
 
         if (messageList.isNotEmpty) {
-          exit(1);
+          wasError = true;
         }
       });
     });
+
+    if (wasError) {
+      exit(1);
+    }
   }
 }

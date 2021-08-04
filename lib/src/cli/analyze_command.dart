@@ -12,6 +12,7 @@ import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_t
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
+import 'package:cool_linter/src/utils/ansi_colors.dart';
 import 'package:cool_linter/src/utils/file_utils.dart';
 import 'package:path/path.dart' as p;
 
@@ -69,8 +70,6 @@ class AnalyzeCommand extends Command<void> {
   Future<void> run() async {
     final ArgResults? arg = argResults;
 
-    print('----arg = ${arg?.arguments}');
-
     // ignore: avoid_as
     final List<String> dirList = argResults?['directories'] as List<String>;
 
@@ -91,6 +90,8 @@ class AnalyzeCommand extends Command<void> {
       excludedExtensions: excludedExtensions,
     );
 
+    // print
+    final IOSink iosink = stdout;
     analysisContext.contexts.forEach((AnalysisContext analysisContext) {
       filePaths.forEach((String path) async {
         final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
@@ -109,7 +110,7 @@ class AnalyzeCommand extends Command<void> {
         });
 
         messageList.forEach((RuleMessage message) {
-          print('----${message.message} > ${message.location.file} > ${message.location.startLine}');
+          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         });
 
         if (messageList.isNotEmpty) {

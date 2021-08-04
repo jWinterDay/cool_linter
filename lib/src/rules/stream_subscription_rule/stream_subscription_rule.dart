@@ -60,7 +60,7 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
 
       return RuleMessage(
         severityName: 'WARNING', // always_specify_stream_subscription
-        message: 'cool_linter. always specify stream subscription',
+        message: 'always_specify_stream_subscription',
         code: 'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
         changeMessage: 'cool_linter. always_specify_stream_subscription',
         location: Location(

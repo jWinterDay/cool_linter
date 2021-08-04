@@ -74,7 +74,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
 
       return RuleMessage(
         severityName: 'WARNING',
-        message: 'cool_linter. always specify rule: ${typesResult.resultTypeAsString}',
+        message: 'always_specify_rule: ${typesResult.resultTypeAsString}',
         code: typesResult.resultTypeAsString,
         changeMessage: 'cool_linter. always_specify_type for rule: ${typesResult.resultTypeAsString}',
         addInfo: typesResult.resultTypeAsString,

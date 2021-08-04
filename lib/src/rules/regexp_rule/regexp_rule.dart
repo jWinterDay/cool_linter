@@ -94,7 +94,7 @@ class RegExpRule extends Rule {
 
           matchListInfo.add(RuleMessage(
             severityName: firstExcluded.severity,
-            message: 'cool_linter. $hint for pattern: ${firstExcluded.pattern}',
+            message: '$hint for pattern: ${firstExcluded.pattern}',
             code: 'cool_linter_needs_fixes',
             location: Location(
               path,

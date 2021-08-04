@@ -19,19 +19,12 @@ class AnalyzeCommand extends Command<void> {
   AnalyzeCommand({
     required this.excludedExtensions,
   }) {
-    // argParser.addOption(
-    //   'root',
-    //   help: 'Root folder.',
-    //   valueHelp: './',
-    //   defaultsTo: Directory.current.path,
-    // );
-    // ..addSeparator('')
-    // ..addOption(
-    //   'directories',
-    //   abbr: 'd',
-    //   help: 'Folder to analyze',
-    //   defaultsTo: 'lib',
-    // )
+    argParser.addMultiOption(
+      'directories',
+      abbr: 'd',
+      help: 'Folder to analyze',
+      defaultsTo: <String>['lib'],
+    );
     // ..addOption(
     //   'fix',
     //   abbr: 'f',
@@ -78,20 +71,22 @@ class AnalyzeCommand extends Command<void> {
 
     print('----arg = ${arg?.arguments}');
 
-    // TODO
-    const List<String> folderToAnalyseList = <String>['lib'];
+    // ignore: avoid_as
+    final List<String> dirList = argResults?['directories'] as List<String>;
+
+    // work
     final String rootFolder = Directory.current.path;
     // final File analysisOptionsFile = File(p.absolute(rootFolder, 'analysis_options.yaml'));
 
     final AnalysisContextCollection analysisContext = AnalysisContextCollection(
-      includedPaths: folderToAnalyseList.map((String path) {
+      includedPaths: dirList.map((String path) {
         return p.normalize(p.join(rootFolder, path));
       }).toList(),
       resourceProvider: PhysicalResourceProvider.INSTANCE,
     );
 
     final Set<String> filePaths = FileUtil.getDartFilesFromFolders(
-      folderToAnalyseList,
+      dirList,
       rootFolder,
       excludedExtensions: excludedExtensions,
     );

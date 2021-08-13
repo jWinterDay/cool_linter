@@ -14,7 +14,7 @@ import 'always_specify_types_visitor.dart';
 class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
   AlwaysSpecifyTypesRule()
       : super(
-          name: 'always_specify_types',
+          name: 'cl_always_specify_types',
           description: 'Specify type annotations.',
           details: 'https://flutter.dev/style-guide',
           group: Group.style,

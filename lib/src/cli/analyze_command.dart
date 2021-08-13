@@ -64,7 +64,7 @@ class AnalyzeCommand extends Command<void> {
             extended_rules:
               - always_specify_stream_subscription
               - prefer_trailing_comma
-            always_specify_types:
+            cl_always_specify_types:
               - typed_literal
               - declared_identifier
               - set_or_map_literal

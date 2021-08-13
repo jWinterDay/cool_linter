@@ -4,7 +4,7 @@ import 'package:analyzer_plugin/protocol/protocol_generated.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
-import 'package:cool_linter/src/utils/utils.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:glob/glob.dart';
 
 import 'rules/always_specify_types_rule/always_specify_types_rule.dart';

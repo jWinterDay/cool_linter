@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart';
-import 'package:cool_linter/src/config/analysis_settings.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
-
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 
 import 'stream_subscription_result.dart';
 import 'stream_subscription_visitor.dart';
@@ -21,26 +20,36 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
           group: Group.style,
         );
 
+  @override
+  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_stream_subscription');
+
   /// custom check
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,
   }) {
+    // path
     final String? path = parseResult.path;
     if (path == null) {
       return <RuleMessage>[];
     }
 
-    final StreamSubscription<void> sub1 = Stream<void>.periodic(const Duration(seconds: 1), (_) {}).listen((_) {
-      // do nothing
-    });
-    sub1.cancel();
+    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    if (ignoreColumnList == null) {
+      return <RuleMessage>[];
+    }
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
     parseResult.unit?.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.map((StreamSubscriptionResult visitorMessage) {
+    return visitor.visitorRuleMessages.where((StreamSubscriptionResult visitorMessage) {
+      return visitorMessage.filterByIgnore(
+        ignoreColumnList: ignoreColumnList,
+        parseResult: parseResult,
+        visitorMessage: visitorMessage,
+      );
+    }).map((StreamSubscriptionResult visitorMessage) {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;
 
@@ -51,7 +60,7 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
 
       return RuleMessage(
         severityName: 'WARNING', // always_specify_stream_subscription
-        message: 'cool_linter. always specify stream subscription',
+        message: 'always_specify_stream_subscription',
         code: 'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
         changeMessage: 'cool_linter. always_specify_stream_subscription',
         location: Location(

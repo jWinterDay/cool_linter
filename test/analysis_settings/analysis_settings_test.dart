@@ -1,5 +1,5 @@
 import 'package:cool_linter/src/config/analysis_settings.dart';
-import 'package:cool_linter/src/utils/utils.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

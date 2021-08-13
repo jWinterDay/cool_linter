@@ -4,7 +4,7 @@ import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_t
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
-import 'package:cool_linter/src/utils/utils.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:test/test.dart';
 
 import '../utils/resolved_unit_util.dart';

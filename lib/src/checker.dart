@@ -59,7 +59,7 @@ class Checker {
     }
 
     // loop through all wrong lines
-    errorMessageList.forEach((RuleMessage errorMessage) {
+    for (final RuleMessage errorMessage in errorMessageList) {
       // fix
       final PrioritizedSourceChange fix = PrioritizedSourceChange(
         1000000,
@@ -87,7 +87,7 @@ class Checker {
       );
 
       result[error] = fix;
-    });
+    }
 
     return result;
   }

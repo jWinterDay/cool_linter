@@ -186,12 +186,15 @@ class _$CoolLinterTearOff {
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
           List<String> excludeFolders = const <String>[],
       @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
-          List<String> extendedRules = const <String>[]}) {
+          List<String> extendedRules = const <String>[],
+      @JsonKey(name: 'prefer_trailing_comma')
+          PreferTrailingComma? preferTrailingComma}) {
     return _CoolLinter(
       types: types,
       regexpExclude: regexpExclude,
       excludeFolders: excludeFolders,
       extendedRules: extendedRules,
+      preferTrailingComma: preferTrailingComma,
     );
   }
 
@@ -213,7 +216,9 @@ mixin _$CoolLinter {
   @JsonKey(name: 'exclude_folders', defaultValue: const <String>[])
   List<String> get excludeFolders => throw _privateConstructorUsedError; // extended_rules
   @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
-  List<String> get extendedRules => throw _privateConstructorUsedError;
+  List<String> get extendedRules => throw _privateConstructorUsedError; // prefer_trailing_comma
+  @JsonKey(name: 'prefer_trailing_comma')
+  PreferTrailingComma? get preferTrailingComma => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -227,7 +232,10 @@ abstract class $CoolLinterCopyWith<$Res> {
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
-      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules});
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules,
+      @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma});
+
+  $PreferTrailingCommaCopyWith<$Res>? get preferTrailingComma;
 }
 
 /// @nodoc
@@ -244,6 +252,7 @@ class _$CoolLinterCopyWithImpl<$Res> implements $CoolLinterCopyWith<$Res> {
     Object? regexpExclude = freezed,
     Object? excludeFolders = freezed,
     Object? extendedRules = freezed,
+    Object? preferTrailingComma = freezed,
   }) {
     return _then(_value.copyWith(
       types: types == freezed
@@ -262,7 +271,22 @@ class _$CoolLinterCopyWithImpl<$Res> implements $CoolLinterCopyWith<$Res> {
           ? _value.extendedRules
           : extendedRules // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      preferTrailingComma: preferTrailingComma == freezed
+          ? _value.preferTrailingComma
+          : preferTrailingComma // ignore: cast_nullable_to_non_nullable
+              as PreferTrailingComma?,
     ));
+  }
+
+  @override
+  $PreferTrailingCommaCopyWith<$Res>? get preferTrailingComma {
+    if (_value.preferTrailingComma == null) {
+      return null;
+    }
+
+    return $PreferTrailingCommaCopyWith<$Res>(_value.preferTrailingComma!, (value) {
+      return _then(_value.copyWith(preferTrailingComma: value));
+    });
   }
 }
 
@@ -274,7 +298,11 @@ abstract class _$CoolLinterCopyWith<$Res> implements $CoolLinterCopyWith<$Res> {
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
-      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules});
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules,
+      @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma});
+
+  @override
+  $PreferTrailingCommaCopyWith<$Res>? get preferTrailingComma;
 }
 
 /// @nodoc
@@ -291,6 +319,7 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
     Object? regexpExclude = freezed,
     Object? excludeFolders = freezed,
     Object? extendedRules = freezed,
+    Object? preferTrailingComma = freezed,
   }) {
     return _then(_CoolLinter(
       types: types == freezed
@@ -309,6 +338,10 @@ class __$CoolLinterCopyWithImpl<$Res> extends _$CoolLinterCopyWithImpl<$Res> imp
           ? _value.extendedRules
           : extendedRules // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      preferTrailingComma: preferTrailingComma == freezed
+          ? _value.preferTrailingComma
+          : preferTrailingComma // ignore: cast_nullable_to_non_nullable
+              as PreferTrailingComma?,
     ));
   }
 }
@@ -320,7 +353,8 @@ class _$_CoolLinter extends _CoolLinter {
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) this.types = const <String>[],
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) this.regexpExclude = const <ExcludeWord>[],
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) this.excludeFolders = const <String>[],
-      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) this.extendedRules = const <String>[]})
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) this.extendedRules = const <String>[],
+      @JsonKey(name: 'prefer_trailing_comma') this.preferTrailingComma})
       : super._();
 
   factory _$_CoolLinter.fromJson(Map<String, dynamic> json) => _$_$_CoolLinterFromJson(json);
@@ -337,10 +371,13 @@ class _$_CoolLinter extends _CoolLinter {
   @override // extended_rules
   @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
   final List<String> extendedRules;
+  @override // prefer_trailing_comma
+  @JsonKey(name: 'prefer_trailing_comma')
+  final PreferTrailingComma? preferTrailingComma;
 
   @override
   String toString() {
-    return 'CoolLinter(types: $types, regexpExclude: $regexpExclude, excludeFolders: $excludeFolders, extendedRules: $extendedRules)';
+    return 'CoolLinter(types: $types, regexpExclude: $regexpExclude, excludeFolders: $excludeFolders, extendedRules: $extendedRules, preferTrailingComma: $preferTrailingComma)';
   }
 
   @override
@@ -353,7 +390,9 @@ class _$_CoolLinter extends _CoolLinter {
             (identical(other.excludeFolders, excludeFolders) ||
                 const DeepCollectionEquality().equals(other.excludeFolders, excludeFolders)) &&
             (identical(other.extendedRules, extendedRules) ||
-                const DeepCollectionEquality().equals(other.extendedRules, extendedRules)));
+                const DeepCollectionEquality().equals(other.extendedRules, extendedRules)) &&
+            (identical(other.preferTrailingComma, preferTrailingComma) ||
+                const DeepCollectionEquality().equals(other.preferTrailingComma, preferTrailingComma)));
   }
 
   @override
@@ -362,7 +401,8 @@ class _$_CoolLinter extends _CoolLinter {
       const DeepCollectionEquality().hash(types) ^
       const DeepCollectionEquality().hash(regexpExclude) ^
       const DeepCollectionEquality().hash(excludeFolders) ^
-      const DeepCollectionEquality().hash(extendedRules);
+      const DeepCollectionEquality().hash(extendedRules) ^
+      const DeepCollectionEquality().hash(preferTrailingComma);
 
   @JsonKey(ignore: true)
   @override
@@ -379,7 +419,8 @@ abstract class _CoolLinter extends CoolLinter {
       {@JsonKey(name: 'always_specify_types', defaultValue: const <String>[]) List<String> types,
       @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude,
       @JsonKey(name: 'exclude_folders', defaultValue: const <String>[]) List<String> excludeFolders,
-      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules}) = _$_CoolLinter;
+      @JsonKey(name: 'extended_rules', defaultValue: const <String>[]) List<String> extendedRules,
+      @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma}) = _$_CoolLinter;
   const _CoolLinter._() : super._();
 
   factory _CoolLinter.fromJson(Map<String, dynamic> json) = _$_CoolLinter.fromJson;
@@ -396,6 +437,9 @@ abstract class _CoolLinter extends CoolLinter {
   @override // extended_rules
   @JsonKey(name: 'extended_rules', defaultValue: const <String>[])
   List<String> get extendedRules => throw _privateConstructorUsedError;
+  @override // prefer_trailing_comma
+  @JsonKey(name: 'prefer_trailing_comma')
+  PreferTrailingComma? get preferTrailingComma => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$CoolLinterCopyWith<_CoolLinter> get copyWith => throw _privateConstructorUsedError;
@@ -574,4 +618,145 @@ abstract class _ExcludeWord extends ExcludeWord {
   @override
   @JsonKey(ignore: true)
   _$ExcludeWordCopyWith<_ExcludeWord> get copyWith => throw _privateConstructorUsedError;
+}
+
+PreferTrailingComma _$PreferTrailingCommaFromJson(Map<String, dynamic> json) {
+  return _PreferTrailingComma.fromJson(json);
+}
+
+/// @nodoc
+class _$PreferTrailingCommaTearOff {
+  const _$PreferTrailingCommaTearOff();
+
+  _PreferTrailingComma call({@JsonKey(name: 'break-on') int breakOn = 2}) {
+    return _PreferTrailingComma(
+      breakOn: breakOn,
+    );
+  }
+
+  PreferTrailingComma fromJson(Map<String, Object> json) {
+    return PreferTrailingComma.fromJson(json);
+  }
+}
+
+/// @nodoc
+const $PreferTrailingComma = _$PreferTrailingCommaTearOff();
+
+/// @nodoc
+mixin _$PreferTrailingComma {
+  @JsonKey(name: 'break-on')
+  int get breakOn => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $PreferTrailingCommaCopyWith<PreferTrailingComma> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PreferTrailingCommaCopyWith<$Res> {
+  factory $PreferTrailingCommaCopyWith(PreferTrailingComma value, $Res Function(PreferTrailingComma) then) =
+      _$PreferTrailingCommaCopyWithImpl<$Res>;
+  $Res call({@JsonKey(name: 'break-on') int breakOn});
+}
+
+/// @nodoc
+class _$PreferTrailingCommaCopyWithImpl<$Res> implements $PreferTrailingCommaCopyWith<$Res> {
+  _$PreferTrailingCommaCopyWithImpl(this._value, this._then);
+
+  final PreferTrailingComma _value;
+  // ignore: unused_field
+  final $Res Function(PreferTrailingComma) _then;
+
+  @override
+  $Res call({
+    Object? breakOn = freezed,
+  }) {
+    return _then(_value.copyWith(
+      breakOn: breakOn == freezed
+          ? _value.breakOn
+          : breakOn // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+abstract class _$PreferTrailingCommaCopyWith<$Res> implements $PreferTrailingCommaCopyWith<$Res> {
+  factory _$PreferTrailingCommaCopyWith(_PreferTrailingComma value, $Res Function(_PreferTrailingComma) then) =
+      __$PreferTrailingCommaCopyWithImpl<$Res>;
+  @override
+  $Res call({@JsonKey(name: 'break-on') int breakOn});
+}
+
+/// @nodoc
+class __$PreferTrailingCommaCopyWithImpl<$Res> extends _$PreferTrailingCommaCopyWithImpl<$Res>
+    implements _$PreferTrailingCommaCopyWith<$Res> {
+  __$PreferTrailingCommaCopyWithImpl(_PreferTrailingComma _value, $Res Function(_PreferTrailingComma) _then)
+      : super(_value, (v) => _then(v as _PreferTrailingComma));
+
+  @override
+  _PreferTrailingComma get _value => super._value as _PreferTrailingComma;
+
+  @override
+  $Res call({
+    Object? breakOn = freezed,
+  }) {
+    return _then(_PreferTrailingComma(
+      breakOn: breakOn == freezed
+          ? _value.breakOn
+          : breakOn // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_PreferTrailingComma extends _PreferTrailingComma {
+  const _$_PreferTrailingComma({@JsonKey(name: 'break-on') this.breakOn = 2}) : super._();
+
+  factory _$_PreferTrailingComma.fromJson(Map<String, dynamic> json) => _$_$_PreferTrailingCommaFromJson(json);
+
+  @override
+  @JsonKey(name: 'break-on')
+  final int breakOn;
+
+  @override
+  String toString() {
+    return 'PreferTrailingComma(breakOn: $breakOn)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is _PreferTrailingComma &&
+            (identical(other.breakOn, breakOn) || const DeepCollectionEquality().equals(other.breakOn, breakOn)));
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode ^ const DeepCollectionEquality().hash(breakOn);
+
+  @JsonKey(ignore: true)
+  @override
+  _$PreferTrailingCommaCopyWith<_PreferTrailingComma> get copyWith =>
+      __$PreferTrailingCommaCopyWithImpl<_PreferTrailingComma>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$_$_PreferTrailingCommaToJson(this);
+  }
+}
+
+abstract class _PreferTrailingComma extends PreferTrailingComma {
+  const factory _PreferTrailingComma({@JsonKey(name: 'break-on') int breakOn}) = _$_PreferTrailingComma;
+  const _PreferTrailingComma._() : super._();
+
+  factory _PreferTrailingComma.fromJson(Map<String, dynamic> json) = _$_PreferTrailingComma.fromJson;
+
+  @override
+  @JsonKey(name: 'break-on')
+  int get breakOn => throw _privateConstructorUsedError;
+  @override
+  @JsonKey(ignore: true)
+  _$PreferTrailingCommaCopyWith<_PreferTrailingComma> get copyWith => throw _privateConstructorUsedError;
 }

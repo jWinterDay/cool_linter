@@ -225,9 +225,9 @@ class CoolLinterPlugin extends ServerPlugin {
       }
     }
 
-    filesByDriver.forEach((AnalysisDriverGeneric driver, List<String> files) {
-      driver.priorityFiles = files;
-    });
+    for (final MapEntry<AnalysisDriverGeneric, List<String>> item in filesByDriver.entries) {
+      item.key.priorityFiles = item.value;
+    }
   }
 
   AnalysisSettings? _getAnalysisSettings(AnalysisDriver analysisDriver) {

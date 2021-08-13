@@ -19,7 +19,7 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
 
   final Rule rule;
 
-  final int breakpoint;
+  final int? breakpoint;
   final LineInfo lineInfo;
 
   final List<PreferTrailingCommaResult> _visitorRuleMessages = <PreferTrailingCommaResult>[];
@@ -78,7 +78,7 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
     if (last.endToken.next?.type != TokenType.COMMA &&
         (!_isLastItemMultiLine(last, leftBracket, rightBracket) &&
                 _getLineNumber(leftBracket) != _getLineNumber(rightBracket) ||
-            nodes.length >= breakpoint)) {
+            breakpoint != null && nodes.length >= breakpoint!)) {
       _visitorRuleMessages.add(PreferTrailingCommaResult(
         astNode: last,
       ));

@@ -1,16 +1,8 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:cool_linter/src/rules/ast_analyze_result.dart';
 
-class StreamSubscriptionResult {
-  const StreamSubscriptionResult({
-    required this.astNode,
-  });
-
-  final AstNode astNode;
-
-  @override
-  String toString() {
-    final StringBuffer sb = StringBuffer()..writeln('astNode: ${astNode.toString()}');
-
-    return sb.toString();
-  }
+class StreamSubscriptionResult extends AstAnalyzeResult {
+  StreamSubscriptionResult({
+    required AstNode astNode,
+  }) : super(astNode: astNode);
 }

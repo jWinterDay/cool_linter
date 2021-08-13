@@ -21,10 +21,13 @@
     "**/.g.dart": false
   },
   "dart.lineLength": 120,
-  "dart.doNotFormat": [
-    "**/test/prefer_trailing_comma/test_data.dart",
-    "**/test/prefer_trailing_comma/test_data_extended.dart",
-  ],
+  // "dart.doNotFormat": [
+  //   "**/test/prefer_trailing_comma/test_data.dart",
+  //   "**/test/prefer_trailing_comma/test_data_extended.dart",
+  // ],
+  "files.associations": {
+    "**/test/prefer_trailing_comma/test_data.dart": "c"
+  },
   "[dart]": {
     "editor.formatOnSave": true,
     "editor.detectIndentation": false,

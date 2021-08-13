@@ -2,8 +2,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/syntactic_entity.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 
 import 'package:cool_linter/src/rules/rule.dart';
@@ -75,10 +73,16 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
 
     final AstNode last = nodes.last;
 
-    if (last.endToken.next?.type != TokenType.COMMA &&
-        (!_isLastItemMultiLine(last, leftBracket, rightBracket) &&
-                _getLineNumber(leftBracket) != _getLineNumber(rightBracket) ||
-            breakpoint != null && nodes.length >= breakpoint!)) {
+    final bool lastItemIsNotComma = last.endToken.next?.type != TokenType.COMMA;
+    final bool lastItemMultiLine = !_isLastItemMultiLine(last, leftBracket, rightBracket);
+    final bool differentLineNumbers = _getLineNumber(leftBracket) != _getLineNumber(rightBracket);
+    final bool nodesMoreThanBreakpoint = breakpoint != null && nodes.length >= breakpoint!;
+
+    // print(
+    //     '$nodes lastItemIsNotComma = $lastItemIsNotComma lastItemMultiLine = $lastItemMultiLine differentLineNumbers = $differentLineNumbers nodesMoreThanBreakpoint = $nodesMoreThanBreakpoint');
+
+    if (lastItemIsNotComma && (lastItemMultiLine && differentLineNumbers || nodesMoreThanBreakpoint)) {
+      print('LINT ---$nodes nodes.length = ${nodes.length}');
       _visitorRuleMessages.add(PreferTrailingCommaResult(
         astNode: last,
       ));

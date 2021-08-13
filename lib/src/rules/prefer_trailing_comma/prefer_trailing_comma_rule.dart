@@ -42,6 +42,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
     final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(
       this,
       lineInfo: parseResult.lineInfo,
+      breakpoint: analysisSettings.coolLinter?.preferTrailingComma?.breakOn,
     );
     parseResult.unit?.visitChildren(visitor);
 

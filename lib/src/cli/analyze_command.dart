@@ -103,21 +103,17 @@ class AnalyzeCommand extends Command<void> {
 
     // print
     final Iterable<AnalysisContext> singleContextList = analysisContext.contexts.take(1);
-    final Set<Rule> rules = _createRules(
-      alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
-      alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
-      preferTrailingCommaRule: preferTrailingCommaRule,
-    );
+
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
       preferTrailingCommaRule: preferTrailingCommaRule,
       breakOn: breakOn,
     );
+
     final bool wasError = await _print(
       analysisSettings: analysisSettings,
       filePaths: filePaths,
-      rules: rules,
       singleContextList: singleContextList,
     );
 
@@ -161,15 +157,11 @@ class AnalyzeCommand extends Command<void> {
     );
   }
 
-  Set<Rule> _createRules({
-    bool alwaysSpecifyTypesRule = false,
-    bool preferTrailingCommaRule = false,
-    bool alwaysSpecifyStreamSubscriptionRule = false,
-  }) {
+  Set<Rule> _createRules(AnalysisSettings analysisSettings) {
     return <Rule>{
-      if (alwaysSpecifyTypesRule) AlwaysSpecifyTypesRule(),
-      if (preferTrailingCommaRule) PreferTrailingCommaRule(),
-      if (alwaysSpecifyStreamSubscriptionRule) StreamSubscriptionRule(),
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
+      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
     };
   }
 
@@ -177,8 +169,9 @@ class AnalyzeCommand extends Command<void> {
     required Iterable<AnalysisContext> singleContextList,
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
-    required Set<Rule> rules,
   }) async {
+    final Set<Rule> rules = _createRules(analysisSettings);
+
     final IOSink iosink = stdout;
     bool wasError = false;
     int totalWarnings = 0;

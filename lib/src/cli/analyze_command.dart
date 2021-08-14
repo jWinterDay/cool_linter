@@ -5,7 +5,6 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
@@ -28,6 +27,11 @@ class AnalyzeCommand extends Command<void> {
         abbr: 'd',
         help: 'Folder to analyze',
         defaultsTo: <String>['lib'],
+      )
+      ..addFlag(
+        'fix',
+        abbr: 'f',
+        help: 'Fix issues',
       )
       ..addOption(
         'break_on',
@@ -67,6 +71,8 @@ class AnalyzeCommand extends Command<void> {
     // ignore: avoid_as
     final List<String> dirList = argResults?['directories'] as List<String>;
     // ignore: avoid_as
+    final bool fix = argResults?['fix'] as bool;
+    // ignore: avoid_as
     final bool alwaysSpecifyTypesRule = argResults?['always_specify_types'] as bool;
     // ignore: avoid_as
     final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
@@ -104,15 +110,23 @@ class AnalyzeCommand extends Command<void> {
       excludedExtensions: excludedExtensions,
     );
 
-    // print
     final Iterable<AnalysisContext> singleContextList = analysisContext.contexts.take(1);
 
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
-      preferTrailingCommaRule: preferTrailingCommaRule,
+      preferTrailingCommaRule: fix || preferTrailingCommaRule, // TODO
       breakOn: breakOn,
     );
+
+    if (fix) {
+      await _fix(
+        analysisSettings: analysisSettings,
+        filePaths: filePaths,
+        singleContextList: singleContextList,
+      );
+      return;
+    }
 
     final bool wasError = await _print(
       analysisSettings: analysisSettings,
@@ -213,5 +227,66 @@ class AnalyzeCommand extends Command<void> {
     iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings));
 
     return wasError;
+  }
+
+  Future<void> _fix({
+    required Iterable<AnalysisContext> singleContextList,
+    required Set<String> filePaths,
+    required AnalysisSettings analysisSettings,
+  }) async {
+    // TODO
+    final Set<Rule> rules = <Rule>{
+      PreferTrailingCommaRule(),
+    };
+
+    for (final AnalysisContext analysisContext in singleContextList) {
+      for (final String path in filePaths) {
+        // print('----path = $path');
+
+        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+
+        if (unit is! ResolvedUnitResult) {
+          continue;
+        }
+        if (unit.content == null) {
+          continue;
+        }
+
+        final Iterable<RuleMessage> messageList = rules.map((Rule rule) {
+          return rule.check(
+            parseResult: unit,
+            analysisSettings: analysisSettings,
+          );
+        }).expand((List<RuleMessage> e) {
+          return e;
+        });
+
+        final String content = unit.content!;
+        final StringBuffer sb = StringBuffer();
+        final File correctFile = File('test/fix/test_1.dart');
+
+        int prevPosition = 0;
+        for (int i = 0; i < messageList.length; i++) {
+          final RuleMessage message = messageList.elementAt(i);
+
+          if (message.correction == null) {
+            continue;
+          }
+
+          final int position = message.location.offset + message.location.length;
+
+          final String strPart = content.substring(prevPosition, position);
+          sb.write(strPart);
+          sb.write(message.correction);
+          if (i == messageList.length - 1) {
+            sb.write(content.substring(position));
+          }
+
+          prevPosition = position;
+
+          await correctFile.writeAsString(sb.toString(), flush: i == 0);
+        }
+      }
+    }
   }
 }

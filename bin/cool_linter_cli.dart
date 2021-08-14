@@ -30,10 +30,11 @@ Future<void> main(List<String> args) async {
 
     await runner.run(args);
   } on UsageException catch (exc) {
-    print('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
+    stderr.writeln('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
+    // print('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
     exit(64);
   } on Exception catch (exc) {
-    print('Uunexpected error: $exc');
+    stderr.writeln('Uunexpected error: $exc');
     exit(1);
   }
 }

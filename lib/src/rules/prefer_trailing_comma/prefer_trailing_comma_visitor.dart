@@ -78,11 +78,7 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
     final bool differentLineNumbers = _getLineNumber(leftBracket) != _getLineNumber(rightBracket);
     final bool nodesMoreThanBreakpoint = breakpoint != null && nodes.length >= breakpoint!;
 
-    // print(
-    //     '$nodes lastItemIsNotComma = $lastItemIsNotComma lastItemMultiLine = $lastItemMultiLine differentLineNumbers = $differentLineNumbers nodesMoreThanBreakpoint = $nodesMoreThanBreakpoint');
-
     if (lastItemIsNotComma && (lastItemMultiLine && differentLineNumbers || nodesMoreThanBreakpoint)) {
-      print('LINT ---$nodes nodes.length = ${nodes.length}');
       _visitorRuleMessages.add(PreferTrailingCommaResult(
         astNode: last,
       ));

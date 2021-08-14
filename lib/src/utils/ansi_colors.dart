@@ -33,7 +33,10 @@ abstract class AnsiColors {
     sb.write(ruleMessage.location.file + ':');
 
     sb.write(AnsiColors.white);
-    sb.write(ruleMessage.location.startLine);
+    sb.write(ruleMessage.location.endLine); // line
+    sb.write(':');
+    sb.write(ruleMessage.location.endColumn); // column
+    // sb.write(' > ${ruleMessage.location}');
 
     sb.write(AnsiColors.reset);
 

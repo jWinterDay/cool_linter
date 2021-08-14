@@ -80,6 +80,9 @@ class AnalyzeCommand extends Command<void> {
       throw UsageException('Param break_on must be an integer', '-b 25');
     }
 
+    // print('-----dirList = $dirList args = ${argResults?.arguments}');
+    // return;
+
     // print('dirList = $dirList');
     // print('preferTrailingCommaRule = $preferTrailingCommaRule');
     // print('alwaysSpecifyTypesRule = $alwaysSpecifyTypesRule');

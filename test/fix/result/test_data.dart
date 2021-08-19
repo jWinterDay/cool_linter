@@ -12,7 +12,7 @@ void secondFunction() {
 void thirdFunction(String someLongVarName, void Function() someLongCallbackName,
     String arg3) {} // LINT
 
-class TestClass {
+class TestClass1 {
   // LINT
   void firstMethod(
       String firstArgument, String secondArgument, String thirdArgument) {

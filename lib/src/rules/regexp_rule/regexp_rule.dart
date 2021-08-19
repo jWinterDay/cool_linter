@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule.dart';
@@ -11,11 +12,15 @@ class RegExpRule extends Rule {
   @override
   final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?regexp_exclude');
 
+  // late Iterable<RegExp> _patternRegExpList;
+
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,
   }) {
+    // _patternRegExpList = analysisSettings.patternRegExpList;
+
     final String? path = parseResult.path;
     if (path == null) {
       return <RuleMessage>[];
@@ -29,9 +34,6 @@ class RegExpRule extends Rule {
   }
 
   List<RuleMessage> _getIncorrectLines({
-    // required String content,
-    // required String path,
-    // CompilationUnit? compilationUnit,
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,
   }) {
@@ -41,14 +43,13 @@ class RegExpRule extends Rule {
     }
 
     final String content = parseResult.content!;
+    final List<ExcludeWord> excludeWordList = analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
 
-    final List<ExcludeWord> patterns = analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
-
-    if (patterns.isEmpty) {
+    if (!analysisSettings.useRegexpExclude) {
       return const <RuleMessage>[];
     }
 
-    final List<RuleMessage> matchListInfo = <RuleMessage>[];
+    final List<RuleMessage> result = <RuleMessage>[];
 
     try {
       final ParseStringResult parseResult = parseString(
@@ -60,59 +61,47 @@ class RegExpRule extends Rule {
         throwIfDiagnostics: false,
       );
 
-      final List<int> lineStarts = parseResult.lineInfo.lineStarts;
-      int prevIndex = 0;
-      int columnIndex = 0;
+      final LineInfo lineInfo = parseResult.lineInfo;
 
-      for (final int lineStartIndex in lineStarts) {
-        if (lineStartIndex == 0) {
-          continue;
-        }
+      // iterate
+      for (final ExcludeWord excludeWord in excludeWordList) {
+        int offset;
+        int start = 0;
 
-        final String lineStr = content.substring(prevIndex, lineStartIndex);
-        prevIndex = lineStartIndex;
+        do {
+          if (excludeWord.patternRegExp == null) {
+            break;
+          }
 
-        // is comment
-        final bool isComment = lineStr.trimLeft().startsWith('//');
-        if (isComment) {
-          columnIndex++;
-          continue;
-        }
+          offset = content.indexOf(excludeWord.patternRegExp!, start);
+          start = offset + 1;
 
-        // find first pattern
-        final Iterable<ExcludeWord> excludedWordList = patterns.where(
-          (ExcludeWord excludeWord) {
-            final RegExp re = RegExp(excludeWord.pattern);
+          if (offset != -1) {
+            // ignore: always_specify_types
+            final offsetLocation = lineInfo.getLocation(offset);
 
-            return lineStr.contains(re);
-          },
-        );
+            final RuleMessage ruleMessage = RuleMessage(
+              severityName: excludeWord.severity,
+              message: 'regexp_exclude: ${excludeWord.hint} for pattern: ${excludeWord.pattern}',
+              code: 'regexp_exclude',
+              changeMessage: 'cool_linter. need to replace by pattern:',
+              location: Location(
+                path,
+                offset, // offset
+                1, // length
+                offsetLocation.lineNumber, // startLine
+                offsetLocation.columnNumber + 1, // startColumn
+                offsetLocation.lineNumber, // endLine
+                offsetLocation.columnNumber + 1, // endColumn
+              ),
+            );
 
-        if (excludedWordList.isNotEmpty) {
-          final ExcludeWord firstExcluded = excludedWordList.first;
-          final String hint = firstExcluded.hint;
-
-          matchListInfo.add(RuleMessage(
-            severityName: firstExcluded.severity,
-            message: 'regexp. $hint for pattern: ${firstExcluded.pattern}',
-            code: 'regexp_exclude',
-            location: Location(
-              path,
-              1, // offset
-              1, // length
-              columnIndex + 1,
-              1, // startColumn
-              1, // endLine
-              1, // endColumn
-            ),
-            changeMessage: 'cool_linter. need to replace by pattern:',
-          ));
-        }
-
-        columnIndex++;
+            result.add(ruleMessage);
+          }
+        } while (offset != -1);
       }
 
-      return matchListInfo;
+      return result;
     } catch (exc) {
       return const <RuleMessage>[];
     }

@@ -70,8 +70,10 @@ class AnalysisSettings with _$AnalysisSettings {
   }
 
   Iterable<RegExp> get patternRegExpList {
-    final Iterable<RegExp>? list = coolLinter?.regexpExclude.map((ExcludeWord e) {
-      return e.patternRegExp;
+    final Iterable<RegExp>? list = coolLinter?.regexpExclude.where((ExcludeWord e) {
+      return e.patternRegExp != null;
+    }).map((ExcludeWord e) {
+      return e.patternRegExp!;
     });
 
     return list ?? <RegExp>[];
@@ -104,15 +106,21 @@ class CoolLinter with _$CoolLinter {
 class ExcludeWord with _$ExcludeWord {
   const ExcludeWord._();
 
-  const factory ExcludeWord(
-    String pattern, {
-    @Default('') String hint,
-    @Default('WARNING') String severity,
+  const factory ExcludeWord({
+    String? pattern,
+    @Default('') @JsonKey(name: 'hint', defaultValue: '') String hint,
+    @Default('WARNING') @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity,
   }) = _ExcludeWord;
 
   factory ExcludeWord.fromJson(Map<String, dynamic> json) => _$ExcludeWordFromJson(json);
 
-  RegExp get patternRegExp => RegExp(pattern);
+  RegExp? get patternRegExp {
+    if (pattern == null) {
+      return null;
+    }
+
+    return RegExp(pattern!);
+  }
 }
 
 @freezed

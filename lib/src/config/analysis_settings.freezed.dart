@@ -453,9 +453,12 @@ ExcludeWord _$ExcludeWordFromJson(Map<String, dynamic> json) {
 class _$ExcludeWordTearOff {
   const _$ExcludeWordTearOff();
 
-  _ExcludeWord call(String pattern, {String hint = '', String severity = 'WARNING'}) {
+  _ExcludeWord call(
+      {String? pattern,
+      @JsonKey(name: 'hint', defaultValue: '') String hint = '',
+      @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity = 'WARNING'}) {
     return _ExcludeWord(
-      pattern,
+      pattern: pattern,
       hint: hint,
       severity: severity,
     );
@@ -471,8 +474,10 @@ const $ExcludeWord = _$ExcludeWordTearOff();
 
 /// @nodoc
 mixin _$ExcludeWord {
-  String get pattern => throw _privateConstructorUsedError;
+  String? get pattern => throw _privateConstructorUsedError;
+  @JsonKey(name: 'hint', defaultValue: '')
   String get hint => throw _privateConstructorUsedError;
+  @JsonKey(name: 'severity', defaultValue: 'WARNING')
   String get severity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -483,7 +488,10 @@ mixin _$ExcludeWord {
 /// @nodoc
 abstract class $ExcludeWordCopyWith<$Res> {
   factory $ExcludeWordCopyWith(ExcludeWord value, $Res Function(ExcludeWord) then) = _$ExcludeWordCopyWithImpl<$Res>;
-  $Res call({String pattern, String hint, String severity});
+  $Res call(
+      {String? pattern,
+      @JsonKey(name: 'hint', defaultValue: '') String hint,
+      @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity});
 }
 
 /// @nodoc
@@ -504,7 +512,7 @@ class _$ExcludeWordCopyWithImpl<$Res> implements $ExcludeWordCopyWith<$Res> {
       pattern: pattern == freezed
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       hint: hint == freezed
           ? _value.hint
           : hint // ignore: cast_nullable_to_non_nullable
@@ -522,7 +530,10 @@ abstract class _$ExcludeWordCopyWith<$Res> implements $ExcludeWordCopyWith<$Res>
   factory _$ExcludeWordCopyWith(_ExcludeWord value, $Res Function(_ExcludeWord) then) =
       __$ExcludeWordCopyWithImpl<$Res>;
   @override
-  $Res call({String pattern, String hint, String severity});
+  $Res call(
+      {String? pattern,
+      @JsonKey(name: 'hint', defaultValue: '') String hint,
+      @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity});
 }
 
 /// @nodoc
@@ -540,10 +551,10 @@ class __$ExcludeWordCopyWithImpl<$Res> extends _$ExcludeWordCopyWithImpl<$Res> i
     Object? severity = freezed,
   }) {
     return _then(_ExcludeWord(
-      pattern == freezed
+      pattern: pattern == freezed
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       hint: hint == freezed
           ? _value.hint
           : hint // ignore: cast_nullable_to_non_nullable
@@ -559,17 +570,21 @@ class __$ExcludeWordCopyWithImpl<$Res> extends _$ExcludeWordCopyWithImpl<$Res> i
 /// @nodoc
 @JsonSerializable()
 class _$_ExcludeWord extends _ExcludeWord {
-  const _$_ExcludeWord(this.pattern, {this.hint = '', this.severity = 'WARNING'}) : super._();
+  const _$_ExcludeWord(
+      {this.pattern,
+      @JsonKey(name: 'hint', defaultValue: '') this.hint = '',
+      @JsonKey(name: 'severity', defaultValue: 'WARNING') this.severity = 'WARNING'})
+      : super._();
 
   factory _$_ExcludeWord.fromJson(Map<String, dynamic> json) => _$_$_ExcludeWordFromJson(json);
 
   @override
-  final String pattern;
-  @JsonKey(defaultValue: '')
+  final String? pattern;
   @override
+  @JsonKey(name: 'hint', defaultValue: '')
   final String hint;
-  @JsonKey(defaultValue: 'WARNING')
   @override
+  @JsonKey(name: 'severity', defaultValue: 'WARNING')
   final String severity;
 
   @override
@@ -604,16 +619,21 @@ class _$_ExcludeWord extends _ExcludeWord {
 }
 
 abstract class _ExcludeWord extends ExcludeWord {
-  const factory _ExcludeWord(String pattern, {String hint, String severity}) = _$_ExcludeWord;
+  const factory _ExcludeWord(
+      {String? pattern,
+      @JsonKey(name: 'hint', defaultValue: '') String hint,
+      @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity}) = _$_ExcludeWord;
   const _ExcludeWord._() : super._();
 
   factory _ExcludeWord.fromJson(Map<String, dynamic> json) = _$_ExcludeWord.fromJson;
 
   @override
-  String get pattern => throw _privateConstructorUsedError;
+  String? get pattern => throw _privateConstructorUsedError;
   @override
+  @JsonKey(name: 'hint', defaultValue: '')
   String get hint => throw _privateConstructorUsedError;
   @override
+  @JsonKey(name: 'severity', defaultValue: 'WARNING')
   String get severity => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)

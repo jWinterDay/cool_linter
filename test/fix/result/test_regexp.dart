@@ -1,11 +1,13 @@
-final int a = 123;
+const int a = 123;
 
 class TestClass {
   void test() {}
 }
 
-final int b = 12312312;
+const int b = 12312312;
 
 class TestClass2 {
   void test() {}
 }
+
+final TestClass ttt = TestClass();

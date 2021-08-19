@@ -12,14 +12,14 @@ class RegExpRule extends Rule {
   @override
   final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?regexp_exclude');
 
-  late Iterable<RegExp> _patternRegExpList;
+  // late Iterable<RegExp> _patternRegExpList;
 
   @override
   List<RuleMessage> check({
     required ResolvedUnitResult parseResult,
     required AnalysisSettings analysisSettings,
   }) {
-    _patternRegExpList = analysisSettings.patternRegExpList;
+    // _patternRegExpList = analysisSettings.patternRegExpList;
 
     final String? path = parseResult.path;
     if (path == null) {
@@ -69,7 +69,11 @@ class RegExpRule extends Rule {
         int start = 0;
 
         do {
-          offset = content.indexOf(excludeWord.patternRegExp, start);
+          if (excludeWord.patternRegExp == null) {
+            break;
+          }
+
+          offset = content.indexOf(excludeWord.patternRegExp!, start);
           start = offset + 1;
 
           if (offset != -1) {
@@ -78,8 +82,9 @@ class RegExpRule extends Rule {
 
             final RuleMessage ruleMessage = RuleMessage(
               severityName: excludeWord.severity,
-              message: 'regexp. ${excludeWord.hint} for pattern: ${excludeWord.pattern}',
+              message: 'regexp_exclude: ${excludeWord.hint} for pattern: ${excludeWord.pattern}',
               code: 'regexp_exclude',
+              changeMessage: 'cool_linter. need to replace by pattern:',
               location: Location(
                 path,
                 offset, // offset
@@ -89,7 +94,6 @@ class RegExpRule extends Rule {
                 offsetLocation.lineNumber, // endLine
                 offsetLocation.columnNumber + 1, // endColumn
               ),
-              changeMessage: 'cool_linter. need to replace by pattern:',
             );
 
             result.add(ruleMessage);

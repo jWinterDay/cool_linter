@@ -58,11 +58,6 @@ enum FirstEnum {
 }
 
 class FirstClass {
-  final num firstField;
-  final num secondField;
-  final num thirdField;
-  final num forthField;
-
   // LINT
   const FirstClass(
     this.firstField,
@@ -70,28 +65,33 @@ class FirstClass {
     this.thirdField,
     this.forthField,
   );
+
+  final num firstField;
+  final num secondField;
+  final num thirdField;
+  final num forthField;
 }
 
-const instance = FirstClass(
+const FirstClass instance = FirstClass(
   3.14159265359,
   3.14159265359,
   3.14159265359,
   3.14159265359,
 );
 
-final secondArray = [
+final List<String> secondArray = <String>[
   'some string',
   'some other string',
   'and another string for length exceed', // LINT
 ];
 
-final secondSet = {
+final Set<String> secondSet = <String>{
   'some string',
   'some other string',
   'and another string for length exceed', // LINT
 };
 
-final secondMap = {
+final Map<String, String> secondMap = <String, String>{
   'some string': 'and another string for length exceed',
   // LINT
   'and another string for length exceed':

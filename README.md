@@ -41,6 +41,8 @@ cool_linter:
     -
       pattern: Test123{1}
       severity: ERROR
+  prefer_trailing_comma:
+    break-on: 3
   exclude_folders:
     - test/**
     - lib/ku/**

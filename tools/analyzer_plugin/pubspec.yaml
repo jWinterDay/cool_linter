@@ -6,4 +6,5 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  cool_linter: ^1.2.1
+  cool_linter: #^1.2.1
+    path: /Users/jwd25/Documents/Work/flutter_projects/cool_linter

@@ -64,9 +64,9 @@ class RegExpRule extends Rule {
       int prevIndex = 0;
       int columnIndex = 0;
 
-      lineStarts.forEach((int lineStartIndex) {
+      for (final int lineStartIndex in lineStarts) {
         if (lineStartIndex == 0) {
-          return;
+          continue;
         }
 
         final String lineStr = content.substring(prevIndex, lineStartIndex);
@@ -76,7 +76,7 @@ class RegExpRule extends Rule {
         final bool isComment = lineStr.trimLeft().startsWith('//');
         if (isComment) {
           columnIndex++;
-          return;
+          continue;
         }
 
         // find first pattern
@@ -95,7 +95,7 @@ class RegExpRule extends Rule {
           matchListInfo.add(RuleMessage(
             severityName: firstExcluded.severity,
             message: 'regexp. $hint for pattern: ${firstExcluded.pattern}',
-            code: 'cool_linter_needs_fixes',
+            code: 'regexp_exclude',
             location: Location(
               path,
               1, // offset
@@ -110,7 +110,7 @@ class RegExpRule extends Rule {
         }
 
         columnIndex++;
-      });
+      }
 
       return matchListInfo;
     } catch (exc) {

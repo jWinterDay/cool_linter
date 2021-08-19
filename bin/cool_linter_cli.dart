@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:cool_linter/src/cli/analyze_command.dart';
+import 'package:cool_linter/src/utils/ansi_colors.dart';
 
 // static List<Glob> excludesGlobList(String root, AnalysisSettings analysisSettings) {
 //   final Iterable<String> patterns = analysisSettings.coolLinter?.excludeFolders ?? <String>[];
@@ -29,11 +30,11 @@ Future<void> main(List<String> args) async {
 
     await runner.run(args);
   } on UsageException catch (exc) {
-    print(exc.message);
-    print(exc.usage);
+    stderr.writeln('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
+    // print('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
     exit(64);
   } on Exception catch (exc) {
-    print('Uunexpected error: $exc');
+    stderr.writeln('Uunexpected error: $exc');
     exit(1);
   }
 }

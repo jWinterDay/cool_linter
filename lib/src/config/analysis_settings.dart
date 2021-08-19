@@ -68,6 +68,14 @@ class AnalysisSettings with _$AnalysisSettings {
   bool get usePreferTrailingComma {
     return coolLinter?.preferTrailingComma != null;
   }
+
+  Iterable<RegExp> get patternRegExpList {
+    final Iterable<RegExp>? list = coolLinter?.regexpExclude.map((ExcludeWord e) {
+      return e.patternRegExp;
+    });
+
+    return list ?? <RegExp>[];
+  }
 }
 
 @freezed
@@ -103,6 +111,8 @@ class ExcludeWord with _$ExcludeWord {
   }) = _ExcludeWord;
 
   factory ExcludeWord.fromJson(Map<String, dynamic> json) => _$ExcludeWordFromJson(json);
+
+  RegExp get patternRegExp => RegExp(pattern);
 }
 
 @freezed

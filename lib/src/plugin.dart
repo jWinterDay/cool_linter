@@ -3,6 +3,7 @@ import 'dart:async';
 // ignore_for_file: implementation_imports
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as pg;
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:glob/glob.dart';
@@ -28,8 +29,6 @@ class CoolLinterPlugin extends ServerPlugin {
     ResourceProvider provider,
   ) : super(provider);
 
-  List<String> _filesFromSetPriorityFilesRequest = <String>[];
-
   static const Checker _checker = Checker();
 
   @override
@@ -43,6 +42,10 @@ class CoolLinterPlugin extends ServerPlugin {
 
   @override
   String get contactInfo => 'https://github.com/jWinterDay/cool_linter';
+
+  List<String> _filesFromSetPriorityFilesRequest = <String>[];
+  AnalysisSettings? _analysisSettings;
+  List<Glob> _excludesGlobList = <Glob>[];
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
@@ -84,12 +87,13 @@ class CoolLinterPlugin extends ServerPlugin {
     final AnalysisDriver dartDriver = context.driver;
 
     // get yaml options
-    final AnalysisSettings? analysisSettings = _getAnalysisSettings(dartDriver);
-    if (analysisSettings == null) {
+    _analysisSettings = _getAnalysisSettings(dartDriver);
+    if (_analysisSettings == null) {
       return dartDriver;
     }
 
-    final List<Glob> excludesGlobList = AnalysisSettingsUtil.excludesGlobList(contextRoot.root, analysisSettings);
+    // final List<Glob> excludesGlobList = AnalysisSettingsUtil.excludesGlobList(contextRoot.root, _analysisSettings!);
+    _excludesGlobList = AnalysisSettingsUtil.excludesGlobList(contextRoot.root, _analysisSettings!);
 
     runZonedGuarded(
       () {
@@ -97,8 +101,8 @@ class CoolLinterPlugin extends ServerPlugin {
           _processResult(
             dartDriver,
             analysisResult,
-            analysisSettings: analysisSettings,
-            excludesGlobList: excludesGlobList,
+            analysisSettings: _analysisSettings!,
+            excludesGlobList: _excludesGlobList,
           );
         });
       },
@@ -125,22 +129,26 @@ class CoolLinterPlugin extends ServerPlugin {
   Future<plugin.AnalysisSetContextRootsResult> handleAnalysisSetContextRoots(
     plugin.AnalysisSetContextRootsParams parameters,
   ) async {
-    try {
-      final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
-      _updatePriorityFiles();
+    final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
+    _updatePriorityFiles();
 
-      return result;
-    } catch (exc, stackTrace) {
-      channel.sendNotification(
-        plugin.PluginErrorParams(
-          false,
-          exc.toString(),
-          stackTrace.toString(),
-        ).toNotification(),
-      );
+    return result;
+    // try {
+    //   final plugin.AnalysisSetContextRootsResult result = await super.handleAnalysisSetContextRoots(parameters);
+    //   _updatePriorityFiles();
 
-      rethrow;
-    }
+    //   return result;
+    // } catch (exc, stackTrace) {
+    //   channel.sendNotification(
+    //     plugin.PluginErrorParams(
+    //       false,
+    //       exc.toString(),
+    //       stackTrace.toString(),
+    //     ).toNotification(),
+    //   );
+
+    //   rethrow;
+    // }
   }
 
   @override
@@ -151,6 +159,39 @@ class CoolLinterPlugin extends ServerPlugin {
     _updatePriorityFiles();
 
     return plugin.AnalysisSetPriorityFilesResult();
+  }
+
+  @override
+  Future<plugin.EditGetFixesResult> handleEditGetFixes(
+    plugin.EditGetFixesParams parameters,
+  ) async {
+    try {
+      // ignore: avoid_as
+      final AnalysisDriver driver = driverForPath(parameters.file) as AnalysisDriver;
+      final SomeResolvedUnitResult analysisResult = await driver.getResult2(parameters.file);
+
+      if (analysisResult is! ResolvedUnitResult) {
+        return plugin.EditGetFixesResult(<pg.AnalysisErrorFixes>[]);
+      }
+
+      if (_analysisSettings == null) {
+        return plugin.EditGetFixesResult(<pg.AnalysisErrorFixes>[]);
+      }
+
+      final Iterable<plugin.AnalysisErrorFixes> checkResult = _checker.checkResult(
+        analysisSettings: _analysisSettings!,
+        excludesGlobList: _excludesGlobList,
+        parseResult: analysisResult,
+      );
+
+      return plugin.EditGetFixesResult(checkResult.toList());
+    } on Exception catch (e, stackTrace) {
+      channel.sendNotification(
+        plugin.PluginErrorParams(false, e.toString(), stackTrace.toString()).toNotification(),
+      );
+
+      return plugin.EditGetFixesResult(<pg.AnalysisErrorFixes>[]);
+    }
   }
 
   void _processResult(
@@ -177,7 +218,7 @@ class CoolLinterPlugin extends ServerPlugin {
         // If there is something to analyze, do so and notify the analyzer.
         // Note that notifying with an empty set of errors is important as
         // this clears errors if they were fixed.
-        final Map<plugin.AnalysisError, plugin.PrioritizedSourceChange> checkResult = _checker.checkResult(
+        final Iterable<plugin.AnalysisErrorFixes> checkResult = _checker.checkResult(
           analysisSettings: analysisSettings,
           excludesGlobList: excludesGlobList,
           parseResult: analysisResult,
@@ -186,7 +227,9 @@ class CoolLinterPlugin extends ServerPlugin {
         channel.sendNotification(
           plugin.AnalysisErrorsParams(
             filePath,
-            checkResult.keys.toList(),
+            checkResult.map((plugin.AnalysisErrorFixes e) {
+              return e.error;
+            }).toList(),
           ).toNotification(),
         );
       }
@@ -225,9 +268,9 @@ class CoolLinterPlugin extends ServerPlugin {
       }
     }
 
-    filesByDriver.forEach((AnalysisDriverGeneric driver, List<String> files) {
-      driver.priorityFiles = files;
-    });
+    for (final MapEntry<AnalysisDriverGeneric, List<String>> item in filesByDriver.entries) {
+      item.key.priorityFiles = item.value;
+    }
   }
 
   AnalysisSettings? _getAnalysisSettings(AnalysisDriver analysisDriver) {

@@ -11,6 +11,17 @@ abstract class AnsiColors {
   static const String white = '\x1B[37m';
   static const String reset = '\x1B[0m';
 
+  static String totalWarningsPrint(int count) {
+    final StringBuffer sb = StringBuffer();
+
+    sb.write(AnsiColors.cyan);
+    sb.write('Total: ');
+    sb.write(AnsiColors.yellow);
+    sb.write(count.toString());
+
+    return sb.toString();
+  }
+
   static String prepareRuleForPrint(RuleMessage ruleMessage) {
     final StringBuffer sb = StringBuffer();
 
@@ -22,7 +33,10 @@ abstract class AnsiColors {
     sb.write(ruleMessage.location.file + ':');
 
     sb.write(AnsiColors.white);
-    sb.write(ruleMessage.location.startLine);
+    sb.write(ruleMessage.location.endLine); // line
+    sb.write(':');
+    sb.write(ruleMessage.location.endColumn); // column
+    // sb.write(' > ${ruleMessage.location}');
 
     sb.write(AnsiColors.reset);
 

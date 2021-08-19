@@ -70,7 +70,7 @@ final secondMap = {
   'and another string for length exceed': 'and another string for length exceed___________________________________________'
 };
 
-enum FirstEnum {
+enum FirstEnum2 {
   firstItem,
   secondItem,
   thirdItem,

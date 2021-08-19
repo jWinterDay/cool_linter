@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/token.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
@@ -42,6 +43,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
     final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(
       this,
       lineInfo: parseResult.lineInfo,
+      breakpoint: analysisSettings.coolLinter?.preferTrailingComma?.breakOn,
     );
     parseResult.unit?.visitChildren(visitor);
 
@@ -65,7 +67,6 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
         message: 'prefer_trailing_comma',
         code: 'prefer_trailing_comma',
         changeMessage: 'prefer_trailing_comma',
-        // addInfo: typesResult.resultTypeAsString,
         location: Location(
           parseResult.path!, // file
           offset, // offset
@@ -75,6 +76,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
           endLocation.lineNumber, // endLine
           endLocation.columnNumber, // endColumn
         ),
+        correction: TokenType.COMMA.lexeme,
       );
     }).toList();
   }

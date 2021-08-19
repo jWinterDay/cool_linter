@@ -21,21 +21,19 @@ import 'rules/stream_subscription_rule/stream_subscription_rule.dart';
 class Checker {
   const Checker();
 
-  Map<AnalysisError, PrioritizedSourceChange> checkResult({
+  Iterable<AnalysisErrorFixes> checkResult({
     required AnalysisSettings analysisSettings,
     required List<Glob> excludesGlobList,
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
-    final Map<AnalysisError, PrioritizedSourceChange> result = <AnalysisError, PrioritizedSourceChange>{};
-
     if (parseResult.content == null || parseResult.path == null) {
-      return result;
+      return <AnalysisErrorFixes>[];
     }
 
     final bool isExcluded = AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
     if (isExcluded) {
-      return result;
+      return <AnalysisErrorFixes>[];
     }
 
     // rules using
@@ -55,40 +53,47 @@ class Checker {
     });
 
     if (errorMessageList.isEmpty) {
-      return result;
+      return <AnalysisErrorFixes>[];
     }
 
-    // loop through all wrong lines
-    errorMessageList.forEach((RuleMessage errorMessage) {
-      // fix
+    return errorMessageList.map((RuleMessage errorMessage) {
+      final AnalysisError error = AnalysisError(
+        AnalysisErrorSeverity.INFO, //( errorMessage.severityName),
+        AnalysisErrorType.LINT,
+        errorMessage.location,
+        errorMessage.message,
+        errorMessage.code,
+        hasFix: true,
+        correction:
+            'go correct path = ${parseResult.path} stamp = ${parseResult.unit?.declaredElement?.source.modificationStamp} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
+      );
+
       final PrioritizedSourceChange fix = PrioritizedSourceChange(
-        1000000,
+        1,
         SourceChange(
           'Apply fixes for cool_linter.',
           edits: <SourceFileEdit>[
             SourceFileEdit(
               parseResult.path!,
-              1, //parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+              parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
               edits: <SourceEdit>[
-                SourceEdit(1, 2, errorMessage.changeMessage),
+                SourceEdit(
+                  errorMessage.location.offset, //1,
+                  errorMessage.location.length, //2,
+                  errorMessage.changeMessage,
+                ),
               ],
             )
           ],
         ),
       );
 
-      // error
-      final AnalysisError error = AnalysisError(
-        AnalysisErrorSeverity(errorMessage.severityName),
-        AnalysisErrorType.LINT,
-        errorMessage.location,
-        errorMessage.message,
-        errorMessage.code,
+      return AnalysisErrorFixes(
+        error,
+        fixes: <PrioritizedSourceChange>[
+          fix,
+        ],
       );
-
-      result[error] = fix;
     });
-
-    return result;
   }
 }

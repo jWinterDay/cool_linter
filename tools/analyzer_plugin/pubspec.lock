@@ -28,7 +28,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.2.0"
   async:
     dependency: transitive
     description:
@@ -88,9 +88,9 @@ packages:
   cool_linter:
     dependency: "direct main"
     description:
-      name: cool_linter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "/Users/jwd25/Documents/Work/flutter_projects/cool_linter"
+      relative: false
+    source: path
     version: "1.2.1"
   crypto:
     dependency: transitive

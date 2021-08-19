@@ -38,6 +38,8 @@ void main() {
                 pattern: Color
                 hint: Correct RegExp pattern
                 severity: WARNING
+            prefer_trailing_comma:
+              break-on: 2
         ''',
         ),
       );

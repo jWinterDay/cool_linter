@@ -97,7 +97,10 @@ cool_linter:
 ## Attention!!!
 ###  You must restart your IDE for starting plugin
 
-# 3. Result
+# 3. CLI
+dart bin/cool_linter_cli.dart analyze -tsc -d test/fix/result --regexp_path test/regexp/regexp_settings_cli.yaml
+
+# 4. Result
 Example of analysis_options.yaml
 
 ```yaml

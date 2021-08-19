@@ -26,9 +26,13 @@ void main() {
           cool_linter:
             regexp_exclude:
               -
-                pattern: TestClass
+                pattern: \\sTestClass2
                 hint: Correct test class name pattern
                 severity: WARNING
+              -
+                pattern: \\sTestClass\\s
+                hint: hint 2
+                severity: ERROR
           ''',
       ));
 
@@ -37,7 +41,11 @@ void main() {
         analysisSettings: analysisSettings,
       );
 
-      expect(list, hasLength(1));
+      expect(list, hasLength(4));
+
+      // list.forEach((RuleMessage mess) {
+      //   print('${mess.message} ${mess.location.file}:${mess.location.endLine}:${mess.location.endColumn}');
+      // });
     });
   });
 }

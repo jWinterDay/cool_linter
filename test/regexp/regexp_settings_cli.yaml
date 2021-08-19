@@ -1,0 +1,13 @@
+regexp_exclude:
+  -
+    pattern: Colors
+    hint: Use colors from design system instead!
+    severity: WARNING
+  -
+    pattern: \sTestClass\s
+    hint: Dont use TestClass
+    severity: ERROR
+  -
+    pattern: \sTestClass2\s
+    hint: Dont use TestClass2
+    severity: INFO

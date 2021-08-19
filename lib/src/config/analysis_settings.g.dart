@@ -41,7 +41,7 @@ Map<String, dynamic> _$_$_CoolLinterToJson(_$_CoolLinter instance) => <String, d
 
 _$_ExcludeWord _$_$_ExcludeWordFromJson(Map<String, dynamic> json) {
   return _$_ExcludeWord(
-    json['pattern'] as String,
+    pattern: json['pattern'] as String?,
     hint: json['hint'] as String? ?? '',
     severity: json['severity'] as String? ?? 'WARNING',
   );

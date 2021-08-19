@@ -6,9 +6,11 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:args/command_runner.dart';
+import 'package:cool_linter/src/cli/models/regexp_settings.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
 import 'package:cool_linter/src/rules/prefer_trailing_comma/prefer_trailing_comma_rule.dart';
+import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscription_rule.dart';
@@ -33,25 +35,29 @@ class AnalyzeCommand extends Command<void> {
         abbr: 'f',
         help: 'Fix issues',
       )
-      ..addOption(
-        'break_on',
-        abbr: 'b',
-        defaultsTo: '2',
-      )
       ..addFlag(
         'always_specify_types',
         abbr: 't',
         help: 'Use always_specify_types_rule rule',
       )
       ..addFlag(
+        'always_specify_stream_subscription',
+        abbr: 's',
+        help: 'Use always_specify_stream_subscription rule',
+      )
+      ..addFlag(
         'prefer_trailing_comma',
         abbr: 'c',
         help: 'Use prefer_trailing_comma rule',
       )
-      ..addFlag(
-        'always_specify_stream_subscription',
-        abbr: 's',
-        help: 'Use always_specify_stream_subscription rule',
+      ..addOption(
+        'break_on',
+        abbr: 'b',
+        defaultsTo: '2',
+      )
+      ..addOption(
+        'regexp_path',
+        help: 'Path to file with RegExp settings',
       );
   }
 
@@ -74,16 +80,24 @@ class AnalyzeCommand extends Command<void> {
     final bool fix = argResults?['fix'] as bool;
     // ignore: avoid_as
     final bool alwaysSpecifyTypesRule = argResults?['always_specify_types'] as bool;
-    // ignore: avoid_as
-    final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
+
     // ignore: avoid_as
     final bool alwaysSpecifyStreamSubscriptionRule = argResults?['always_specify_stream_subscription'] as bool;
     // ignore: avoid_as
     final String breakOnStr = argResults?['break_on'] as String;
+    // ignore: avoid_as
+    final String? regexpPath = argResults?['regexp_path'] as String?;
 
+    // ignore: avoid_as
+    final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
     final int? breakOn = int.tryParse(breakOnStr);
-    if (breakOn == null) {
+    if (preferTrailingCommaRule && breakOn == null) {
       throw UsageException('Param break_on must be an integer', '-b 25');
+    }
+
+    RegexpSettings? regexpSettings;
+    if (regexpPath != null) {
+      regexpSettings = _getCliRegExpSettingsFromFile(regexpPath);
     }
 
     // print('-----dirList = $dirList args = ${argResults?.arguments}');
@@ -115,8 +129,9 @@ class AnalyzeCommand extends Command<void> {
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
-      preferTrailingCommaRule: fix || preferTrailingCommaRule, // TODO
+      preferTrailingCommaRule: fix || preferTrailingCommaRule,
       breakOn: breakOn,
+      regexpSettings: regexpSettings,
     );
 
     if (fix) {
@@ -139,11 +154,25 @@ class AnalyzeCommand extends Command<void> {
     }
   }
 
+  RegexpSettings? _getCliRegExpSettingsFromFile(String path) {
+    final File file = File(path);
+
+    if (!file.existsSync()) {
+      return null;
+    }
+
+    final String content = file.readAsStringSync();
+    return RegexpSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(
+      content,
+    ));
+  }
+
   AnalysisSettings _createAnalysisSettings({
     bool alwaysSpecifyTypesRule = false,
     bool preferTrailingCommaRule = false,
     bool alwaysSpecifyStreamSubscriptionRule = false,
-    int breakOn = 2,
+    int? breakOn = 2,
+    RegexpSettings? regexpSettings,
   }) {
     final StringBuffer sb = StringBuffer();
     sb.writeln('\ncool_linter:');
@@ -167,6 +196,18 @@ class AnalyzeCommand extends Command<void> {
       sb.writeln('    break-on: $breakOn');
     }
 
+    // regexp
+    if (regexpSettings != null && regexpSettings.existsAtLeastOneRegExp) {
+      sb.writeln('  regexp_exclude:');
+
+      for (final ExcludeWord regExpExclude in regexpSettings.regexpExcludeSafeList) {
+        sb.writeln('    -');
+        sb.writeln('      pattern: ${regExpExclude.pattern}');
+        sb.writeln('      hint: ${regExpExclude.hint}');
+        sb.writeln('      severity: ${regExpExclude.severity}');
+      }
+    }
+
     return AnalysisSettings.fromJson(
       AnalysisSettingsUtil.convertYamlToMap(
         sb.toString(),
@@ -179,6 +220,7 @@ class AnalyzeCommand extends Command<void> {
       if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
       if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
       if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      if (analysisSettings.useRegexpExclude) RegExpRule(),
     };
   }
 
@@ -263,7 +305,8 @@ class AnalyzeCommand extends Command<void> {
 
         final String content = unit.content!;
         final StringBuffer sb = StringBuffer();
-        final File correctFile = File('test/fix/test_1.dart');
+        // final File correctFile = File('test/fix/test_1.dart');
+        final File correctFile = File(unit.path!); // 'test/fix/test_1.dart');
 
         int prevPosition = 0;
         for (int i = 0; i < messageList.length; i++) {

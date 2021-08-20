@@ -100,14 +100,12 @@ class AnalyzeCommand extends Command<void> {
       regexpSettings = _getCliRegExpSettingsFromFile(regexpPath);
     }
 
-    // print('-----dirList = $dirList args = ${argResults?.arguments}');
-    // return;
-
-    // print('dirList = $dirList');
-    // print('preferTrailingCommaRule = $preferTrailingCommaRule');
-    // print('alwaysSpecifyTypesRule = $alwaysSpecifyTypesRule');
-    // print('alwaysSpecifyStreamSubscriptionRule = $alwaysSpecifyStreamSubscriptionRule');
-    // print('breakOn = $breakOn');
+    AnsiColors.cliSettingsPrint('directories', dirList);
+    AnsiColors.cliSettingsPrint('prefer_trailing_comma', preferTrailingCommaRule);
+    AnsiColors.cliSettingsPrint('always_specify_types', alwaysSpecifyTypesRule);
+    AnsiColors.cliSettingsPrint('always_specify_stream_subscription', alwaysSpecifyStreamSubscriptionRule);
+    AnsiColors.cliSettingsPrint('break_on', breakOn);
+    AnsiColors.cliSettingsPrint('regexp_path', regexpPath);
 
     // work
     final String rootFolder = Directory.current.path;
@@ -158,7 +156,7 @@ class AnalyzeCommand extends Command<void> {
     final File file = File(path);
 
     if (!file.existsSync()) {
-      return null;
+      throw UsageException('File doesn"t exist', 'Use correct file path');
     }
 
     final String content = file.readAsStringSync();

@@ -22,6 +22,11 @@ abstract class AnsiColors {
     return sb.toString();
   }
 
+  static void cliSettingsPrint(String name, Object? setting) {
+    // ignore: avoid_print
+    print('${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}');
+  }
+
   static String prepareRuleForPrint(RuleMessage ruleMessage) {
     final StringBuffer sb = StringBuffer();
 

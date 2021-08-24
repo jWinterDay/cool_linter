@@ -1,3 +1,5 @@
+## 2.2.2
+    updated readme about CLI support
 ## 2.2.1
     added CLI support
 

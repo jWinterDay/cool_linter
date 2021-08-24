@@ -98,7 +98,18 @@ cool_linter:
 ###  You must restart your IDE for starting plugin
 
 # 3. CLI
-dart bin/cool_linter_cli.dart analyze -tsc -d test/fix/result --regexp_path test/regexp/regexp_settings_cli.yaml
+You can use linter as command line tool
+```dart bin/cool_linter_cli.dart analyze -tsc -d test/fix/result --regexp_path test/regexp/regexp_settings_cli.yaml```
+
+`Available options`:
+* `-d` - Folder to analyze
+* `-f` - Fix issues. At now only for prefer_trailing_comma rule
+* `-t` - Use always_specify_types_rule rule
+* `-s` - Use always_specify_stream_subscription rule
+* `-c` - Use prefer_trailing_comma rule
+* `-f` - Fix issues. At now only for prefer_trailing_comma rule
+* `-b` - break_on value for prefer_trailing_comma rule
+* `--regexp_path` - Path to file with RegExp settings
 
 # 4. Result
 Example of analysis_options.yaml

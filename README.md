@@ -101,6 +101,9 @@ cool_linter:
 You can use linter as command line tool
 ```dart bin/cool_linter_cli.dart analyze -tsc -d test/fix/result --regexp_path test/regexp/regexp_settings_cli.yaml```
 
+[or using dart pub run](https://pub.dev/packages/cool_linter/install)
+
+
 `Available options`:
 * `-d` - Folder to analyze
 * `-f` - Fix issues. At now only for prefer_trailing_comma rule
@@ -110,6 +113,25 @@ You can use linter as command line tool
 * `-f` - Fix issues. At now only for prefer_trailing_comma rule
 * `-b` - break_on value for prefer_trailing_comma rule
 * `--regexp_path` - Path to file with RegExp settings
+
+Also you must specify ```--regexp_path``` parameter if you want to regexp analyzer.
+Example: ```--regexp_path <path to regexp settings .yaml file>```
+
+```yaml
+regexp_exclude:
+  -
+    pattern: Colors
+    hint: Use colors from design system instead!
+    severity: WARNING
+  -
+    pattern: \sTestClass\s
+    hint: Dont use TestClass
+    severity: ERROR
+  -
+    pattern: \sTestClass2\s
+    hint: Dont use TestClass2
+    severity: INFO
+```
 
 # 4. Result
 Example of analysis_options.yaml
@@ -127,6 +149,8 @@ cool_linter:
     - simple_formal_parameter
     - type_name
     - variable_declaration_list
+  prefer_trailing_comma:
+    break-on: 2
   regexp_exclude:
     -
       pattern: Colors

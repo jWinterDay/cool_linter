@@ -2,26 +2,22 @@ import 'dart:async';
 
 // ignore_for_file: implementation_imports
 import 'package:analyzer/dart/analysis/analysis_context.dart';
-import 'package:analyzer/dart/analysis/context_root.dart';
-import 'package:analyzer_plugin/protocol/protocol_generated.dart' as pg;
-import 'package:cool_linter/src/config/analysis_settings.dart';
-import 'package:cool_linter/src/utils/analyse_utils.dart';
-import 'package:glob/glob.dart';
-
 //
 import 'package:analyzer/dart/analysis/context_builder.dart';
 import 'package:analyzer/dart/analysis/context_locator.dart';
+import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
-
 import 'package:analyzer/src/dart/analysis/driver.dart';
-
 import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
-import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:analyzer_plugin/protocol/protocol_common.dart' as plugin;
-
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as pg;
+import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:cool_linter/src/checker.dart';
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
+import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;
 
 class CoolLinterPlugin extends ServerPlugin {
@@ -68,11 +64,13 @@ class CoolLinterPlugin extends ServerPlugin {
 
     if (locator.isEmpty) {
       final StateError error = StateError('Unexpected empty context');
-      channel.sendNotification(plugin.PluginErrorParams(
-        true,
-        error.message,
-        error.stackTrace.toString(),
-      ).toNotification());
+      channel.sendNotification(
+        plugin.PluginErrorParams(
+          true,
+          error.message,
+          error.stackTrace.toString(),
+        ).toNotification(),
+      );
 
       throw error;
     }

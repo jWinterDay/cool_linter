@@ -15,9 +15,9 @@ import 'prefer_trailing_comma_visitor.dart';
 class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
   PreferTrailingCommaRule()
       : super(
-          name: 'cl_prefer_trailing_comma',
+          name: 'prefer_trailing_comma',
           description: 'cool_linter prefer trailing comma',
-          details: 'fork of https://github.com/dart-code-checker',
+          details: 'cool_linter prefer trailing comma',
           group: Group.style,
         );
 
@@ -43,7 +43,6 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
     final PreferTrailingCommaVisitor visitor = PreferTrailingCommaVisitor(
       this,
       lineInfo: parseResult.lineInfo,
-      breakpoint: analysisSettings.coolLinter?.preferTrailingComma?.breakOn,
     );
     parseResult.unit?.visitChildren(visitor);
 

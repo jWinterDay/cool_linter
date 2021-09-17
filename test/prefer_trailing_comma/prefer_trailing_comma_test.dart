@@ -25,14 +25,14 @@ void main() {
         AnalysisSettingsUtil.convertYamlToMap(
           r'''
           cool_linter:
-            prefer_trailing_comma:
-              break-on: 2
+            extended_rules:
+              - prefer_trailing_comma
         ''',
         ),
       );
 
       // yaml
-      expect(analysisSettings.coolLinter!.preferTrailingComma?.breakOn, 2);
+      expect(analysisSettings.usePreferTrailingComma, isTrue);
 
       // checker
       final List<RuleMessage> ruleMessageList = preferTrailingCommaRule.check(
@@ -40,46 +40,48 @@ void main() {
         analysisSettings: analysisSettings,
       );
 
-      expect(ruleMessageList, hasLength(12));
+      expect(ruleMessageList, hasLength(7));
 
-      // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
+      // ruleMessageList.map((RuleMessage e) {
+      //   return '${e.location.startLine}';
+      // }).forEach((String element) {
       //   print('>> $element');
       // });
     });
   });
 
-  group('extended prefer_trailing_comma', () {
-    const String _kTestDataPath = 'test/prefer_trailing_comma/test_data_extended.dart';
+  // group('extended prefer_trailing_comma', () {
+  //   const String _kTestDataPath = 'test/prefer_trailing_comma/test_data_extended.dart';
 
-    setUp(() async {
-      resolvedUnitResult = await getResolvedUnitResult(_kTestDataPath);
-    });
+  //   setUp(() async {
+  //     resolvedUnitResult = await getResolvedUnitResult(_kTestDataPath);
+  //   });
 
-    test('prefer_trailing_comma rule', () async {
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-        AnalysisSettingsUtil.convertYamlToMap(
-          r'''
-          cool_linter:
-            prefer_trailing_comma:
-              break-on: 2
-        ''',
-        ),
-      );
+  //   test('prefer_trailing_comma rule', () async {
+  //     final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
+  //       AnalysisSettingsUtil.convertYamlToMap(
+  //         r'''
+  //         cool_linter:
+  //           prefer_trailing_comma:
+  //             break-on: 2
+  //       ''',
+  //       ),
+  //     );
 
-      // yaml
-      expect(analysisSettings.coolLinter!.preferTrailingComma?.breakOn, 2);
+  //     // yaml
+  //     expect(analysisSettings.coolLinter!.preferTrailingComma?.breakOn, 2);
 
-      // checker
-      final List<RuleMessage> ruleMessageList = preferTrailingCommaRule.check(
-        parseResult: resolvedUnitResult,
-        analysisSettings: analysisSettings,
-      );
+  //     // checker
+  //     final List<RuleMessage> ruleMessageList = preferTrailingCommaRule.check(
+  //       parseResult: resolvedUnitResult,
+  //       analysisSettings: analysisSettings,
+  //     );
 
-      // expect(ruleMessageList, hasLength(12));
+  //     // expect(ruleMessageList, hasLength(12));
 
-      // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
-      //   print('>> $element');
-      // });
-    });
-  });
+  //     // ruleMessageList.map((e) => '${e.location.startLine}').forEach((element) {
+  //     //   print('>> $element');
+  //     // });
+  //   });
+  // });
 }

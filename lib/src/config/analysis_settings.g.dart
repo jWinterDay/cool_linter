@@ -25,9 +25,6 @@ _$_CoolLinter _$_$_CoolLinterFromJson(Map<String, dynamic> json) {
         [],
     excludeFolders: (json['exclude_folders'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
     extendedRules: (json['extended_rules'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
-    preferTrailingComma: json['prefer_trailing_comma'] == null
-        ? null
-        : PreferTrailingComma.fromJson(json['prefer_trailing_comma'] as Map<String, dynamic>),
   );
 }
 
@@ -36,7 +33,6 @@ Map<String, dynamic> _$_$_CoolLinterToJson(_$_CoolLinter instance) => <String, d
       'regexp_exclude': instance.regexpExclude,
       'exclude_folders': instance.excludeFolders,
       'extended_rules': instance.extendedRules,
-      'prefer_trailing_comma': instance.preferTrailingComma,
     };
 
 _$_ExcludeWord _$_$_ExcludeWordFromJson(Map<String, dynamic> json) {
@@ -51,14 +47,4 @@ Map<String, dynamic> _$_$_ExcludeWordToJson(_$_ExcludeWord instance) => <String,
       'pattern': instance.pattern,
       'hint': instance.hint,
       'severity': instance.severity,
-    };
-
-_$_PreferTrailingComma _$_$_PreferTrailingCommaFromJson(Map<String, dynamic> json) {
-  return _$_PreferTrailingComma(
-    breakOn: json['break-on'] as int,
-  );
-}
-
-Map<String, dynamic> _$_$_PreferTrailingCommaToJson(_$_PreferTrailingComma instance) => <String, dynamic>{
-      'break-on': instance.breakOn,
     };

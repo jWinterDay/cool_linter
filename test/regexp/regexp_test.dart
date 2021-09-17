@@ -21,8 +21,9 @@ void main() {
     final Rule regExpRule = RegExpRule();
 
     test('regexp_rule find one regexp rule', () async {
-      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(
-        '''
+      final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
+        AnalysisSettingsUtil.convertYamlToMap(
+          '''
           cool_linter:
             regexp_exclude:
               -
@@ -34,7 +35,8 @@ void main() {
                 hint: hint 2
                 severity: ERROR
           ''',
-      ));
+        ),
+      );
 
       final List<RuleMessage> list = regExpRule.check(
         parseResult: resolvedUnitResult,

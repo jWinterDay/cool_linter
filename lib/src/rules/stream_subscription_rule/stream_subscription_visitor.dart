@@ -21,9 +21,11 @@ class StreamSubscriptionVisitor extends RecursiveAstVisitor<void> {
 
     if (node.expression is MethodInvocation &&
         node.expression.staticType?.element?.displayName == _kStreamSubscriptionName) {
-      _visitorRuleMessages.add(StreamSubscriptionResult(
-        astNode: node,
-      ));
+      _visitorRuleMessages.add(
+        StreamSubscriptionResult(
+          astNode: node,
+        ),
+      );
     }
 
     // print('[----8----] visitExpressionStatement: ${node.expression.staticType?.element?.displayName}');
@@ -38,9 +40,11 @@ class StreamSubscriptionVisitor extends RecursiveAstVisitor<void> {
     });
 
     if (!parentContainsName && childContainsName) {
-      _visitorRuleMessages.add(StreamSubscriptionResult(
-        astNode: node,
-      ));
+      _visitorRuleMessages.add(
+        StreamSubscriptionResult(
+          astNode: node,
+        ),
+      );
     }
 
     // print('[----21----] visitCascadeExpression: ${node.target.staticType?.element?.displayName}');

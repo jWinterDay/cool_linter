@@ -7,6 +7,7 @@ part 'analysis_settings.g.dart';
 /// cool_linter:
 ///   extended_rules:
 ///     - always_specify_stream_subscription
+///     - prefer_trailing_comma
 ///   always_specify_types:
 ///     - typed_literal
 ///     - declared_identifier
@@ -19,8 +20,6 @@ part 'analysis_settings.g.dart';
 ///       pattern: Colors
 ///       hint: Use colors from design system instead!
 ///       severity: WARNING
-///   prefer_trailing_comma:
-///     - break-ok: 2
 ///   exclude_folders:
 ///    - test/**
 /// ```
@@ -66,7 +65,7 @@ class AnalysisSettings with _$AnalysisSettings {
 
   /// use `prefer_trailing_comma` rule
   bool get usePreferTrailingComma {
-    return coolLinter?.preferTrailingComma != null;
+    return coolLinter?.extendedRules.contains('prefer_trailing_comma') ?? false;
   }
 
   Iterable<RegExp> get patternRegExpList {
@@ -96,7 +95,7 @@ class CoolLinter with _$CoolLinter {
     // extended_rules
     @Default(<String>[]) @JsonKey(name: 'extended_rules', defaultValue: <String>[]) List<String> extendedRules,
     // prefer_trailing_comma
-    @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma,
+    // @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma,
   }) = _CoolLinter;
 
   factory CoolLinter.fromJson(Map<String, dynamic> json) => _$CoolLinterFromJson(json);
@@ -123,13 +122,11 @@ class ExcludeWord with _$ExcludeWord {
   }
 }
 
-@freezed
-class PreferTrailingComma with _$PreferTrailingComma {
-  const PreferTrailingComma._();
+// @freezed
+// class PreferTrailingComma with _$PreferTrailingComma {
+//   const PreferTrailingComma._();
 
-  const factory PreferTrailingComma({
-    @Default(2) @JsonKey(name: 'break-on') int breakOn,
-  }) = _PreferTrailingComma;
+//   const factory PreferTrailingComma() = _PreferTrailingComma;
 
-  factory PreferTrailingComma.fromJson(Map<String, dynamic> json) => _$PreferTrailingCommaFromJson(json);
-}
+//   factory PreferTrailingComma.fromJson(Map<String, dynamic> json) => _$PreferTrailingCommaFromJson(json);
+// }

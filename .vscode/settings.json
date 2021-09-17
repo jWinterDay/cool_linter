@@ -25,11 +25,7 @@
   //   "**/test/prefer_trailing_comma/test_data.dart",
   //   "**/test/prefer_trailing_comma/test_data_extended.dart",
   // ],
-  "files.associations": {
-    "**/test/prefer_trailing_comma/test_data.dart": "c",
-    "**/test/fix/result/test_data.dart": "c",
-    // "**/test/prefer_trailing_comma/test_data_extended.dart": "c",
-  },
+
   "[dart]": {
     "editor.formatOnSave": true,
     "editor.detectIndentation": false,

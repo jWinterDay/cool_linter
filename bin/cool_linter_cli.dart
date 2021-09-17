@@ -24,9 +24,11 @@ List<String> excludedExtensions = <String>[
 Future<void> main(List<String> args) async {
   try {
     final CommandRunner<void> runner = CommandRunner<void>('cool_linter', 'cool_linter cli')
-      ..addCommand(AnalyzeCommand(
-        excludedExtensions: excludedExtensions,
-      ));
+      ..addCommand(
+        AnalyzeCommand(
+          excludedExtensions: excludedExtensions,
+        ),
+      );
 
     await runner.run(args);
   } on UsageException catch (exc) {

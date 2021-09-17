@@ -26,6 +26,7 @@ analyzer:
 cool_linter:
   extended_rules:
     - always_specify_stream_subscription
+    - prefer_trailing_comma
   always_specify_types:
     - typed_literal
     - declared_identifier
@@ -41,8 +42,6 @@ cool_linter:
     -
       pattern: Test123{1}
       severity: ERROR
-  prefer_trailing_comma:
-    break-on: 3
   exclude_folders:
     - test/**
     - lib/ku/**
@@ -111,7 +110,6 @@ You can use linter as command line tool
 * `-s` - Use always_specify_stream_subscription rule
 * `-c` - Use prefer_trailing_comma rule
 * `-f` - Fix issues. At now only for prefer_trailing_comma rule
-* `-b` - break_on value for prefer_trailing_comma rule
 * `--regexp_path` - Path to file with RegExp settings
 
 Also you must specify ```--regexp_path``` parameter if you want to regexp analyzer.
@@ -142,6 +140,9 @@ analyzer:
     - cool_linter
 
 cool_linter:
+  extended_rules:
+    - always_specify_stream_subscription
+    - prefer_trailing_comma
   always_specify_types:
     - typed_literal
     - declared_identifier
@@ -149,8 +150,6 @@ cool_linter:
     - simple_formal_parameter
     - type_name
     - variable_declaration_list
-  prefer_trailing_comma:
-    break-on: 2
   regexp_exclude:
     -
       pattern: Colors

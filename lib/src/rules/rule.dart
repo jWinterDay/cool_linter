@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:cool_linter/src/config/analysis_settings.dart';
-import 'package:cool_linter/src/rules/rule_message.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group; //, LinterContext, NodeLintRegistry, NodeLintRule;
+import 'package:cool_linter/src/config/analysis_settings.dart';
+import 'package:cool_linter/src/rules/rule_message.dart';
 
 abstract class Rule extends LintRule {
   Rule()

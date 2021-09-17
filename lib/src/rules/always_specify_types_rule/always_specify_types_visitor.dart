@@ -39,10 +39,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
   void _checkLiteral(TypedLiteral literal) {
     if (literal.typeArguments == null) {
-      _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-        astNode: literal,
-        type: ResultType.typedLiteral,
-      ));
+      _visitorRuleMessages.add(
+        AlwaysSpecifyTypesResult.withType(
+          astNode: literal,
+          type: ResultType.typedLiteral,
+        ),
+      );
       // print('((((++++)))) _checkLiteral: ${literal} | ${literal.parent} ${literal.typeArguments}');
     }
   }
@@ -60,10 +62,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     super.visitDeclaredIdentifier(node);
 
     if (node.type == null) {
-      _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-        astNode: node,
-        type: ResultType.declaredIdentifier,
-      ));
+      _visitorRuleMessages.add(
+        AlwaysSpecifyTypesResult.withType(
+          astNode: node,
+          type: ResultType.declaredIdentifier,
+        ),
+      );
       // print('++++ visitDeclaredIdentifier: ${node}');
     }
   }
@@ -86,10 +90,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
           node.typeArguments == null &&
           node.parent is! IsExpression &&
           !_isOptionallyParameterized(element)) {
-        _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-          astNode: node,
-          type: ResultType.typeName,
-        ));
+        _visitorRuleMessages.add(
+          AlwaysSpecifyTypesResult.withType(
+            astNode: node,
+            type: ResultType.typeName,
+          ),
+        );
         // print('@@@@@@@@@ visitNamedType $namedType element = $element');
       }
     }
@@ -112,16 +118,20 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
       if (node.keyword != null) {
-        _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-          astNode: node,
-          type: ResultType.simpleFormalParameter,
-        ));
+        _visitorRuleMessages.add(
+          AlwaysSpecifyTypesResult.withType(
+            astNode: node,
+            type: ResultType.simpleFormalParameter,
+          ),
+        );
         // print('&&&&& reportLintForToken $node');
       } else {
-        _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-          astNode: node,
-          type: ResultType.simpleFormalParameter,
-        ));
+        _visitorRuleMessages.add(
+          AlwaysSpecifyTypesResult.withType(
+            astNode: node,
+            type: ResultType.simpleFormalParameter,
+          ),
+        );
         // print('====== reportLint $node ${node.identifier?.name}');
       }
     }
@@ -141,10 +151,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     super.visitVariableDeclarationList(node);
 
     if (node.type == null) {
-      _visitorRuleMessages.add(AlwaysSpecifyTypesResult.withType(
-        astNode: node,
-        type: ResultType.variableDeclarationList,
-      ));
+      _visitorRuleMessages.add(
+        AlwaysSpecifyTypesResult.withType(
+          astNode: node,
+          type: ResultType.variableDeclarationList,
+        ),
+      );
 
       // print('----list = ${list.type} > ${list.keyword} > ${list}');
     }

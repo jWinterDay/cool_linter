@@ -51,11 +51,6 @@ class AnalyzeCommand extends Command<void> {
         help: 'Use prefer_trailing_comma rule',
       )
       ..addOption(
-        'break_on',
-        abbr: 'b',
-        defaultsTo: '2',
-      )
-      ..addOption(
         'regexp_path',
         help: 'Path to file with RegExp settings',
       );
@@ -84,16 +79,10 @@ class AnalyzeCommand extends Command<void> {
     // ignore: avoid_as
     final bool alwaysSpecifyStreamSubscriptionRule = argResults?['always_specify_stream_subscription'] as bool;
     // ignore: avoid_as
-    final String breakOnStr = argResults?['break_on'] as String;
-    // ignore: avoid_as
     final String? regexpPath = argResults?['regexp_path'] as String?;
 
     // ignore: avoid_as
     final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
-    final int? breakOn = int.tryParse(breakOnStr);
-    if (preferTrailingCommaRule && breakOn == null) {
-      throw UsageException('Param break_on must be an integer', '-b 25');
-    }
 
     RegexpSettings? regexpSettings;
     if (regexpPath != null) {
@@ -104,7 +93,6 @@ class AnalyzeCommand extends Command<void> {
     AnsiColors.cliSettingsPrint('prefer_trailing_comma', preferTrailingCommaRule);
     AnsiColors.cliSettingsPrint('always_specify_types', alwaysSpecifyTypesRule);
     AnsiColors.cliSettingsPrint('always_specify_stream_subscription', alwaysSpecifyStreamSubscriptionRule);
-    AnsiColors.cliSettingsPrint('break_on', breakOn);
     AnsiColors.cliSettingsPrint('regexp_path', regexpPath);
 
     // work
@@ -128,7 +116,6 @@ class AnalyzeCommand extends Command<void> {
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
       preferTrailingCommaRule: fix || preferTrailingCommaRule,
-      breakOn: breakOn,
       regexpSettings: regexpSettings,
     );
 
@@ -160,23 +147,30 @@ class AnalyzeCommand extends Command<void> {
     }
 
     final String content = file.readAsStringSync();
-    return RegexpSettings.fromJson(AnalysisSettingsUtil.convertYamlToMap(
-      content,
-    ));
+    return RegexpSettings.fromJson(
+      AnalysisSettingsUtil.convertYamlToMap(
+        content,
+      ),
+    );
   }
 
   AnalysisSettings _createAnalysisSettings({
     bool alwaysSpecifyTypesRule = false,
     bool preferTrailingCommaRule = false,
     bool alwaysSpecifyStreamSubscriptionRule = false,
-    int? breakOn = 2,
     RegexpSettings? regexpSettings,
   }) {
     final StringBuffer sb = StringBuffer();
     sb.writeln('\ncool_linter:');
-    if (alwaysSpecifyStreamSubscriptionRule) {
+
+    if (alwaysSpecifyStreamSubscriptionRule || preferTrailingCommaRule) {
       sb.writeln('  extended_rules:');
+    }
+    if (alwaysSpecifyStreamSubscriptionRule) {
       sb.writeln('    - always_specify_stream_subscription');
+    }
+    if (preferTrailingCommaRule) {
+      sb.writeln('    - prefer_trailing_comma');
     }
 
     if (alwaysSpecifyTypesRule) {
@@ -187,11 +181,6 @@ class AnalyzeCommand extends Command<void> {
       sb.writeln('    - simple_formal_parameter');
       sb.writeln('    - type_name');
       sb.writeln('    - variable_declaration_list');
-    }
-
-    if (preferTrailingCommaRule) {
-      sb.writeln('  prefer_trailing_comma:');
-      sb.writeln('    break-on: $breakOn');
     }
 
     // regexp

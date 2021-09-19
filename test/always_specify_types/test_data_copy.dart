@@ -50,10 +50,7 @@ main() {
     print(i);
   }
   List<String> ls = <String>[];
-  ls.forEach((s1without) => print(s1without)); //LINT [15:1]
-  ls.forEach((final s1final) => print(s1final)); //LINT [15:1]
-  ls.forEach((var s1var) => print(s1var)); //LINT [15:1]
-  ls.forEach((dynamic s1dynamic) => print(s1dynamic)); //LINT [15:1]
+  ls.forEach((s) => print(s)); //LINT [15:1]
   for (var l in ls) {
     //LINT [8:3]
     print(l);

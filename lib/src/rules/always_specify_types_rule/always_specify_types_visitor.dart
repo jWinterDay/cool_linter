@@ -1,3 +1,4 @@
+import 'package:_fe_analyzer_shared/src/scanner/token.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -6,6 +7,19 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 
 import 'always_specify_types_result.dart';
+
+//
+import 'dart:async';
+import 'package:analyzer/dart/constant/value.dart';
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
+import 'package:built_collection/built_collection.dart';
+
+import 'package:source_gen/source_gen.dart';
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
+//
 
 /// https://github.com/dart-lang/linter/blob/master/lib/src/rules/always_specify_types.dart
 /// The name of `meta` library, used to define analysis annotations.
@@ -30,9 +44,24 @@ final RegExp _underscores = RegExp(r'^[_]+$');
 bool isJustUnderscores(String name) => _underscores.hasMatch(name);
 
 class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
-  AlwaysSpecifyTypesVisitor(this.rule);
+  AlwaysSpecifyTypesVisitor(
+    this.rule, {
+    required this.useDeclaredIdentifier,
+    required this.useSetOrMapLiteral,
+    required this.useSimpleFormalParameter,
+    required this.useTypeName,
+    required this.useTypedLiteral,
+    required this.useVariableDeclarationList,
+  });
 
   final Rule rule;
+
+  final bool useTypedLiteral;
+  final bool useDeclaredIdentifier;
+  final bool useSetOrMapLiteral;
+  final bool useSimpleFormalParameter;
+  final bool useTypeName;
+  final bool useVariableDeclarationList;
 
   final List<AlwaysSpecifyTypesResult> _visitorRuleMessages = <AlwaysSpecifyTypesResult>[];
   List<AlwaysSpecifyTypesResult> get visitorRuleMessages => _visitorRuleMessages;
@@ -61,6 +90,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitDeclaredIdentifier(DeclaredIdentifier node) {
     super.visitDeclaredIdentifier(node);
 
+    if (!useDeclaredIdentifier) return;
+
     if (node.type == null) {
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
@@ -76,6 +107,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitListLiteral(ListLiteral node) {
     super.visitListLiteral(node);
+
+    if (!useTypedLiteral) return;
 
     _checkLiteral(node);
   }
@@ -106,6 +139,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitSetOrMapLiteral(SetOrMapLiteral node) {
     super.visitSetOrMapLiteral(node);
 
+    if (!useSetOrMapLiteral) return;
+
     _checkLiteral(node);
   }
 
@@ -114,26 +149,33 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitSimpleFormalParameter(SimpleFormalParameter node) {
     super.visitSimpleFormalParameter(node);
 
+    if (!useSimpleFormalParameter) return;
+
     final SimpleIdentifier? identifier = node.identifier;
 
     if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
-      if (node.keyword != null) {
-        _visitorRuleMessages.add(
-          AlwaysSpecifyTypesResult.withType(
-            astNode: node,
-            type: ResultType.simpleFormalParameter,
-          ),
-        );
-        // print('&&&&& reportLintForToken $node');
-      } else {
-        _visitorRuleMessages.add(
-          AlwaysSpecifyTypesResult.withType(
-            astNode: node,
-            type: ResultType.simpleFormalParameter,
-          ),
-        );
-        // print('====== reportLint $node ${node.identifier?.name}');
+      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+
+      String? corr;
+      if (varType != 'dynamic') {
+        final StringBuffer sb = StringBuffer()
+          ..write(varType)
+          ..write(' ')
+          ..write(identifier.name);
+
+        corr = sb.toString();
+
+        // final Token? keyword = node.keyword;
+        // print('lexeme = ${keyword?.stringValue} len = ${identifier.length} name = ${identifier.name} type = $varType');
       }
+
+      _visitorRuleMessages.add(
+        AlwaysSpecifyTypesResult.withType(
+          astNode: node,
+          type: ResultType.simpleFormalParameter,
+          correction: corr,
+        ),
+      );
     }
   }
 
@@ -142,6 +184,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitTypeName(TypeName node) {
     super.visitTypeName(node);
 
+    if (!useTypeName) return;
+
     visitNamedType(node);
   }
 
@@ -149,6 +193,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitVariableDeclarationList(VariableDeclarationList node) {
     super.visitVariableDeclarationList(node);
+
+    if (!useVariableDeclarationList) return;
 
     if (node.type == null) {
       _visitorRuleMessages.add(

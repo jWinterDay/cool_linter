@@ -50,7 +50,25 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
-    final AlwaysSpecifyTypesVisitor visitor = AlwaysSpecifyTypesVisitor(this);
+    //
+    final List<String> types = analysisSettings.alwaysSpecifyTypes;
+
+    final bool useTypedLiteral = types.contains(kOptionNameOfResultType[ResultType.typedLiteral]);
+    final bool useDeclaredIdentifier = types.contains(kOptionNameOfResultType[ResultType.declaredIdentifier]);
+    final bool useSetOrMapLiteral = types.contains(kOptionNameOfResultType[ResultType.setOrMapLiteral]);
+    final bool useSimpleFormalParameter = types.contains(kOptionNameOfResultType[ResultType.simpleFormalParameter]);
+    final bool useTypeName = types.contains(kOptionNameOfResultType[ResultType.typeName]);
+    final bool useVariableDeclarationList = types.contains(kOptionNameOfResultType[ResultType.variableDeclarationList]);
+
+    final AlwaysSpecifyTypesVisitor visitor = AlwaysSpecifyTypesVisitor(
+      this,
+      useTypedLiteral: useTypedLiteral,
+      useDeclaredIdentifier: useDeclaredIdentifier,
+      useSetOrMapLiteral: useSetOrMapLiteral,
+      useSimpleFormalParameter: useSimpleFormalParameter,
+      useTypeName: useTypeName,
+      useVariableDeclarationList: useVariableDeclarationList,
+    );
     parseResult.unit?.visitChildren(visitor);
 
     final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
@@ -78,6 +96,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
         code: typesResult.resultTypeAsString,
         changeMessage: 'cool_linter. always_specify_type for rule: ${typesResult.resultTypeAsString}',
         addInfo: typesResult.resultTypeAsString,
+        correction: typesResult.correction,
         location: Location(
           parseResult.path!, // file
           offset, // offset

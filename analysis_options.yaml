@@ -28,6 +28,7 @@ analyzer:
     - lib/**/*.g.dart
     - lib/src/generated/**
     - test/**/**test_data.dart
+    - test/**/**test_data_copy.dart
     
 
 linter:

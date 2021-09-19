@@ -1,6 +1,6 @@
 name: cool_linter
 description: linter for analyzing dart code by RegExp pattern
-version: 2.2.2
+version: 2.3.1
 homepage: https://github.com/jWinterDay/cool_linter
 repository: https://github.com/jWinterDay/cool_linter
 issue_tracker: https://github.com/jWinterDay/cool_linter/issues
@@ -36,4 +36,4 @@ dev_dependencies:
 #   analyzer: ^2.0.0 # ^1.7.0
 
 executables:
-  cool_linter: cool_linter
+  cool_linter: cool_linter_cli

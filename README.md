@@ -105,11 +105,11 @@ You can use linter as command line tool
 
 `Available options`:
 * `-d` - Folder to analyze
-* `-f` - Fix issues. At now only for prefer_trailing_comma rule
+* `-f` - Fix issues. Now only for prefer_trailing_comma rule
 * `-t` - Use always_specify_types_rule rule
 * `-s` - Use always_specify_stream_subscription rule
 * `-c` - Use prefer_trailing_comma rule
-* `-f` - Fix issues. At now only for prefer_trailing_comma rule
+* `-f` - Fix issues. Now only for prefer_trailing_comma rule
 * `--regexp_path` - Path to file with RegExp settings
 
 Also you must specify ```--regexp_path``` parameter if you want to regexp analyzer.
@@ -130,6 +130,8 @@ regexp_exclude:
     hint: Dont use TestClass2
     severity: INFO
 ```
+
+![Screenshot](images/cli_result.png)
 
 # 4. Result
 Example of analysis_options.yaml

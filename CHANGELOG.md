@@ -1,3 +1,7 @@
+## 2.3.1
+    changed readme and image
+## 2.3.0
+    changed prefer_trailing_commas according google linter required_trailing_commas
 ## 2.2.2
     updated readme about CLI support
 ## 2.2.1

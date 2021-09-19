@@ -36,4 +36,4 @@ dev_dependencies:
 #   analyzer: ^2.0.0 # ^1.7.0
 
 executables:
-  cool_linter: cool_linter
+  cool_linter: cool_linter_cli

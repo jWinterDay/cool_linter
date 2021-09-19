@@ -120,6 +120,15 @@ class AnalyzeCommand extends Command<void> {
     );
 
     if (fix) {
+      // TODO make better
+      // only one fix rule type
+      if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
+        throw UsageException(
+          'Wrong parameters count',
+          'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
+        );
+      }
+
       await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
@@ -176,12 +185,12 @@ class AnalyzeCommand extends Command<void> {
     if (alwaysSpecifyTypesRule) {
       // TODO
       sb.writeln('  always_specify_types:');
-      // sb.writeln('    - typed_literal');
-      sb.writeln('    - declared_identifier'); // OK
+      sb.writeln('    - typed_literal');
+      // sb.writeln('    - declared_identifier'); // OK
       // sb.writeln('    - set_or_map_literal');
-      sb.writeln('    - simple_formal_parameter'); // OK
+      // sb.writeln('    - simple_formal_parameter'); // OK
       // sb.writeln('    - type_name');
-      // sb.writeln('    - variable_declaration_list');
+      // sb.writeln('    - variable_declaration_list'); // OK
     }
 
     // regexp
@@ -209,6 +218,15 @@ class AnalyzeCommand extends Command<void> {
       if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
       if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
       if (analysisSettings.useRegexpExclude) RegExpRule(),
+    };
+  }
+
+  Set<Rule> _createFixRules() {
+    return <Rule>{
+      AlwaysSpecifyTypesRule(),
+      PreferTrailingCommaRule(),
+      // if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      // if (analysisSettings.useRegexpExclude) RegExpRule(),
     };
   }
 
@@ -267,15 +285,11 @@ class AnalyzeCommand extends Command<void> {
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    final Set<Rule> rules = <Rule>{
-      PreferTrailingCommaRule(),
-      AlwaysSpecifyTypesRule(),
-    };
+    final Set<Rule> rules = _createFixRules();
+    final IOSink iosink = stdout;
 
     for (final AnalysisContext analysisContext in singleContextList) {
       for (final String path in filePaths) {
-        // print('----path = $path');
-
         final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
 
         if (unit is! ResolvedUnitResult) {
@@ -327,6 +341,7 @@ class AnalyzeCommand extends Command<void> {
           }
 
           await correctFile.writeAsString(sb.toString(), flush: i == 0);
+          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
       }
     }

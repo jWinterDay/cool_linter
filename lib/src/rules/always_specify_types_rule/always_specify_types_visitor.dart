@@ -66,12 +66,13 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   final List<AlwaysSpecifyTypesResult> _visitorRuleMessages = <AlwaysSpecifyTypesResult>[];
   List<AlwaysSpecifyTypesResult> get visitorRuleMessages => _visitorRuleMessages;
 
-  void _checkLiteral(TypedLiteral literal) {
+  void _checkLiteral(TypedLiteral literal, {required ResultType type}) {
     if (literal.typeArguments == null) {
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: literal,
-          type: ResultType.typedLiteral,
+          type: type,
+          correction: 'dfgfdgdfg',
         ),
       );
       // print('((((++++)))) _checkLiteral: ${literal} | ${literal.parent} ${literal.typeArguments}');
@@ -128,7 +129,10 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (!useTypedLiteral) return;
 
-    _checkLiteral(node);
+    _checkLiteral(
+      node,
+      type: ResultType.typedLiteral,
+    );
   }
 
   void _visitNamedType(TypeName node) {
@@ -159,7 +163,10 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (!useSetOrMapLiteral) return;
 
-    _checkLiteral(node);
+    _checkLiteral(
+      node,
+      type: ResultType.setOrMapLiteral,
+    );
   }
 
   // ---
@@ -216,10 +223,44 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     if (!useVariableDeclarationList) return;
 
     if (node.type == null) {
+      // correction
+      // ===single item===
+      String? corr;
+      if (node.variables.length == 1) {
+        final VariableDeclaration item = node.variables.first;
+        final String? varType = item.declaredElement?.type.getDisplayString(withNullability: true);
+        final String? lexeme = node.keyword?.lexeme;
+
+        // item.childEntities.join(' ')
+        if (lexeme == 'final' || lexeme == 'const') {
+          final StringBuffer sb = StringBuffer()
+            ..write(node.keyword?.lexeme ?? '')
+            ..write(' ')
+            ..write(varType ?? '')
+            ..write(' ')
+            ..write(item.childEntities.join(' '));
+
+          corr = sb.toString();
+        } else if (lexeme == 'var') {
+          final StringBuffer sb = StringBuffer()
+            // ..write(node.keyword?.lexeme ?? '')
+            // ..write(' ')
+            ..write(varType ?? '')
+            ..write(' ')
+            ..write(item.childEntities.join(' '));
+
+          corr = sb.toString();
+        }
+      }
+
+      // TODO
+      // ===many items===
+
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: node,
           type: ResultType.variableDeclarationList,
+          correction: corr,
         ),
       );
 

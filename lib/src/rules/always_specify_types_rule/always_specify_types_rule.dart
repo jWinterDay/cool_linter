@@ -60,6 +60,13 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     final bool useTypeName = types.contains(kOptionNameOfResultType[ResultType.typeName]);
     final bool useVariableDeclarationList = types.contains(kOptionNameOfResultType[ResultType.variableDeclarationList]);
 
+    // print(
+    //   'useTypedLiteral: $useTypedLiteral, useDeclaredIdentifier: $useDeclaredIdentifier, useSetOrMapLiteral: $useSetOrMapLiteral',
+    // );
+    // print(
+    //   'useSimpleFormalParameter: $useSimpleFormalParameter, useTypeName: $useTypeName, useVariableDeclarationList: $useVariableDeclarationList',
+    // );
+
     final AlwaysSpecifyTypesVisitor visitor = AlwaysSpecifyTypesVisitor(
       this,
       useTypedLiteral: useTypedLiteral,
@@ -71,11 +78,13 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     );
     parseResult.unit?.visitChildren(visitor);
 
-    final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
+    // final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
 
-    return visitor.visitorRuleMessages.where((AlwaysSpecifyTypesResult typesResult) {
-      return analysisTypes.contains(typesResult.resultTypeAsString);
-    }).where((AlwaysSpecifyTypesResult visitorMessage) {
+    return visitor.visitorRuleMessages
+        // .where((AlwaysSpecifyTypesResult typesResult) {
+        //   return analysisTypes.contains(typesResult.resultTypeAsString);
+        // })
+        .where((AlwaysSpecifyTypesResult visitorMessage) {
       return visitorMessage.filterByIgnore(
         ignoreColumnList: ignoreColumnList,
         parseResult: parseResult,

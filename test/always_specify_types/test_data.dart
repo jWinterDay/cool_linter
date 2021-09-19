@@ -2,16 +2,25 @@ import 'package:meta/meta.dart';
 
 Map<String, String> map = {}; //LINT
 List<String> strings = []; //LINT
+List<String> strings2 = ['fsd']; //LINT
 Set<String> set = {}; //LINT
 
 List? list; // LINT
 List<List>? lists; //LINT
 List<int>? ints; //OK
 
+// final funcRes = () {};
+// final funcResAsync = (dynamic fggd) async {
+//   return 'fsdfs $fggd';
+// };
+// var a = 1, b = 2, c = 'fsdfds', d = 0.15;
 final x = 1; //LINT [1:5]
+var xvar = 1; //LINT [1:5]
+// late int x11, y11;
 final int xx = 3;
-const y = 2; //LINT
-const int yy = 3;
+var y = 3.14; //LINT
+
+const yy = 3;
 
 final bl = false;
 

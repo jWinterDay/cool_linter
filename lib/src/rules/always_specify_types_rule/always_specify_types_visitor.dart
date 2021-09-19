@@ -93,10 +93,28 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     if (!useDeclaredIdentifier) return;
 
     if (node.type == null) {
+      // correction
+      final SimpleIdentifier? identifier = node.identifier;
+      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+
+      String? corr;
+      if (identifier != null && varType != 'dynamic') {
+        final StringBuffer sb = StringBuffer()
+          ..write(varType)
+          ..write(' ')
+          ..write(identifier.name);
+
+        corr = sb.toString();
+
+        // final Token? keyword = node.keyword;
+        // print('lexeme = ${keyword?.stringValue} len = ${identifier.length} name = ${identifier.name} type = $varType');
+      }
+
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: node,
           type: ResultType.declaredIdentifier,
+          correction: corr,
         ),
       );
       // print('++++ visitDeclaredIdentifier: ${node}');
@@ -113,7 +131,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     _checkLiteral(node);
   }
 
-  void visitNamedType(TypeName node) {
+  void _visitNamedType(TypeName node) {
     final DartType? type = node.type;
 
     if (type is InterfaceType) {
@@ -129,7 +147,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
             type: ResultType.typeName,
           ),
         );
-        // print('@@@@@@@@@ visitNamedType $namedType element = $element');
+        // print('@@@@@@@@@ _visitNamedType $namedType element = $element');
       }
     }
   }
@@ -154,6 +172,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     final SimpleIdentifier? identifier = node.identifier;
 
     if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
+      // correction
       final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
 
       String? corr;
@@ -186,7 +205,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (!useTypeName) return;
 
-    visitNamedType(node);
+    _visitNamedType(node);
   }
 
   // ---

@@ -174,13 +174,14 @@ class AnalyzeCommand extends Command<void> {
     }
 
     if (alwaysSpecifyTypesRule) {
+      // TODO
       sb.writeln('  always_specify_types:');
-      sb.writeln('    - typed_literal');
-      sb.writeln('    - declared_identifier');
-      sb.writeln('    - set_or_map_literal');
-      sb.writeln('    - simple_formal_parameter');
-      sb.writeln('    - type_name');
-      sb.writeln('    - variable_declaration_list');
+      // sb.writeln('    - typed_literal');
+      sb.writeln('    - declared_identifier'); // OK
+      // sb.writeln('    - set_or_map_literal');
+      sb.writeln('    - simple_formal_parameter'); // OK
+      // sb.writeln('    - type_name');
+      // sb.writeln('    - variable_declaration_list');
     }
 
     // regexp
@@ -242,6 +243,9 @@ class AnalyzeCommand extends Command<void> {
         });
 
         for (final RuleMessage message in messageList) {
+          // print(
+          //   'col: [${message.location.startColumn}:${message.location.endColumn}] line:[${message.location.startLine}] offset = ${message.location.offset}',
+          // );
           iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
 
@@ -263,9 +267,9 @@ class AnalyzeCommand extends Command<void> {
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    // TODO
     final Set<Rule> rules = <Rule>{
       PreferTrailingCommaRule(),
+      AlwaysSpecifyTypesRule(),
     };
 
     for (final AnalysisContext analysisContext in singleContextList) {
@@ -292,27 +296,35 @@ class AnalyzeCommand extends Command<void> {
 
         final String content = unit.content!;
         final StringBuffer sb = StringBuffer();
-        // final File correctFile = File('test/fix/test_1.dart');
-        final File correctFile = File(unit.path!); // 'test/fix/test_1.dart');
+        final File correctFile = File(unit.path!);
 
+        // TODO for trailing commas
         int prevPosition = 0;
         for (int i = 0; i < messageList.length; i++) {
           final RuleMessage message = messageList.elementAt(i);
 
+          // print(
+          //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
+          // );
+
+          final String strLeftPart = content.substring(prevPosition, message.location.offset);
+
+          sb.write(strLeftPart);
           if (message.correction == null) {
-            continue;
+            final String originalVal = content.substring(
+              message.location.offset,
+              message.location.offset + message.location.length,
+            );
+            sb.write(originalVal);
+          } else {
+            sb.write(message.correction);
           }
 
-          final int position = message.location.offset + message.location.length;
+          prevPosition = message.location.offset + message.location.length;
 
-          final String strPart = content.substring(prevPosition, position);
-          sb.write(strPart);
-          sb.write(message.correction);
           if (i == messageList.length - 1) {
-            sb.write(content.substring(position));
+            sb.write(content.substring(prevPosition));
           }
-
-          prevPosition = position;
 
           await correctFile.writeAsString(sb.toString(), flush: i == 0);
         }

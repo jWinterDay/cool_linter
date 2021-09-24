@@ -57,10 +57,10 @@ List<int>? ints; //OK
 //   return 'fsdfs $fggd';
 // };
 // var a = 1, b = 2, c = 'fsdfds', d = 0.15;
-final int x = 1; //LINT [1:5]
-int xvar = 1; //LINT [1:5]
+final x = 1; //LINT [1:5]
+var xvar = 1; //LINT [1:5]
 // late int x11, y11;
-final int xx = 3;
+final xx = 3;
 double y = 3.14; //LINT
 
 const int yy = 3;
@@ -74,23 +74,23 @@ late final Map? testMap;
 
 void main() {
   String x = ''; //LINT [3:3]
-  for (int i = 0; i < 10; ++i) {
+  for (var i = 0; i < 10; ++i) {
     //LINT [8:3]
     print(i);
   }
   List<String> ls = <String>[];
 
-  ls.forEach((String s1without) => print(s1without)); //LINT [15:1]
-  ls.forEach((String s1final) => print(s1final)); //LINT [15:1]
-  ls.forEach((String s1var) => print(s1var)); //LINT [15:1]
-  ls.forEach((dynamic s1dynamic) => print(s1dynamic)); //LINT [15:1]
+  ls.forEach((s1without) => print(s1without)); //LINT [15:1]
+  ls.forEach((s1final) => print(s1final)); //LINT [15:1]
+  ls.forEach((s1var) => print(s1var)); //LINT [15:1]
+  ls.forEach((s1dynamic) => print(s1dynamic)); //LINT [15:1]
 
-  for (String l in ls) {
+  for (var l in ls) {
     //LINT [8:3]
     print(l);
   }
   try {
-    for (final String l in ls) {
+    for (final l in ls) {
       // LINT [10:5]
       print(l);
     }
@@ -104,5 +104,5 @@ void main() {
 
 class Foo {
   static String bar = 'dsfsd'; //LINT
-  static final int baz = 1;
+  static final baz = 1;
 }

@@ -115,7 +115,7 @@ class AnalyzeCommand extends Command<void> {
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
-      preferTrailingCommaRule: fix || preferTrailingCommaRule,
+      preferTrailingCommaRule: preferTrailingCommaRule,
       regexpSettings: regexpSettings,
     );
 
@@ -345,9 +345,10 @@ class AnalyzeCommand extends Command<void> {
     required AnalysisSettings analysisSettings,
   }) async {
     final Set<Rule> rules = <Rule>{
-      AlwaysSpecifyTypesRule(),
-      PreferTrailingCommaRule(),
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
     };
+
     final IOSink iosink = stdout;
 
     for (final AnalysisContext analysisContext in singleContextList) {
@@ -368,6 +369,8 @@ class AnalyzeCommand extends Command<void> {
             parseResult: unit,
             analysisSettings: analysisSettings,
           );
+
+          print('messageList = ${messageList.length}');
 
           // need work here
           final String content = unit.content!;

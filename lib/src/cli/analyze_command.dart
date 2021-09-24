@@ -120,16 +120,7 @@ class AnalyzeCommand extends Command<void> {
     );
 
     if (fix) {
-      // TODO make better
-      // only one fix rule type
-      // if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
-      //   throw UsageException(
-      //     'Wrong parameters count',
-      //     'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
-      //   );
-      // }
-
-      await _fix2(
+      await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
         singleContextList: singleContextList,
@@ -273,78 +264,6 @@ class AnalyzeCommand extends Command<void> {
     required AnalysisSettings analysisSettings,
   }) async {
     final Set<Rule> rules = <Rule>{
-      AlwaysSpecifyTypesRule(),
-      PreferTrailingCommaRule(),
-      // if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
-      // if (analysisSettings.useRegexpExclude) RegExpRule(),
-    };
-    final IOSink iosink = stdout;
-
-    for (final AnalysisContext analysisContext in singleContextList) {
-      for (final String path in filePaths) {
-        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
-
-        if (unit is! ResolvedUnitResult) {
-          continue;
-        }
-        if (unit.content == null) {
-          continue;
-        }
-
-        final Iterable<RuleMessage> messageList = rules.map((Rule rule) {
-          return rule.check(
-            parseResult: unit,
-            analysisSettings: analysisSettings,
-          );
-        }).expand((List<RuleMessage> e) {
-          return e;
-        });
-
-        final String content = unit.content!;
-        final StringBuffer sb = StringBuffer();
-        final File correctFile = File(unit.path!);
-
-        // TODO for trailing commas
-        int prevPosition = 0;
-        for (int i = 0; i < messageList.length; i++) {
-          final RuleMessage message = messageList.elementAt(i);
-
-          print(
-            '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
-          );
-
-          final String strLeftPart = content.substring(prevPosition, message.location.offset);
-
-          sb.write(strLeftPart);
-          if (message.correction == null) {
-            final String originalVal = content.substring(
-              message.location.offset,
-              message.location.offset + message.location.length,
-            );
-            sb.write(originalVal);
-          } else {
-            sb.write(message.correction);
-          }
-
-          prevPosition = message.location.offset + message.location.length;
-
-          if (i == messageList.length - 1) {
-            sb.write(content.substring(prevPosition));
-          }
-
-          await correctFile.writeAsString(sb.toString(), flush: i == 0);
-          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
-        }
-      }
-    }
-  }
-
-  Future<void> _fix2({
-    required Iterable<AnalysisContext> singleContextList,
-    required Set<String> filePaths,
-    required AnalysisSettings analysisSettings,
-  }) async {
-    final Set<Rule> rules = <Rule>{
       if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
       if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
     };
@@ -362,15 +281,11 @@ class AnalyzeCommand extends Command<void> {
           continue;
         }
 
-        print('path = $path');
-
         for (final Rule rule in rules) {
           final List<RuleMessage> messageList = rule.check(
             parseResult: unit,
             analysisSettings: analysisSettings,
           );
-
-          print('messageList = ${messageList.length}');
 
           // need work here
           final String content = unit.content!;
@@ -381,9 +296,9 @@ class AnalyzeCommand extends Command<void> {
           for (int i = 0; i < messageList.length; i++) {
             final RuleMessage message = messageList.elementAt(i);
 
-            print(
-              '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
-            );
+            // print(
+            //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
+            // );
 
             final String strLeftPart = content.substring(prevPosition, message.location.offset);
 

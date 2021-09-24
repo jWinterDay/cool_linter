@@ -61,6 +61,11 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       // ignore: always_specify_types
       final endLocation = parseResult.lineInfo.getLocation(end);
 
+      String? corr = parseResult.content?.substring(offset, end);
+      if (corr != null) {
+        corr += TokenType.COMMA.lexeme;
+      }
+
       return RuleMessage(
         severityName: 'WARNING',
         message: 'prefer_trailing_comma',
@@ -75,7 +80,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
           endLocation.lineNumber, // endLine
           endLocation.columnNumber, // endColumn
         ),
-        correction: TokenType.COMMA.lexeme,
+        correction: corr,
       );
     }).toList();
   }

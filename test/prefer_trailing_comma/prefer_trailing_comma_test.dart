@@ -42,6 +42,13 @@ void main() {
 
       expect(ruleMessageList, hasLength(7));
 
+      ruleMessageList.forEach((RuleMessage e) {
+        final String part1 = 'corr: [${e.correction}] offset: ${e.location.offset} len: ${e.location.length}';
+        final String part2 =
+            'startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]';
+        print('$part1 $part2');
+      });
+
       // ruleMessageList.map((RuleMessage e) {
       //   return '${e.location.startLine}';
       // }).forEach((String element) {

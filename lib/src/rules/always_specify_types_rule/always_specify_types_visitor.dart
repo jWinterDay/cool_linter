@@ -1,25 +1,10 @@
-import 'package:_fe_analyzer_shared/src/scanner/token.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-
 import 'package:cool_linter/src/rules/rule.dart';
 
 import 'always_specify_types_result.dart';
-
-//
-import 'dart:async';
-import 'package:analyzer/dart/constant/value.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:build/build.dart';
-import 'package:built_collection/built_collection.dart';
-
-import 'package:source_gen/source_gen.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
-//
 
 /// https://github.com/dart-lang/linter/blob/master/lib/src/rules/always_specify_types.dart
 /// The name of `meta` library, used to define analysis annotations.
@@ -97,10 +82,13 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
       // correction
       final SimpleIdentifier? identifier = node.identifier;
       final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+      final String? lexeme = node.keyword?.lexeme;
 
       String? corr;
       if (identifier != null && varType != 'dynamic') {
         final StringBuffer sb = StringBuffer()
+          ..write(lexeme ?? '')
+          ..write(' ')
           ..write(varType)
           ..write(' ')
           ..write(identifier.name);
@@ -128,6 +116,16 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     super.visitListLiteral(node);
 
     if (!useTypedLiteral) return;
+
+    // node.staticType.runtimeType
+
+    // node.elements.forEach((CollectionElement element) {
+    //   element.childEntities.forEach((SyntacticEntity ent) {
+    //     print('el = ${element is ElementKind} ent = ${ent is FieldElement} ${ent is CollectionElement}------${ent}');
+    //   });
+    //   // print('element = ${element.childEntities}');
+    // });
+    // staticType?.getDisplayString(withNullability: true);
 
     _checkLiteral(
       node,
@@ -234,7 +232,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
         // item.childEntities.join(' ')
         if (lexeme == 'final' || lexeme == 'const') {
           final StringBuffer sb = StringBuffer()
-            ..write(node.keyword?.lexeme ?? '')
+            ..write(lexeme ?? '')
             ..write(' ')
             ..write(varType ?? '')
             ..write(' ')

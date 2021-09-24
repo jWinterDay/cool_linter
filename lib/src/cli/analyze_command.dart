@@ -122,14 +122,14 @@ class AnalyzeCommand extends Command<void> {
     if (fix) {
       // TODO make better
       // only one fix rule type
-      if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
-        throw UsageException(
-          'Wrong parameters count',
-          'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
-        );
-      }
+      // if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
+      //   throw UsageException(
+      //     'Wrong parameters count',
+      //     'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
+      //   );
+      // }
 
-      await _fix(
+      await _fix2(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
         singleContextList: singleContextList,
@@ -169,39 +169,39 @@ class AnalyzeCommand extends Command<void> {
     bool alwaysSpecifyStreamSubscriptionRule = false,
     RegexpSettings? regexpSettings,
   }) {
+    const String indent = '  ';
     final StringBuffer sb = StringBuffer();
     sb.writeln('\ncool_linter:');
 
     if (alwaysSpecifyStreamSubscriptionRule || preferTrailingCommaRule) {
-      sb.writeln('  extended_rules:');
+      sb.writeln('${indent}extended_rules:');
     }
     if (alwaysSpecifyStreamSubscriptionRule) {
-      sb.writeln('    - always_specify_stream_subscription');
+      sb.writeln('$indent$indent- always_specify_stream_subscription');
     }
     if (preferTrailingCommaRule) {
-      sb.writeln('    - prefer_trailing_comma');
+      sb.writeln('$indent$indent- prefer_trailing_comma');
     }
 
     if (alwaysSpecifyTypesRule) {
-      // TODO
-      sb.writeln('  always_specify_types:');
-      sb.writeln('    - typed_literal');
-      // sb.writeln('    - declared_identifier'); // OK
+      sb.writeln('${indent}always_specify_types:');
+      // sb.writeln('    - typed_literal');
+      sb.writeln('$indent$indent- declared_identifier'); // OK
       // sb.writeln('    - set_or_map_literal');
-      // sb.writeln('    - simple_formal_parameter'); // OK
+      sb.writeln('$indent$indent- simple_formal_parameter'); // OK
       // sb.writeln('    - type_name');
-      // sb.writeln('    - variable_declaration_list'); // OK
+      sb.writeln('$indent$indent- variable_declaration_list'); // OK
     }
 
     // regexp
     if (regexpSettings != null && regexpSettings.existsAtLeastOneRegExp) {
-      sb.writeln('  regexp_exclude:');
+      sb.writeln('${indent}regexp_exclude:');
 
       for (final ExcludeWord regExpExclude in regexpSettings.regexpExcludeSafeList) {
-        sb.writeln('    -');
-        sb.writeln('      pattern: ${regExpExclude.pattern}');
-        sb.writeln('      hint: ${regExpExclude.hint}');
-        sb.writeln('      severity: ${regExpExclude.severity}');
+        sb.writeln('$indent$indent-');
+        sb.writeln('$indent$indent${indent}pattern: ${regExpExclude.pattern}');
+        sb.writeln('$indent$indent${indent}hint: ${regExpExclude.hint}');
+        sb.writeln('$indent$indent${indent}severity: ${regExpExclude.severity}');
       }
     }
 
@@ -212,30 +212,17 @@ class AnalyzeCommand extends Command<void> {
     );
   }
 
-  Set<Rule> _createRules(AnalysisSettings analysisSettings) {
-    return <Rule>{
-      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
-      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
-      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
-      if (analysisSettings.useRegexpExclude) RegExpRule(),
-    };
-  }
-
-  Set<Rule> _createFixRules() {
-    return <Rule>{
-      AlwaysSpecifyTypesRule(),
-      PreferTrailingCommaRule(),
-      // if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
-      // if (analysisSettings.useRegexpExclude) RegExpRule(),
-    };
-  }
-
   Future<bool> _print({
     required Iterable<AnalysisContext> singleContextList,
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    final Set<Rule> rules = _createRules(analysisSettings);
+    final Set<Rule> rules = <Rule>{
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
+      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      if (analysisSettings.useRegexpExclude) RegExpRule(),
+    };
 
     final IOSink iosink = stdout;
     bool wasError = false;
@@ -285,7 +272,12 @@ class AnalyzeCommand extends Command<void> {
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    final Set<Rule> rules = _createFixRules();
+    final Set<Rule> rules = <Rule>{
+      AlwaysSpecifyTypesRule(),
+      PreferTrailingCommaRule(),
+      // if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      // if (analysisSettings.useRegexpExclude) RegExpRule(),
+    };
     final IOSink iosink = stdout;
 
     for (final AnalysisContext analysisContext in singleContextList) {
@@ -317,9 +309,9 @@ class AnalyzeCommand extends Command<void> {
         for (int i = 0; i < messageList.length; i++) {
           final RuleMessage message = messageList.elementAt(i);
 
-          // print(
-          //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
-          // );
+          print(
+            '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
+          );
 
           final String strLeftPart = content.substring(prevPosition, message.location.offset);
 
@@ -342,6 +334,76 @@ class AnalyzeCommand extends Command<void> {
 
           await correctFile.writeAsString(sb.toString(), flush: i == 0);
           iosink.writeln(AnsiColors.prepareRuleForPrint(message));
+        }
+      }
+    }
+  }
+
+  Future<void> _fix2({
+    required Iterable<AnalysisContext> singleContextList,
+    required Set<String> filePaths,
+    required AnalysisSettings analysisSettings,
+  }) async {
+    final Set<Rule> rules = <Rule>{
+      AlwaysSpecifyTypesRule(),
+      PreferTrailingCommaRule(),
+    };
+    final IOSink iosink = stdout;
+
+    for (final AnalysisContext analysisContext in singleContextList) {
+      for (final String path in filePaths) {
+        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+
+        if (unit is! ResolvedUnitResult) {
+          continue;
+        }
+        if (unit.content == null) {
+          continue;
+        }
+
+        print('path = $path');
+
+        for (final Rule rule in rules) {
+          final List<RuleMessage> messageList = rule.check(
+            parseResult: unit,
+            analysisSettings: analysisSettings,
+          );
+
+          // need work here
+          final String content = unit.content!;
+          final StringBuffer sb = StringBuffer();
+          final File correctFile = File(unit.path!);
+
+          int prevPosition = 0;
+          for (int i = 0; i < messageList.length; i++) {
+            final RuleMessage message = messageList.elementAt(i);
+
+            print(
+              '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
+            );
+
+            final String strLeftPart = content.substring(prevPosition, message.location.offset);
+
+            sb.write(strLeftPart);
+            if (message.correction == null) {
+              final String originalVal = content.substring(
+                message.location.offset,
+                message.location.offset + message.location.length,
+              );
+              sb.write(originalVal);
+            } else {
+              sb.write(message.correction);
+            }
+
+            prevPosition = message.location.offset + message.location.length;
+
+            if (i == messageList.length - 1) {
+              sb.write(content.substring(prevPosition));
+            }
+
+            await correctFile.writeAsString(sb.toString(), flush: i == 0);
+            iosink.writeln(AnsiColors.prepareRuleForPrint(message));
+          }
         }
       }
     }

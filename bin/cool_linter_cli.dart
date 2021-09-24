@@ -19,6 +19,12 @@ import 'package:cool_linter/src/utils/ansi_colors.dart';
 List<String> excludedExtensions = <String>[
   '.g.dart',
   '.freezed.dart',
+
+  // TODO
+  'l10n.dart',
+  'messages_all.dart',
+  'messages_en.dart',
+  'messages_ru.dart'
 ];
 
 Future<void> main(List<String> args) async {

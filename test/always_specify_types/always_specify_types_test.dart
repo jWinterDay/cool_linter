@@ -28,11 +28,11 @@ void main() {
           cool_linter:
             always_specify_types:
               - typed_literal
-              #- declared_identifier
-              #- set_or_map_literal
-              #- simple_formal_parameter
-              #- type_name
-              #- variable_declaration_list
+              - declared_identifier # OK
+              - set_or_map_literal
+              - simple_formal_parameter # OK
+              - type_name
+              - variable_declaration_list # OK
         ''',
         ),
       );

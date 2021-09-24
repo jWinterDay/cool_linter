@@ -1,11 +1,17 @@
-import 'package:meta/meta.dart';
+List<bool> samplelist = []; //LINT
 
+Iterable<List<String>> stringsiter = []; //LINT
 Map<String, String> map = {}; //LINT
 List<String> strings = []; //LINT
-List<String> strings2 = ['fsd']; //LINT
+List<double> stringsdouble = [0.15, 0.16]; //LINT
 Set<String> set = {}; //LINT
 
-List? list; // LINT
+void t() {
+  List? list1; // = <double>[]; // LINT
+// list1 = <double>[];
+  list1?.add(0.15);
+}
+
 List<List>? lists; //LINT
 List<int>? ints; //OK
 

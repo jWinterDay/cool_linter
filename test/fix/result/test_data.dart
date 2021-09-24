@@ -94,6 +94,11 @@ void main() {
       // LINT [10:5]
       print(l);
     }
+
+    for (dynamic l in ls) {
+      // LINT [10:5]
+      print(l);
+    }
   } on Exception catch (ex) {
     print(ex);
   } catch (e) {

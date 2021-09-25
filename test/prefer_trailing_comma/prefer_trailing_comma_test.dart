@@ -6,7 +6,7 @@ import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:test/test.dart';
 
-import '../utils/resolved_unit_util.dart';
+import '../../lib/src/utils/resolved_unit_util.dart';
 
 void main() {
   late ResolvedUnitResult resolvedUnitResult;
@@ -41,6 +41,13 @@ void main() {
       );
 
       expect(ruleMessageList, hasLength(7));
+
+      ruleMessageList.forEach((RuleMessage e) {
+        final String part1 = 'corr: [${e.correction}] offset: ${e.location.offset} len: ${e.location.length}';
+        final String part2 =
+            'startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]';
+        print('$part1 $part2');
+      });
 
       // ruleMessageList.map((RuleMessage e) {
       //   return '${e.location.startLine}';

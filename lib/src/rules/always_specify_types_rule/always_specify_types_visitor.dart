@@ -2,7 +2,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-
 import 'package:cool_linter/src/rules/rule.dart';
 
 import 'always_specify_types_result.dart';
@@ -30,19 +29,35 @@ final RegExp _underscores = RegExp(r'^[_]+$');
 bool isJustUnderscores(String name) => _underscores.hasMatch(name);
 
 class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
-  AlwaysSpecifyTypesVisitor(this.rule);
+  AlwaysSpecifyTypesVisitor(
+    this.rule, {
+    required this.useDeclaredIdentifier,
+    required this.useSetOrMapLiteral,
+    required this.useSimpleFormalParameter,
+    required this.useTypeName,
+    required this.useTypedLiteral,
+    required this.useVariableDeclarationList,
+  });
 
   final Rule rule;
+
+  final bool useTypedLiteral;
+  final bool useDeclaredIdentifier;
+  final bool useSetOrMapLiteral;
+  final bool useSimpleFormalParameter;
+  final bool useTypeName;
+  final bool useVariableDeclarationList;
 
   final List<AlwaysSpecifyTypesResult> _visitorRuleMessages = <AlwaysSpecifyTypesResult>[];
   List<AlwaysSpecifyTypesResult> get visitorRuleMessages => _visitorRuleMessages;
 
-  void _checkLiteral(TypedLiteral literal) {
+  void _checkLiteral(TypedLiteral literal, {required ResultType type}) {
     if (literal.typeArguments == null) {
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: literal,
-          type: ResultType.typedLiteral,
+          type: type,
+          correction: 'dfgfdgdfg',
         ),
       );
       // print('((((++++)))) _checkLiteral: ${literal} | ${literal.parent} ${literal.typeArguments}');
@@ -61,11 +76,39 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitDeclaredIdentifier(DeclaredIdentifier node) {
     super.visitDeclaredIdentifier(node);
 
+    if (!useDeclaredIdentifier) return;
+
     if (node.type == null) {
+      // correction
+      final SimpleIdentifier? identifier = node.identifier;
+      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+      final String? lexeme = node.keyword?.lexeme;
+
+      String? corr;
+      if (identifier != null && varType != 'dynamic') {
+        final StringBuffer sb = StringBuffer();
+        if (lexeme == 'final' || lexeme == 'const') {
+          sb
+            ..write(lexeme ?? '')
+            ..write(' ');
+        }
+
+        sb
+          ..write(varType)
+          ..write(' ')
+          ..write(identifier.name);
+
+        corr = sb.toString();
+
+        // final Token? keyword = node.keyword;
+        // print('lexeme = ${keyword?.stringValue} len = ${identifier.length} name = ${identifier.name} type = $varType');
+      }
+
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: node,
           type: ResultType.declaredIdentifier,
+          correction: corr,
         ),
       );
       // print('++++ visitDeclaredIdentifier: ${node}');
@@ -77,10 +120,25 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitListLiteral(ListLiteral node) {
     super.visitListLiteral(node);
 
-    _checkLiteral(node);
+    if (!useTypedLiteral) return;
+
+    // node.staticType.runtimeType
+
+    // node.elements.forEach((CollectionElement element) {
+    //   element.childEntities.forEach((SyntacticEntity ent) {
+    //     print('el = ${element is ElementKind} ent = ${ent is FieldElement} ${ent is CollectionElement}------${ent}');
+    //   });
+    //   // print('element = ${element.childEntities}');
+    // });
+    // staticType?.getDisplayString(withNullability: true);
+
+    _checkLiteral(
+      node,
+      type: ResultType.typedLiteral,
+    );
   }
 
-  void visitNamedType(TypeName node) {
+  void _visitNamedType(TypeName node) {
     final DartType? type = node.type;
 
     if (type is InterfaceType) {
@@ -96,7 +154,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
             type: ResultType.typeName,
           ),
         );
-        // print('@@@@@@@@@ visitNamedType $namedType element = $element');
+        // print('@@@@@@@@@ _visitNamedType $namedType element = $element');
       }
     }
   }
@@ -106,7 +164,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitSetOrMapLiteral(SetOrMapLiteral node) {
     super.visitSetOrMapLiteral(node);
 
-    _checkLiteral(node);
+    if (!useSetOrMapLiteral) return;
+
+    _checkLiteral(
+      node,
+      type: ResultType.setOrMapLiteral,
+    );
   }
 
   // ---
@@ -114,26 +177,34 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitSimpleFormalParameter(SimpleFormalParameter node) {
     super.visitSimpleFormalParameter(node);
 
+    if (!useSimpleFormalParameter) return;
+
     final SimpleIdentifier? identifier = node.identifier;
 
     if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
-      if (node.keyword != null) {
-        _visitorRuleMessages.add(
-          AlwaysSpecifyTypesResult.withType(
-            astNode: node,
-            type: ResultType.simpleFormalParameter,
-          ),
-        );
-        // print('&&&&& reportLintForToken $node');
-      } else {
-        _visitorRuleMessages.add(
-          AlwaysSpecifyTypesResult.withType(
-            astNode: node,
-            type: ResultType.simpleFormalParameter,
-          ),
-        );
-        // print('====== reportLint $node ${node.identifier?.name}');
+      // correction
+      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+
+      String? corr;
+      if (varType != 'dynamic') {
+        final StringBuffer sb = StringBuffer()
+          ..write(varType)
+          ..write(' ')
+          ..write(identifier.name);
+
+        corr = sb.toString();
+
+        // final Token? keyword = node.keyword;
+        // print('lexeme = ${keyword?.stringValue} len = ${identifier.length} name = ${identifier.name} type = $varType');
       }
+
+      _visitorRuleMessages.add(
+        AlwaysSpecifyTypesResult.withType(
+          astNode: node,
+          type: ResultType.simpleFormalParameter,
+          correction: corr,
+        ),
+      );
     }
   }
 
@@ -142,7 +213,9 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitTypeName(TypeName node) {
     super.visitTypeName(node);
 
-    visitNamedType(node);
+    if (!useTypeName) return;
+
+    _visitNamedType(node);
   }
 
   // ---
@@ -150,11 +223,47 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   void visitVariableDeclarationList(VariableDeclarationList node) {
     super.visitVariableDeclarationList(node);
 
+    if (!useVariableDeclarationList) return;
+
     if (node.type == null) {
+      // correction
+      // ===single item===
+      String? corr;
+      if (node.variables.length == 1) {
+        final VariableDeclaration item = node.variables.first;
+        final String? varType = item.declaredElement?.type.getDisplayString(withNullability: true);
+        final String? lexeme = node.keyword?.lexeme;
+
+        // item.childEntities.join(' ')
+        if (lexeme == 'final' || lexeme == 'const') {
+          final StringBuffer sb = StringBuffer()
+            ..write(lexeme ?? '')
+            ..write(' ')
+            ..write(varType ?? '')
+            ..write(' ')
+            ..write(item.childEntities.join(' '));
+
+          corr = sb.toString();
+        } else if (lexeme == 'var') {
+          final StringBuffer sb = StringBuffer()
+            // ..write(node.keyword?.lexeme ?? '')
+            // ..write(' ')
+            ..write(varType ?? '')
+            ..write(' ')
+            ..write(item.childEntities.join(' '));
+
+          corr = sb.toString();
+        }
+      }
+
+      // TODO
+      // ===many items===
+
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
           astNode: node,
           type: ResultType.variableDeclarationList,
+          correction: corr,
         ),
       );
 

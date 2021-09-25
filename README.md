@@ -102,7 +102,7 @@ You can use linter as command line tool
 
 [or using dart pub run](https://pub.dev/packages/cool_linter/install)
 
-available autofix for:
+:muscle: available autofix :muscle: for:
   - **prefer_trailing_comma**
   - **always_specify_types_rule**
 

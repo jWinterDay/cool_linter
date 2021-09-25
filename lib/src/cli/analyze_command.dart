@@ -120,6 +120,15 @@ class AnalyzeCommand extends Command<void> {
     );
 
     if (fix) {
+      // TODO make better
+      // only one fix rule type
+      if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
+        throw UsageException(
+          'Only one of autofix type (TODO)',
+          'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
+        );
+      }
+
       await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,

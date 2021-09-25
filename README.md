@@ -102,11 +102,11 @@ You can use linter as command line tool
 
 [or using dart pub run](https://pub.dev/packages/cool_linter/install)
 
-available autofix for ```prefer_trailing_comma``` and ```always_specify_types_rule```
+available autofix for **prefer_trailing_comma** and **always_specify_types_rule**
 for this subrules:
-  * declared_identifier
-  * simple_formal_parameter
-  * variable_declaration_list
+  > declared_identifier
+  > simple_formal_parameter
+  > variable_declaration_list
 
 for others subrules feel free to provide me PRs
 

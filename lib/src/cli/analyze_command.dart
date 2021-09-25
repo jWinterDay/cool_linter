@@ -115,11 +115,20 @@ class AnalyzeCommand extends Command<void> {
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
       alwaysSpecifyTypesRule: alwaysSpecifyTypesRule,
-      preferTrailingCommaRule: fix || preferTrailingCommaRule,
+      preferTrailingCommaRule: preferTrailingCommaRule,
       regexpSettings: regexpSettings,
     );
 
     if (fix) {
+      // TODO make better
+      // only one fix rule type
+      if (alwaysSpecifyTypesRule && preferTrailingCommaRule) {
+        throw UsageException(
+          'Only one of autofix type (TODO)',
+          'Use only one of fix rule types (always_specify_types or prefer_trailing_comma)',
+        );
+      }
+
       await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
@@ -160,38 +169,39 @@ class AnalyzeCommand extends Command<void> {
     bool alwaysSpecifyStreamSubscriptionRule = false,
     RegexpSettings? regexpSettings,
   }) {
+    const String indent = '  ';
     final StringBuffer sb = StringBuffer();
     sb.writeln('\ncool_linter:');
 
     if (alwaysSpecifyStreamSubscriptionRule || preferTrailingCommaRule) {
-      sb.writeln('  extended_rules:');
+      sb.writeln('${indent}extended_rules:');
     }
     if (alwaysSpecifyStreamSubscriptionRule) {
-      sb.writeln('    - always_specify_stream_subscription');
+      sb.writeln('$indent$indent- always_specify_stream_subscription');
     }
     if (preferTrailingCommaRule) {
-      sb.writeln('    - prefer_trailing_comma');
+      sb.writeln('$indent$indent- prefer_trailing_comma');
     }
 
     if (alwaysSpecifyTypesRule) {
-      sb.writeln('  always_specify_types:');
-      sb.writeln('    - typed_literal');
-      sb.writeln('    - declared_identifier');
-      sb.writeln('    - set_or_map_literal');
-      sb.writeln('    - simple_formal_parameter');
-      sb.writeln('    - type_name');
-      sb.writeln('    - variable_declaration_list');
+      sb.writeln('${indent}always_specify_types:');
+      // sb.writeln('    - typed_literal');
+      sb.writeln('$indent$indent- declared_identifier'); // OK
+      // sb.writeln('    - set_or_map_literal');
+      sb.writeln('$indent$indent- simple_formal_parameter'); // OK
+      // sb.writeln('    - type_name');
+      sb.writeln('$indent$indent- variable_declaration_list'); // OK
     }
 
     // regexp
     if (regexpSettings != null && regexpSettings.existsAtLeastOneRegExp) {
-      sb.writeln('  regexp_exclude:');
+      sb.writeln('${indent}regexp_exclude:');
 
       for (final ExcludeWord regExpExclude in regexpSettings.regexpExcludeSafeList) {
-        sb.writeln('    -');
-        sb.writeln('      pattern: ${regExpExclude.pattern}');
-        sb.writeln('      hint: ${regExpExclude.hint}');
-        sb.writeln('      severity: ${regExpExclude.severity}');
+        sb.writeln('$indent$indent-');
+        sb.writeln('$indent$indent${indent}pattern: ${regExpExclude.pattern}');
+        sb.writeln('$indent$indent${indent}hint: ${regExpExclude.hint}');
+        sb.writeln('$indent$indent${indent}severity: ${regExpExclude.severity}');
       }
     }
 
@@ -202,21 +212,17 @@ class AnalyzeCommand extends Command<void> {
     );
   }
 
-  Set<Rule> _createRules(AnalysisSettings analysisSettings) {
-    return <Rule>{
-      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
-      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
-      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
-      if (analysisSettings.useRegexpExclude) RegExpRule(),
-    };
-  }
-
   Future<bool> _print({
     required Iterable<AnalysisContext> singleContextList,
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    final Set<Rule> rules = _createRules(analysisSettings);
+    final Set<Rule> rules = <Rule>{
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
+      if (analysisSettings.useAlwaysSpecifyStreamSub) StreamSubscriptionRule(),
+      if (analysisSettings.useRegexpExclude) RegExpRule(),
+    };
 
     final IOSink iosink = stdout;
     bool wasError = false;
@@ -242,6 +248,9 @@ class AnalyzeCommand extends Command<void> {
         });
 
         for (final RuleMessage message in messageList) {
+          // print(
+          //   'col: [${message.location.startColumn}:${message.location.endColumn}] line:[${message.location.startLine}] offset = ${message.location.offset}',
+          // );
           iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
 
@@ -263,60 +272,95 @@ class AnalyzeCommand extends Command<void> {
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
-    // TODO
     final Set<Rule> rules = <Rule>{
-      PreferTrailingCommaRule(),
+      if (analysisSettings.useAlwaysSpecifyTypes) AlwaysSpecifyTypesRule(),
+      if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
     };
 
-    for (final AnalysisContext analysisContext in singleContextList) {
-      for (final String path in filePaths) {
-        // print('----path = $path');
+    if (singleContextList.isEmpty) {
+      return;
+    }
 
-        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+    final AnalysisContext analysisContext = singleContextList.first;
 
-        if (unit is! ResolvedUnitResult) {
-          continue;
-        }
-        if (unit.content == null) {
-          continue;
-        }
+    final IOSink iosink = stdout;
+    int totalError = 0;
+    int totalFileCorrects = 0;
 
-        final Iterable<RuleMessage> messageList = rules.map((Rule rule) {
-          return rule.check(
+    for (final String path in filePaths) {
+      // print('path: [$path]');
+      final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+
+      if (unit is! ResolvedUnitResult) {
+        continue;
+      }
+      if (unit.content == null) {
+        continue;
+      }
+
+      try {
+        for (final Rule rule in rules) {
+          final List<RuleMessage> messageList = rule.check(
             parseResult: unit,
             analysisSettings: analysisSettings,
           );
-        }).expand((List<RuleMessage> e) {
-          return e;
-        });
+          // ..sort((RuleMessage l, RuleMessage r) {
+          //     return l.location.offset.compareTo(r.location.offset);
+          //   });
 
-        final String content = unit.content!;
-        final StringBuffer sb = StringBuffer();
-        // final File correctFile = File('test/fix/test_1.dart');
-        final File correctFile = File(unit.path!); // 'test/fix/test_1.dart');
+          // need work here
+          final String content = unit.content!;
+          final StringBuffer sb = StringBuffer();
+          final File correctFile = File(unit.path!);
 
-        int prevPosition = 0;
-        for (int i = 0; i < messageList.length; i++) {
-          final RuleMessage message = messageList.elementAt(i);
+          int prevPosition = 0;
+          for (int i = 0; i < messageList.length; i++) {
+            final RuleMessage message = messageList.elementAt(i);
 
-          if (message.correction == null) {
-            continue;
+            // final String part1 = '[$i] len: ${message.location.length} prev = $prevPosition ';
+            // final String part2 = 'offset = ${message.location.offset}';
+            // final String part3 = 'line: [${message.location.startLine}:${message.location.endLine}] ';
+            // final String part4 = 'column: [${message.location.startColumn}:${message.location.endColumn}] ';
+
+            // print('$part1 $part2 $part3 $part4');
+
+            final String strLeftPart = content.substring(prevPosition, message.location.offset);
+
+            sb.write(strLeftPart);
+            if (message.correction == null) {
+              final String originalVal = content.substring(
+                message.location.offset,
+                message.location.offset + message.location.length,
+              );
+              sb.write(originalVal);
+            } else {
+              sb.write(message.correction);
+            }
+
+            prevPosition = message.location.offset + message.location.length;
+
+            if (i == messageList.length - 1) {
+              sb.write(content.substring(prevPosition));
+            }
+
+            await correctFile.writeAsString(sb.toString(), flush: i == 0);
+            iosink.writeln(AnsiColors.prepareRuleForPrint(message));
           }
-
-          final int position = message.location.offset + message.location.length;
-
-          final String strPart = content.substring(prevPosition, position);
-          sb.write(strPart);
-          sb.write(message.correction);
-          if (i == messageList.length - 1) {
-            sb.write(content.substring(position));
-          }
-
-          prevPosition = position;
-
-          await correctFile.writeAsString(sb.toString(), flush: i == 0);
         }
+
+        totalFileCorrects++;
+      } catch (exc, stackTrace) {
+        print('Exception in file: [$path]');
+        totalError++;
+
+        // discard any changes for file
+        final File tmpFile = File(path);
+        await tmpFile.writeAsString(unit.content!);
       }
     }
+
+    //
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'));
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalFileCorrects, addInfo: 'fixed files'));
   }
 }

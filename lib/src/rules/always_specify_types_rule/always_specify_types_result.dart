@@ -23,14 +23,18 @@ const Map<ResultType, String> kOptionNameOfResultType = <ResultType, String>{
 class AlwaysSpecifyTypesResult extends AstAnalyzeResult {
   AlwaysSpecifyTypesResult({
     required AstNode astNode,
+    this.correction,
   }) : super(astNode: astNode);
 
   AlwaysSpecifyTypesResult.withType({
     required AstNode astNode,
     required ResultType type,
+    this.correction,
   }) : super(astNode: astNode) {
     resultType = type;
   }
+
+  final String? correction;
 
   late ResultType resultType;
 
@@ -40,7 +44,8 @@ class AlwaysSpecifyTypesResult extends AstAnalyzeResult {
   String toString() {
     final StringBuffer sb = StringBuffer()
       ..writeln('resultType: $resultType')
-      ..writeln('astNode: ${astNode.toString()}');
+      ..writeln('astNode: ${astNode.toString()}')
+      ..writeln('correction: $correction');
 
     return sb.toString();
   }

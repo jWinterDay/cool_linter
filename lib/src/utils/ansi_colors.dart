@@ -11,11 +11,11 @@ abstract class AnsiColors {
   static const String white = '\x1B[37m';
   static const String reset = '\x1B[0m';
 
-  static String totalWarningsPrint(int count) {
+  static String totalWarningsPrint(int count, {String addInfo = ''}) {
     final StringBuffer sb = StringBuffer();
 
     sb.write(AnsiColors.cyan);
-    sb.write('Total: ');
+    sb.write('Total $addInfo:');
     sb.write(AnsiColors.yellow);
     sb.write(count.toString());
 

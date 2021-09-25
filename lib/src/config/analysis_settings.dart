@@ -39,6 +39,8 @@ class AnalysisSettings with _$AnalysisSettings {
     return coolLinter?.extendedRules.contains('always_specify_stream_subscription') ?? false;
   }
 
+  List<String> get alwaysSpecifyTypes => coolLinter?.types ?? <String>[];
+
   /// `always_specify_types` rule list
   static final List<String> alwaysSpecifyTypeRuleNameList = <String>[
     'typed_literal',

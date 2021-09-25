@@ -32,6 +32,7 @@ analyzer:
     - test/regexp/test_data.dart
     - test/always_specify_types/test_data_original.dart
     - test/always_specify_types/test_data.dart
+    - test/fix/result/**
     
 
 linter:

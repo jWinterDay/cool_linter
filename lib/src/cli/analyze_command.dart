@@ -17,7 +17,6 @@ import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscripti
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:cool_linter/src/utils/ansi_colors.dart';
 import 'package:cool_linter/src/utils/file_utils.dart';
-import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:path/path.dart' as p;
 
 class AnalyzeCommand extends Command<void> {
@@ -124,6 +123,7 @@ class AnalyzeCommand extends Command<void> {
       await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
+        singleContextList: singleContextList,
       );
       return;
     }
@@ -177,9 +177,9 @@ class AnalyzeCommand extends Command<void> {
     if (alwaysSpecifyTypesRule) {
       sb.writeln('${indent}always_specify_types:');
       // sb.writeln('    - typed_literal');
-      sb.writeln('$indent$indent- declared_identifier'); // OK
+      // sb.writeln('$indent$indent- declared_identifier'); // OK
       // sb.writeln('    - set_or_map_literal');
-      sb.writeln('$indent$indent- simple_formal_parameter'); // OK
+      // sb.writeln('$indent$indent- simple_formal_parameter'); // OK
       // sb.writeln('    - type_name');
       sb.writeln('$indent$indent- variable_declaration_list'); // OK
     }
@@ -259,6 +259,7 @@ class AnalyzeCommand extends Command<void> {
   }
 
   Future<void> _fix({
+    required Iterable<AnalysisContext> singleContextList,
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
@@ -267,33 +268,49 @@ class AnalyzeCommand extends Command<void> {
       if (analysisSettings.usePreferTrailingComma) PreferTrailingCommaRule(),
     };
 
+    if (singleContextList.isEmpty) {
+      return;
+    }
+
+    final AnalysisContext analysisContext = singleContextList.first;
+
     final IOSink iosink = stdout;
 
     for (final String path in filePaths) {
+      //.where((String p) => p.contains('bet_middleware.dart'))) {
+      // print('path: [$path]');
+      final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+
+      if (unit is! ResolvedUnitResult) {
+        continue;
+      }
+      if (unit.content == null) {
+        continue;
+      }
+
       for (final Rule rule in rules) {
-        final ResolvedUnitResult resolvedUnitResult = await getResolvedUnitResult(path);
-
-        if (resolvedUnitResult.content == null) {
-          continue;
-        }
-
         final List<RuleMessage> messageList = rule.check(
-          parseResult: resolvedUnitResult,
+          parseResult: unit,
           analysisSettings: analysisSettings,
-        );
+        )..sort((RuleMessage l, RuleMessage r) {
+            return l.location.offset.compareTo(r.location.offset);
+          });
 
         // need work here
-        final String content = resolvedUnitResult.content!;
+        final String content = unit.content!;
         final StringBuffer sb = StringBuffer();
-        final File correctFile = File(resolvedUnitResult.path!);
+        final File correctFile = File(unit.path!);
 
         int prevPosition = 0;
         for (int i = 0; i < messageList.length; i++) {
           final RuleMessage message = messageList.elementAt(i);
 
-          // print(
-          //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
-          // );
+          // final String part1 = '[$i] len: ${message.location.length} prev = $prevPosition ';
+          // final String part2 = 'offset = ${message.location.offset}';
+          // final String part3 = 'line: [${message.location.startLine}:${message.location.endLine}] ';
+          // final String part4 = 'column: [${message.location.startColumn}:${message.location.endColumn}] ';
+
+          // print('$part1 $part2 $part3 $part4');
 
           final String strLeftPart = content.substring(prevPosition, message.location.offset);
 
@@ -314,7 +331,7 @@ class AnalyzeCommand extends Command<void> {
             sb.write(content.substring(prevPosition));
           }
 
-          await correctFile.writeAsString(sb.toString()); //, flush: i == 0);
+          await correctFile.writeAsString(sb.toString(), flush: i == 0);
           iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
       }

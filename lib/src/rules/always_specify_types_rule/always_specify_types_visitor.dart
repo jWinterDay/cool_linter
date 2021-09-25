@@ -82,13 +82,18 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
       // correction
       final SimpleIdentifier? identifier = node.identifier;
       final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
-      // final String? lexeme = node.keyword?.lexeme;
+      final String? lexeme = node.keyword?.lexeme;
 
       String? corr;
       if (identifier != null && varType != 'dynamic') {
-        final StringBuffer sb = StringBuffer()
-          // ..write(lexeme ?? '')
-          // ..write(' ')
+        final StringBuffer sb = StringBuffer();
+        if (lexeme == 'final' || lexeme == 'const') {
+          sb
+            ..write(lexeme ?? '')
+            ..write(' ');
+        }
+
+        sb
           ..write(varType)
           ..write(' ')
           ..write(identifier.name);

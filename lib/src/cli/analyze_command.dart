@@ -17,6 +17,7 @@ import 'package:cool_linter/src/rules/stream_subscription_rule/stream_subscripti
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:cool_linter/src/utils/ansi_colors.dart';
 import 'package:cool_linter/src/utils/file_utils.dart';
+import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:path/path.dart' as p;
 
 class AnalyzeCommand extends Command<void> {
@@ -123,7 +124,6 @@ class AnalyzeCommand extends Command<void> {
       await _fix(
         analysisSettings: analysisSettings,
         filePaths: filePaths,
-        singleContextList: singleContextList,
       );
       return;
     }
@@ -259,7 +259,6 @@ class AnalyzeCommand extends Command<void> {
   }
 
   Future<void> _fix({
-    required Iterable<AnalysisContext> singleContextList,
     required Set<String> filePaths,
     required AnalysisSettings analysisSettings,
   }) async {
@@ -270,58 +269,53 @@ class AnalyzeCommand extends Command<void> {
 
     final IOSink iosink = stdout;
 
-    for (final AnalysisContext analysisContext in singleContextList) {
-      for (final String path in filePaths) {
-        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+    for (final String path in filePaths) {
+      for (final Rule rule in rules) {
+        final ResolvedUnitResult resolvedUnitResult = await getResolvedUnitResult(path);
 
-        if (unit is! ResolvedUnitResult) {
-          continue;
-        }
-        if (unit.content == null) {
+        if (resolvedUnitResult.content == null) {
           continue;
         }
 
-        for (final Rule rule in rules) {
-          final List<RuleMessage> messageList = rule.check(
-            parseResult: unit,
-            analysisSettings: analysisSettings,
-          );
+        final List<RuleMessage> messageList = rule.check(
+          parseResult: resolvedUnitResult,
+          analysisSettings: analysisSettings,
+        );
 
-          // need work here
-          final String content = unit.content!;
-          final StringBuffer sb = StringBuffer();
-          final File correctFile = File(unit.path!);
+        // need work here
+        final String content = resolvedUnitResult.content!;
+        final StringBuffer sb = StringBuffer();
+        final File correctFile = File(resolvedUnitResult.path!);
 
-          int prevPosition = 0;
-          for (int i = 0; i < messageList.length; i++) {
-            final RuleMessage message = messageList.elementAt(i);
+        int prevPosition = 0;
+        for (int i = 0; i < messageList.length; i++) {
+          final RuleMessage message = messageList.elementAt(i);
 
-            // print(
-            //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
-            // );
+          // print(
+          //   '$i ${messageList.length} |||| prevPosition = $prevPosition start = ${message.location.offset} end = ${message.location.offset + message.location.length}',
+          // );
 
-            final String strLeftPart = content.substring(prevPosition, message.location.offset);
+          final String strLeftPart = content.substring(prevPosition, message.location.offset);
 
-            sb.write(strLeftPart);
-            if (message.correction == null) {
-              final String originalVal = content.substring(
-                message.location.offset,
-                message.location.offset + message.location.length,
-              );
-              sb.write(originalVal);
-            } else {
-              sb.write(message.correction);
-            }
-
-            prevPosition = message.location.offset + message.location.length;
-
-            if (i == messageList.length - 1) {
-              sb.write(content.substring(prevPosition));
-            }
-
-            await correctFile.writeAsString(sb.toString(), flush: i == 0);
-            iosink.writeln(AnsiColors.prepareRuleForPrint(message));
+          sb.write(strLeftPart);
+          if (message.correction == null) {
+            final String originalVal = content.substring(
+              message.location.offset,
+              message.location.offset + message.location.length,
+            );
+            sb.write(originalVal);
+          } else {
+            sb.write(message.correction);
           }
+
+          prevPosition = message.location.offset + message.location.length;
+
+          if (i == messageList.length - 1) {
+            sb.write(content.substring(prevPosition));
+          }
+
+          await correctFile.writeAsString(sb.toString()); //, flush: i == 0);
+          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
       }
     }

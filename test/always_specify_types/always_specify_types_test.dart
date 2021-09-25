@@ -7,7 +7,7 @@ import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:test/test.dart';
 
-import '../utils/resolved_unit_util.dart';
+import '../../lib/src/utils/resolved_unit_util.dart';
 
 const String _kTestDataPath = 'test/always_specify_types/test_data.dart';
 

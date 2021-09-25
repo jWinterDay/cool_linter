@@ -177,9 +177,9 @@ class AnalyzeCommand extends Command<void> {
     if (alwaysSpecifyTypesRule) {
       sb.writeln('${indent}always_specify_types:');
       // sb.writeln('    - typed_literal');
-      // sb.writeln('$indent$indent- declared_identifier'); // OK
+      sb.writeln('$indent$indent- declared_identifier'); // OK
       // sb.writeln('    - set_or_map_literal');
-      // sb.writeln('$indent$indent- simple_formal_parameter'); // OK
+      sb.writeln('$indent$indent- simple_formal_parameter'); // OK
       // sb.writeln('    - type_name');
       sb.writeln('$indent$indent- variable_declaration_list'); // OK
     }
@@ -275,9 +275,10 @@ class AnalyzeCommand extends Command<void> {
     final AnalysisContext analysisContext = singleContextList.first;
 
     final IOSink iosink = stdout;
+    int totalError = 0;
+    int totalFileCorrects = 0;
 
     for (final String path in filePaths) {
-      //.where((String p) => p.contains('bet_middleware.dart'))) {
       // print('path: [$path]');
       final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
 
@@ -288,53 +289,69 @@ class AnalyzeCommand extends Command<void> {
         continue;
       }
 
-      for (final Rule rule in rules) {
-        final List<RuleMessage> messageList = rule.check(
-          parseResult: unit,
-          analysisSettings: analysisSettings,
-        )..sort((RuleMessage l, RuleMessage r) {
-            return l.location.offset.compareTo(r.location.offset);
-          });
+      try {
+        for (final Rule rule in rules) {
+          final List<RuleMessage> messageList = rule.check(
+            parseResult: unit,
+            analysisSettings: analysisSettings,
+          );
+          // ..sort((RuleMessage l, RuleMessage r) {
+          //     return l.location.offset.compareTo(r.location.offset);
+          //   });
 
-        // need work here
-        final String content = unit.content!;
-        final StringBuffer sb = StringBuffer();
-        final File correctFile = File(unit.path!);
+          // need work here
+          final String content = unit.content!;
+          final StringBuffer sb = StringBuffer();
+          final File correctFile = File(unit.path!);
 
-        int prevPosition = 0;
-        for (int i = 0; i < messageList.length; i++) {
-          final RuleMessage message = messageList.elementAt(i);
+          int prevPosition = 0;
+          for (int i = 0; i < messageList.length; i++) {
+            final RuleMessage message = messageList.elementAt(i);
 
-          // final String part1 = '[$i] len: ${message.location.length} prev = $prevPosition ';
-          // final String part2 = 'offset = ${message.location.offset}';
-          // final String part3 = 'line: [${message.location.startLine}:${message.location.endLine}] ';
-          // final String part4 = 'column: [${message.location.startColumn}:${message.location.endColumn}] ';
+            // final String part1 = '[$i] len: ${message.location.length} prev = $prevPosition ';
+            // final String part2 = 'offset = ${message.location.offset}';
+            // final String part3 = 'line: [${message.location.startLine}:${message.location.endLine}] ';
+            // final String part4 = 'column: [${message.location.startColumn}:${message.location.endColumn}] ';
 
-          // print('$part1 $part2 $part3 $part4');
+            // print('$part1 $part2 $part3 $part4');
 
-          final String strLeftPart = content.substring(prevPosition, message.location.offset);
+            final String strLeftPart = content.substring(prevPosition, message.location.offset);
 
-          sb.write(strLeftPart);
-          if (message.correction == null) {
-            final String originalVal = content.substring(
-              message.location.offset,
-              message.location.offset + message.location.length,
-            );
-            sb.write(originalVal);
-          } else {
-            sb.write(message.correction);
+            sb.write(strLeftPart);
+            if (message.correction == null) {
+              final String originalVal = content.substring(
+                message.location.offset,
+                message.location.offset + message.location.length,
+              );
+              sb.write(originalVal);
+            } else {
+              sb.write(message.correction);
+            }
+
+            prevPosition = message.location.offset + message.location.length;
+
+            if (i == messageList.length - 1) {
+              sb.write(content.substring(prevPosition));
+            }
+
+            await correctFile.writeAsString(sb.toString(), flush: i == 0);
+            iosink.writeln(AnsiColors.prepareRuleForPrint(message));
           }
-
-          prevPosition = message.location.offset + message.location.length;
-
-          if (i == messageList.length - 1) {
-            sb.write(content.substring(prevPosition));
-          }
-
-          await correctFile.writeAsString(sb.toString(), flush: i == 0);
-          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
         }
+
+        totalFileCorrects++;
+      } catch (exc, stackTrace) {
+        print('Exception in file: [$path]');
+        totalError++;
+
+        // discard any changes for file
+        final File tmpFile = File(path);
+        await tmpFile.writeAsString(unit.content!);
       }
     }
+
+    //
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'));
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalFileCorrects, addInfo: 'fixed files'));
   }
 }

@@ -25,18 +25,6 @@ List<String> excludedExtensions = <String>[
   'messages_all.dart',
   'messages_en.dart',
   'messages_ru.dart',
-  'live_bloc.dart',
-  'outcome_operation.dart',
-  'block_operation.dart',
-  'features_operation.dart',
-  'market_operation.dart',
-  'main_market_replace_operation.dart',
-  'favorites_view.dart',
-  'lite_mode_selectors.dart',
-  'ite_alert_bloc.dart',
-  'recharge_withdraws_tab_view.dart',
-  'recharge_deposits_tab_view.dart',
-  'identity_cypis_status_component.dart',
 ];
 
 Future<void> main(List<String> args) async {

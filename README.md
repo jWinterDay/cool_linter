@@ -93,7 +93,7 @@ cool_linter:
   stream1.listen((String ttt) {}); // LINT
   ```
 
-## Attention!!!
+## :warning: Attention!!!
 ###  You must restart your IDE for starting plugin
 
 # 3. CLI

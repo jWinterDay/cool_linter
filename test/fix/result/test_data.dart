@@ -1,4 +1,6 @@
 // LINT
+import 'dart:async';
+
 void firstFunction(String firstArgument, String secondArgument, String thirdArgument) {
   return;
 }
@@ -43,8 +45,30 @@ List<String> strings = []; //LINT
 List<double> stringsdouble = [0.15, 0.16]; //LINT
 Set<String> set = {}; //LINT
 
+typedef Create<T> = T Function();
+
+class AP<T> {
+  AP(this.a, this.create);
+
+  final int a;
+  final Create<T> create;
+}
+
+late StreamSubscription sub;
 void t() {
+  final List<int> t = List.generate(10, (index) => index + 1);
+
+  final cre = () => 'fsd';
+  AP<String> ap = AP(123, cre);
+
+  final s = Stream<double>.value(3.14);
+  sub = s.listen((double event) {
+    print('>> $event');
+  });
+  sub.cancel();
+
   List? list1; // = <double>[]; // LINT
+
 // list1 = <double>[];
   list1?.add(0.15);
 }

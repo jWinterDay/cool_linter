@@ -122,6 +122,35 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (!useTypedLiteral) return;
 
+    //
+    // final DartType? type = node.type;
+
+    // if (type is InterfaceType) {
+    //   final TypeParameterizedElement element = type.aliasElement ?? type.element;
+
+    //   if (element.typeParameters.isNotEmpty &&
+    //       node.typeArguments == null &&
+    //       node.parent is! IsExpression &&
+    //       !_isOptionallyParameterized(element)) {
+    //     // correction
+    //     String? corr;
+
+    //     final String displayString = type.getDisplayString(withNullability: true);
+    //     if (!displayString.contains('dynamic')) {
+    //       corr = displayString;
+    //     }
+
+    //     _visitorRuleMessages.add(
+    //       AlwaysSpecifyTypesResult.withType(
+    //         astNode: node,
+    //         type: ResultType.typeName,
+    //         correction: corr,
+    //       ),
+    //     );
+    //     // print('@@@@@@@@@ _visitNamedType $namedType element = $element');
+    //   }
+    //
+
     // node.staticType.runtimeType
 
     // node.elements.forEach((CollectionElement element) {
@@ -148,10 +177,19 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
           node.typeArguments == null &&
           node.parent is! IsExpression &&
           !_isOptionallyParameterized(element)) {
+        // correction
+        String? corr;
+
+        final String displayString = type.getDisplayString(withNullability: true);
+        if (!displayString.contains('dynamic')) {
+          corr = displayString;
+        }
+
         _visitorRuleMessages.add(
           AlwaysSpecifyTypesResult.withType(
             astNode: node,
             type: ResultType.typeName,
+            correction: corr,
           ),
         );
         // print('@@@@@@@@@ _visitNamedType $namedType element = $element');

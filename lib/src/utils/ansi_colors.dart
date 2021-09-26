@@ -15,7 +15,7 @@ abstract class AnsiColors {
     final StringBuffer sb = StringBuffer();
 
     sb.write(AnsiColors.cyan);
-    sb.write('Total $addInfo:');
+    sb.write('Total $addInfo: ');
     sb.write(AnsiColors.yellow);
     sb.write(count.toString());
 

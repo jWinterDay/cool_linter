@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_rule.dart';
@@ -28,11 +29,11 @@ void main() {
           cool_linter:
             always_specify_types:
               - typed_literal
-              - declared_identifier # OK
-              - set_or_map_literal
-              - simple_formal_parameter # OK
-              - type_name
-              - variable_declaration_list # OK
+              #- declared_identifier # OK
+              #- set_or_map_literal
+              #- simple_formal_parameter # OK
+              #- type_name # partially OK
+              #- variable_declaration_list # OK
         ''',
         ),
       );
@@ -46,11 +47,20 @@ void main() {
 
       // ==================
       // final Iterable<RuleMessage> typedLiteralList =
-      list.forEach((RuleMessage e) {
+      list.forEach((RuleMessage message) {
         final String? typeStr = kOptionNameOfResultType[ResultType.typedLiteral];
-        print(
-          'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',
-        );
+        final Location loc = message.location;
+
+        final String part1 = 'corr: ${message.correction} ';
+        final String part2 = 'offset = ${loc.offset}';
+        final String part3 = 'line: [${loc.startLine}] '; //:${loc.endLine}] ';
+        final String part4 = 'column: [${loc.startColumn}:${loc.endColumn}] ';
+
+        print('$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}');
+
+        // print(
+        //   'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',
+        // );
       });
       // expect(typedLiteralList, hasLength(3));
       // ==================

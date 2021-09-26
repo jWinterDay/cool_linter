@@ -30,17 +30,16 @@ final List<String> secondArray = ['some string', 'some other string', 'and anoth
 
 final Set<String> secondSet = {'some string', 'some other string', 'and another string for length exceed'};
 
-final Map<String, String> secondMap = {
-  'some string': 'and another string for length exceed',
-  'and another string for length exceed':
-      'and another string for length exceed___________________________________________'
+final Map<String, int> secondMap = {
+  'some string': 1,
+  'and another string for length exceed': 2,
 };
 
 // -------
 List<bool> samplelist = []; //LINT
 
 Iterable<List<String>> stringsiter = []; //LINT
-Map<String, String> map = {}; //LINT
+Map<String, double> map = {}; //LINT
 List<String> strings = []; //LINT
 List<double> stringsdouble = [0.15, 0.16]; //LINT
 Set<String> set = {}; //LINT

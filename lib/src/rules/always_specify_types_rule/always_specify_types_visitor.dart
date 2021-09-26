@@ -51,16 +51,31 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   final List<AlwaysSpecifyTypesResult> _visitorRuleMessages = <AlwaysSpecifyTypesResult>[];
   List<AlwaysSpecifyTypesResult> get visitorRuleMessages => _visitorRuleMessages;
 
-  void _checkLiteral(TypedLiteral literal, {required ResultType type}) {
-    if (literal.typeArguments == null) {
+  void _checkLiteral(TypedLiteral node, {required ResultType resultType}) {
+    if (node.typeArguments == null) {
+      // correction
+      String? corr;
+      final DartType? type = node.staticType;
+      if (type is InterfaceType) {
+        final String joinTypes = type.typeArguments.join(', ');
+
+        final StringBuffer sb = StringBuffer()
+          ..write('<')
+          ..write(joinTypes)
+          ..write('>')
+          // add source
+          ..write(node.toString());
+
+        corr = sb.toString();
+      }
+
       _visitorRuleMessages.add(
         AlwaysSpecifyTypesResult.withType(
-          astNode: literal,
-          type: type,
-          correction: 'dfgfdgdfg',
+          astNode: node,
+          type: resultType,
+          correction: corr,
         ),
       );
-      // print('((((++++)))) _checkLiteral: ${literal} | ${literal.parent} ${literal.typeArguments}');
     }
   }
 
@@ -122,48 +137,9 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     if (!useTypedLiteral) return;
 
-    //
-    // final DartType? type = node.type;
-
-    // if (type is InterfaceType) {
-    //   final TypeParameterizedElement element = type.aliasElement ?? type.element;
-
-    //   if (element.typeParameters.isNotEmpty &&
-    //       node.typeArguments == null &&
-    //       node.parent is! IsExpression &&
-    //       !_isOptionallyParameterized(element)) {
-    //     // correction
-    //     String? corr;
-
-    //     final String displayString = type.getDisplayString(withNullability: true);
-    //     if (!displayString.contains('dynamic')) {
-    //       corr = displayString;
-    //     }
-
-    //     _visitorRuleMessages.add(
-    //       AlwaysSpecifyTypesResult.withType(
-    //         astNode: node,
-    //         type: ResultType.typeName,
-    //         correction: corr,
-    //       ),
-    //     );
-    //     // print('@@@@@@@@@ _visitNamedType $namedType element = $element');
-    //   }
-    //
-
-    // node.staticType.runtimeType
-
-    // node.elements.forEach((CollectionElement element) {
-    //   element.childEntities.forEach((SyntacticEntity ent) {
-    //     print('el = ${element is ElementKind} ent = ${ent is FieldElement} ${ent is CollectionElement}------${ent}');
-    //   });
-    //   // print('element = ${element.childEntities}');
-    // });
-    // staticType?.getDisplayString(withNullability: true);
-
     _checkLiteral(
       node,
-      type: ResultType.typedLiteral,
+      resultType: ResultType.typedLiteral,
     );
   }
 
@@ -206,7 +182,7 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     _checkLiteral(
       node,
-      type: ResultType.setOrMapLiteral,
+      resultType: ResultType.setOrMapLiteral,
     );
   }
 

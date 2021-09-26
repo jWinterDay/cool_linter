@@ -28,9 +28,9 @@ void main() {
           r'''
           cool_linter:
             always_specify_types:
-              - typed_literal
+              #- typed_literal
               #- declared_identifier # OK
-              #- set_or_map_literal
+              - set_or_map_literal
               #- simple_formal_parameter # OK
               #- type_name # partially OK
               #- variable_declaration_list # OK

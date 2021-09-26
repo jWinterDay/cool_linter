@@ -185,11 +185,11 @@ class AnalyzeCommand extends Command<void> {
 
     if (alwaysSpecifyTypesRule) {
       sb.writeln('${indent}always_specify_types:');
-      // sb.writeln('    - typed_literal');
+      sb.writeln('    - typed_literal'); // OK
       sb.writeln('$indent$indent- declared_identifier'); // OK
-      // sb.writeln('    - set_or_map_literal');
+      sb.writeln('    - set_or_map_literal');
       sb.writeln('$indent$indent- simple_formal_parameter'); // OK
-      // sb.writeln('    - type_name');
+      sb.writeln('    - type_name'); // partially OK
       sb.writeln('$indent$indent- variable_declaration_list'); // OK
     }
 
@@ -262,7 +262,7 @@ class AnalyzeCommand extends Command<void> {
       }
     }
 
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings));
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings, addInfo: 'errors'));
 
     return wasError;
   }
@@ -349,7 +349,7 @@ class AnalyzeCommand extends Command<void> {
         }
 
         totalFileCorrects++;
-      } catch (exc, stackTrace) {
+      } catch (exc, _) {
         print('Exception in file: [$path]');
         totalError++;
 

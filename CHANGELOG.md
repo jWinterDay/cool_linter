@@ -1,3 +1,5 @@
+## 2.3.2
+    fix // ignore: regexp_exclude
 ## 2.3.1
     changed readme and image
 ## 2.3.0

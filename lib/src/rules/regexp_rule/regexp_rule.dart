@@ -6,6 +6,7 @@ import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
+import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class RegExpRule extends Rule {
@@ -39,6 +40,11 @@ class RegExpRule extends Rule {
   }) {
     final String? path = parseResult.path;
     if (path == null) {
+      return <RuleMessage>[];
+    }
+
+    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
 
@@ -80,23 +86,29 @@ class RegExpRule extends Rule {
             // ignore: always_specify_types
             final offsetLocation = lineInfo.getLocation(offset);
 
-            final RuleMessage ruleMessage = RuleMessage(
-              severityName: excludeWord.severity,
-              message: 'regexp_exclude: ${excludeWord.hint} for pattern: ${excludeWord.pattern}',
-              code: 'regexp_exclude',
-              changeMessage: 'cool_linter. need to replace by pattern:',
-              location: Location(
-                path,
-                offset, // offset
-                1, // length
-                offsetLocation.lineNumber, // startLine
-                offsetLocation.columnNumber + 1, // startColumn
-                offsetLocation.lineNumber, // endLine
-                offsetLocation.columnNumber + 1, // endColumn
-              ),
-            );
+            // check by ignore patter
+            final int columnWithIgnoreComment = offsetLocation.lineNumber - 1;
+            final bool willIgnore = ignoreColumnList.contains(columnWithIgnoreComment);
 
-            result.add(ruleMessage);
+            if (!willIgnore) {
+              final RuleMessage ruleMessage = RuleMessage(
+                severityName: excludeWord.severity,
+                message: 'regexp_exclude: ${excludeWord.hint}',
+                code: 'regexp_exclude',
+                changeMessage: 'cool_linter. need to replace by pattern:',
+                location: Location(
+                  path,
+                  offset, // offset
+                  1, // length
+                  offsetLocation.lineNumber, // startLine
+                  offsetLocation.columnNumber + 1, // startColumn
+                  offsetLocation.lineNumber, // endLine
+                  offsetLocation.columnNumber + 1, // endColumn
+                ),
+              );
+
+              result.add(ruleMessage);
+            }
           }
         } while (offset != -1);
       }

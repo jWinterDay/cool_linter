@@ -91,7 +91,7 @@ packages:
       name: cool_linter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.4"
+    version: "2.3.5"
   crypto:
     dependency: transitive
     description:

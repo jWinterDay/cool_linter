@@ -89,11 +89,31 @@ class AnalyzeCommand extends Command<void> {
       regexpSettings = _getCliRegExpSettingsFromFile(regexpPath);
     }
 
-    AnsiColors.cliSettingsPrint('directories', dirList);
-    AnsiColors.cliSettingsPrint('prefer_trailing_comma', preferTrailingCommaRule);
-    AnsiColors.cliSettingsPrint('always_specify_types', alwaysSpecifyTypesRule);
-    AnsiColors.cliSettingsPrint('always_specify_stream_subscription', alwaysSpecifyStreamSubscriptionRule);
-    AnsiColors.cliSettingsPrint('regexp_path', regexpPath);
+    AnsiColors.cliSettingsPrint(
+      'directories',
+      dirList,
+      withColor: false,
+    );
+    AnsiColors.cliSettingsPrint(
+      'prefer_trailing_comma',
+      preferTrailingCommaRule,
+      withColor: false,
+    );
+    AnsiColors.cliSettingsPrint(
+      'always_specify_types',
+      alwaysSpecifyTypesRule,
+      withColor: false,
+    );
+    AnsiColors.cliSettingsPrint(
+      'always_specify_stream_subscription',
+      alwaysSpecifyStreamSubscriptionRule,
+      withColor: false,
+    );
+    AnsiColors.cliSettingsPrint(
+      'regexp_path',
+      regexpPath,
+      withColor: false,
+    );
 
     // work
     final String rootFolder = Directory.current.path;

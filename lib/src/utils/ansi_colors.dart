@@ -22,7 +22,13 @@ abstract class AnsiColors {
     return sb.toString();
   }
 
-  static void cliSettingsPrint(String name, Object? setting) {
+  static void cliSettingsPrint(String name, Object? setting, {bool withColor = true}) {
+    if (withColor) {
+      // ignore: avoid_print
+      print('[$name]: ${setting?.toString()}');
+      return;
+    }
+
     // ignore: avoid_print
     print('${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}');
   }

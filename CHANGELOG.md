@@ -1,3 +1,5 @@
+## 2.3.4
+    withColor flag for command line
 ## 2.3.3
     withColor flag for command line
 ## 2.3.2

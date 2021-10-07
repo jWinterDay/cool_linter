@@ -11,12 +11,12 @@ abstract class AnsiColors {
   static const String white = '\x1B[37m';
   static const String reset = '\x1B[0m';
 
-  static String totalWarningsPrint(int count, {String addInfo = ''}) {
+  static String totalWarningsPrint(int count, {String addInfo = '', bool withColor = true}) {
     final StringBuffer sb = StringBuffer();
 
-    sb.write(AnsiColors.cyan);
+    if (withColor) sb.write(AnsiColors.cyan);
     sb.write('Total $addInfo: ');
-    sb.write(AnsiColors.yellow);
+    if (withColor) sb.write(AnsiColors.yellow);
     sb.write(count.toString());
 
     return sb.toString();
@@ -27,23 +27,23 @@ abstract class AnsiColors {
     print('${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}');
   }
 
-  static String prepareRuleForPrint(RuleMessage ruleMessage) {
+  static String prepareRuleForPrint(RuleMessage ruleMessage, {bool withColor = true}) {
     final StringBuffer sb = StringBuffer();
 
-    sb.write(AnsiColors.red);
+    if (withColor) sb.write(AnsiColors.red);
     sb.write(ruleMessage.message);
     sb.write(' ');
 
-    sb.write(AnsiColors.green);
+    if (withColor) sb.write(AnsiColors.green);
     sb.write(ruleMessage.location.file + ':');
 
-    sb.write(AnsiColors.white);
+    if (withColor) sb.write(AnsiColors.white);
     sb.write(ruleMessage.location.endLine); // line
     sb.write(':');
     sb.write(ruleMessage.location.endColumn); // column
     // sb.write(' > ${ruleMessage.location}');
 
-    sb.write(AnsiColors.reset);
+    if (withColor) sb.write(AnsiColors.reset);
 
     return sb.toString();
   }

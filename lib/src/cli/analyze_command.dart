@@ -251,7 +251,7 @@ class AnalyzeCommand extends Command<void> {
           // print(
           //   'col: [${message.location.startColumn}:${message.location.endColumn}] line:[${message.location.startLine}] offset = ${message.location.offset}',
           // );
-          iosink.writeln(AnsiColors.prepareRuleForPrint(message));
+          iosink.writeln(AnsiColors.prepareRuleForPrint(message, withColor: false));
         }
 
         totalWarnings += messageList.length;
@@ -262,7 +262,7 @@ class AnalyzeCommand extends Command<void> {
       }
     }
 
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings, addInfo: 'errors'));
+    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings, addInfo: 'errors', withColor: false));
 
     return wasError;
   }

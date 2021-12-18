@@ -9,7 +9,6 @@ extension AstAnalyzeResultIgnoreFilter on AstAnalyzeResult {
     required Iterable<int> ignoreColumnList,
   }) {
     final int offset = visitorMessage.astNode.offset;
-    // ignore: always_specify_types
     final offsetLocation = parseResult.lineInfo.getLocation(offset);
     final int warningLineNumber = offsetLocation.lineNumber;
 

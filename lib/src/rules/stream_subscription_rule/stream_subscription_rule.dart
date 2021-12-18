@@ -53,9 +53,7 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;
 
-      // ignore: always_specify_types
       final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      // ignore: always_specify_types
       final endLocation = parseResult.lineInfo.getLocation(end);
 
       return RuleMessage(

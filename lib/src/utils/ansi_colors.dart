@@ -24,13 +24,11 @@ abstract class AnsiColors {
 
   static void cliSettingsPrint(String name, Object? setting, {bool withColor = true}) {
     if (withColor) {
-      // ignore: avoid_print
       print('${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}');
 
       return;
     }
 
-    // ignore: avoid_print
     print('[$name]: ${setting?.toString()}');
   }
 

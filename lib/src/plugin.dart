@@ -80,7 +80,6 @@ class CoolLinterPlugin extends ServerPlugin {
     );
 
     final AnalysisContext analysisContext = builder.createContext(contextRoot: locator.first);
-    // ignore: avoid_as
     final DriverBasedAnalysisContext context = analysisContext as DriverBasedAnalysisContext;
     final AnalysisDriver dartDriver = context.driver;
 
@@ -164,7 +163,6 @@ class CoolLinterPlugin extends ServerPlugin {
     plugin.EditGetFixesParams parameters,
   ) async {
     try {
-      // ignore: avoid_as
       final AnalysisDriver driver = driverForPath(parameters.file) as AnalysisDriver;
       final SomeResolvedUnitResult analysisResult = await driver.getResult2(parameters.file);
 
@@ -250,7 +248,6 @@ class CoolLinterPlugin extends ServerPlugin {
       ..._filesFromSetPriorityFilesRequest,
 
       // ... all other files need to be analyzed, but don't trump priority
-      // ignore: avoid_as
       for (final AnalysisDriverGeneric driver2 in driverMap.values) ...(driver2 as AnalysisDriver).addedFiles,
     };
 
@@ -273,7 +270,6 @@ class CoolLinterPlugin extends ServerPlugin {
 
   AnalysisSettings? _getAnalysisSettings(AnalysisDriver analysisDriver) {
     try {
-      // ignore: deprecated_member_use
       final File? optionsPath = analysisDriver.analysisContext?.contextRoot.optionsFile;
       final bool exists = optionsPath?.exists ?? false;
 

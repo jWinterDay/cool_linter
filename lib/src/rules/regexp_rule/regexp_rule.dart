@@ -83,7 +83,6 @@ class RegExpRule extends Rule {
           start = offset + 1;
 
           if (offset != -1) {
-            // ignore: always_specify_types
             final offsetLocation = lineInfo.getLocation(offset);
 
             // check by ignore patter

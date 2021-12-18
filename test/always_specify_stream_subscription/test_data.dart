@@ -31,10 +31,7 @@ class Test {
     StreamSubscription<bool> lateSubWithoutCancel = Stream<bool>.value(true).listen((_) {}); // OK
 
     // 1 warning
-    // ignore: always_specify_stream_subscription
     Stream<String>.value('value').listen((String val) {}); // OK
-
-    // ignore: always_specify_stream_subscription
 
     Stream<String>.value('value').listen((String val) {}); // LINT
   }

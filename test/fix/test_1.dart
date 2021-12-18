@@ -104,6 +104,5 @@ enum FirstEnum2 {
   thirdItem,
   forthItem,
   fifthItem,
-  // ignore: prefer_trailing_comma
   sixthItem // LINT
 }

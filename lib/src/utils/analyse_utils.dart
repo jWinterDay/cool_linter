@@ -94,7 +94,6 @@ abstract class AnalysisSettingsUtil {
     final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
     // places of [// ignore: always_specify_stream_subscription] comment
     final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
-      // ignore: always_specify_types
       final loc = parseResult.lineInfo.getLocation(match.start);
 
       return loc.lineNumber;

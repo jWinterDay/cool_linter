@@ -56,9 +56,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 
-      // ignore: always_specify_types
       final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      // ignore: always_specify_types
       final endLocation = parseResult.lineInfo.getLocation(end);
 
       String? corr = parseResult.content?.substring(offset, end);

@@ -69,19 +69,13 @@ class AnalyzeCommand extends Command<void> {
 
   @override
   Future<void> run() async {
-    // ignore: avoid_as
     final List<String> dirList = argResults?['directories'] as List<String>;
-    // ignore: avoid_as
     final bool fix = argResults?['fix'] as bool;
-    // ignore: avoid_as
     final bool alwaysSpecifyTypesRule = argResults?['always_specify_types'] as bool;
 
-    // ignore: avoid_as
     final bool alwaysSpecifyStreamSubscriptionRule = argResults?['always_specify_stream_subscription'] as bool;
-    // ignore: avoid_as
     final String? regexpPath = argResults?['regexp_path'] as String?;
 
-    // ignore: avoid_as
     final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
 
     RegexpSettings? regexpSettings;

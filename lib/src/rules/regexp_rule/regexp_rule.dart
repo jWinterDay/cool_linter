@@ -102,8 +102,8 @@ class RegExpRule extends Rule {
                   1, // length
                   offsetLocation.lineNumber, // startLine
                   offsetLocation.columnNumber + 1, // startColumn
-                  offsetLocation.lineNumber, // endLine
-                  offsetLocation.columnNumber + 1, // endColumn
+                  endLine: offsetLocation.lineNumber, // endLine
+                  endColumn: offsetLocation.columnNumber + 1, // endColumn
                 ),
               );
 

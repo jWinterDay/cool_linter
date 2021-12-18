@@ -59,7 +59,7 @@ void t() {
   sub = s.listen((double event) {
     print('>> $event');
   });
-  sub.cancel();
+  sub?.cancel();
 
   final cre = () => 'fsd';
   AP<String> ap = AP(123, cre);

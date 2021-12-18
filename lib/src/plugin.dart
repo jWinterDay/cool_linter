@@ -95,10 +95,10 @@ class CoolLinterPlugin extends ServerPlugin {
 
     runZonedGuarded(
       () {
-        dartDriver.results.listen((ResolvedUnitResult analysisResult) {
+        dartDriver.results.listen((Object analysisResult) {
           _processResult(
             dartDriver,
-            analysisResult,
+            analysisResult as ResolvedUnitResult,
             analysisSettings: _analysisSettings!,
             excludesGlobList: _excludesGlobList,
           );

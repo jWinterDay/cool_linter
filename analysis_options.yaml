@@ -4,7 +4,7 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-  exclude: ["**/*.g.dart", "**/*.mocks.dart", "**/*.freezed.dart"]
+  exclude: ["**/*.g.dart", "**/*.mocks.dart", "**/*.freezed.dart", "tools"]
 
 linter:
   rules:

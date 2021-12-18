@@ -77,8 +77,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
           end - offset, // length
           offsetLocation.lineNumber, // startLine
           offsetLocation.columnNumber, // startColumn
-          endLocation.lineNumber, // endLine
-          endLocation.columnNumber, // endColumn
+          endLine: endLocation.lineNumber, // endLine
+          endColumn: endLocation.columnNumber, // endColumn
         ),
         correction: corr,
       );

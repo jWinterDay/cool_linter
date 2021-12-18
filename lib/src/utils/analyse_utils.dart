@@ -88,7 +88,7 @@ abstract class AnalysisSettingsUtil {
       return null;
     }
 
-    final String content = parseResult.content!;
+    final String content = parseResult.content;
 
     // ignores
     final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);

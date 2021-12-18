@@ -65,7 +65,7 @@ class Checker {
         errorMessage.code,
         hasFix: true,
         correction:
-            'go correct path = ${parseResult.path} stamp = ${parseResult.unit?.declaredElement?.source.modificationStamp} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
+            'go correct path = ${parseResult.path} stamp = ${parseResult.unit.declaredElement?.source.modificationStamp} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
       );
 
       final PrioritizedSourceChange fix = PrioritizedSourceChange(
@@ -74,8 +74,8 @@ class Checker {
           'Apply fixes for cool_linter.',
           edits: <SourceFileEdit>[
             SourceFileEdit(
-              parseResult.path!,
-              parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+              parseResult.path,
+              parseResult.unit.declaredElement?.source.modificationStamp ?? 1,
               edits: <SourceEdit>[
                 SourceEdit(
                   errorMessage.location.offset, //1,

@@ -323,9 +323,9 @@ class AnalyzeCommand extends Command<void> {
           //   });
 
           // need work here
-          final String content = unit.content!;
+          final String content = unit.content;
           final StringBuffer sb = StringBuffer();
-          final File correctFile = File(unit.path!);
+          final File correctFile = File(unit.path);
 
           int prevPosition = 0;
           for (int i = 0; i < messageList.length; i++) {
@@ -369,7 +369,7 @@ class AnalyzeCommand extends Command<void> {
 
         // discard any changes for file
         final File tmpFile = File(path);
-        await tmpFile.writeAsString(unit.content!);
+        await tmpFile.writeAsString(unit.content);
       }
     }
 

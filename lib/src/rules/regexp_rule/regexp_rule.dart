@@ -48,7 +48,7 @@ class RegExpRule extends Rule {
       return <RuleMessage>[];
     }
 
-    final String content = parseResult.content!;
+    final String content = parseResult.content;
     final List<ExcludeWord> excludeWordList = analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
 
     if (!analysisSettings.useRegexpExclude) {

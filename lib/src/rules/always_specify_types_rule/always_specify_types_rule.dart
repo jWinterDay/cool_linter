@@ -76,7 +76,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       useTypeName: useTypeName,
       useVariableDeclarationList: useVariableDeclarationList,
     );
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
     // final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
 
@@ -105,7 +105,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
         addInfo: typesResult.resultTypeAsString,
         correction: typesResult.correction,
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine

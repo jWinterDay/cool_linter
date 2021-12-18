@@ -41,7 +41,7 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
     }
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
     return visitor.visitorRuleMessages.where((StreamSubscriptionResult visitorMessage) {
       return visitorMessage.filterByIgnore(
@@ -62,7 +62,7 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
         code: 'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
         changeMessage: 'cool_linter. always_specify_stream_subscription',
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine

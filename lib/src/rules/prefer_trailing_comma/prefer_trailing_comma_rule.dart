@@ -44,7 +44,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       this,
       lineInfo: parseResult.lineInfo,
     );
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
     return visitor.visitorRuleMessages.where((PreferTrailingCommaResult visitorMessage) {
       return visitorMessage.filterByIgnore(
@@ -59,7 +59,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       final offsetLocation = parseResult.lineInfo.getLocation(offset);
       final endLocation = parseResult.lineInfo.getLocation(end);
 
-      String? corr = parseResult.content?.substring(offset, end);
+      String? corr = parseResult.content.substring(offset, end);
       if (corr != null) {
         corr += TokenType.COMMA.lexeme;
       }
@@ -70,7 +70,7 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
         code: 'prefer_trailing_comma',
         changeMessage: 'prefer_trailing_comma',
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine

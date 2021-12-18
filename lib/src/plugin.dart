@@ -11,7 +11,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart' as plugin;
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as pg;
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:cool_linter/src/checker.dart';
@@ -164,7 +163,7 @@ class CoolLinterPlugin extends ServerPlugin {
   ) async {
     try {
       final AnalysisDriver driver = driverForPath(parameters.file) as AnalysisDriver;
-      final SomeResolvedUnitResult analysisResult = await driver.getResult2(parameters.file);
+      final SomeResolvedUnitResult analysisResult = await driver.getResult(parameters.file);
 
       if (analysisResult is! ResolvedUnitResult) {
         return plugin.EditGetFixesResult(<pg.AnalysisErrorFixes>[]);
@@ -202,33 +201,23 @@ class CoolLinterPlugin extends ServerPlugin {
     }
 
     try {
-      // If there is no relevant analysis result, notify the analyzer of no errors.
-      if (analysisResult.unit == null) {
-        channel.sendNotification(
-          plugin.AnalysisErrorsParams(
-            filePath,
-            <plugin.AnalysisError>[],
-          ).toNotification(),
-        );
-      } else {
-        // If there is something to analyze, do so and notify the analyzer.
-        // Note that notifying with an empty set of errors is important as
-        // this clears errors if they were fixed.
-        final Iterable<plugin.AnalysisErrorFixes> checkResult = _checker.checkResult(
-          analysisSettings: analysisSettings,
-          excludesGlobList: excludesGlobList,
-          parseResult: analysisResult,
-        );
+      // If there is something to analyze, do so and notify the analyzer.
+      // Note that notifying with an empty set of errors is important as
+      // this clears errors if they were fixed.
+      final Iterable<plugin.AnalysisErrorFixes> checkResult = _checker.checkResult(
+        analysisSettings: analysisSettings,
+        excludesGlobList: excludesGlobList,
+        parseResult: analysisResult,
+      );
 
-        channel.sendNotification(
-          plugin.AnalysisErrorsParams(
-            filePath,
-            checkResult.map((plugin.AnalysisErrorFixes e) {
-              return e.error;
-            }).toList(),
-          ).toNotification(),
-        );
-      }
+      channel.sendNotification(
+        plugin.AnalysisErrorsParams(
+          filePath,
+          checkResult.map((plugin.AnalysisErrorFixes e) {
+            return e.error;
+          }).toList(),
+        ).toNotification(),
+      );
     } catch (exc, stackTrace) {
       // Notify the analyzer that an exception happened.
       channel.sendNotification(

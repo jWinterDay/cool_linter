@@ -25,6 +25,7 @@ class MockResolvedUnitResult extends ResolvedUnitResult {
   @override
   AnalysisSession get session => throw UnimplementedError();
   @override
+  // ignore: deprecated_member_use
   ResultState get state => throw UnimplementedError();
   @override
   TypeProvider get typeProvider => throw UnimplementedError();

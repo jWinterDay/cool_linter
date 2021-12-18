@@ -6,9 +6,8 @@ import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_t
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
+import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:test/test.dart';
-
-import '../../lib/src/utils/resolved_unit_util.dart';
 
 const String _kTestDataPath = 'test/always_specify_types/test_data.dart';
 
@@ -47,7 +46,8 @@ void main() {
 
       // ==================
       // final Iterable<RuleMessage> typedLiteralList =
-      list.forEach((RuleMessage message) {
+      for (final RuleMessage message in list) {
+        // ignore: unused_local_variable
         final String? typeStr = kOptionNameOfResultType[ResultType.typedLiteral];
         final Location loc = message.location;
 
@@ -61,7 +61,7 @@ void main() {
         // print(
         //   'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',
         // );
-      });
+      }
       // expect(typedLiteralList, hasLength(3));
       // ==================
 

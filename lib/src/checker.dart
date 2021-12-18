@@ -27,10 +27,6 @@ class Checker {
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
-    if (parseResult.content == null || parseResult.path == null) {
-      return <AnalysisErrorFixes>[];
-    }
-
     final bool isExcluded = AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
     if (isExcluded) {
       return <AnalysisErrorFixes>[];
@@ -65,7 +61,7 @@ class Checker {
         errorMessage.code,
         hasFix: true,
         correction:
-            'go correct path = ${parseResult.path} stamp = ${parseResult.unit.declaredElement?.source.modificationStamp} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
+            'go correct path = ${parseResult.path} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
       );
 
       final PrioritizedSourceChange fix = PrioritizedSourceChange(
@@ -75,7 +71,7 @@ class Checker {
           edits: <SourceFileEdit>[
             SourceFileEdit(
               parseResult.path,
-              parseResult.unit.declaredElement?.source.modificationStamp ?? 1,
+              1,
               edits: <SourceEdit>[
                 SourceEdit(
                   errorMessage.location.offset, //1,

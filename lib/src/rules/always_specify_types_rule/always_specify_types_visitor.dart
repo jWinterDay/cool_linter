@@ -143,11 +143,11 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     );
   }
 
-  void _visitNamedType(TypeName node) {
+  void _visitNamedType(NamedType node) {
     final DartType? type = node.type;
 
     if (type is InterfaceType) {
-      final TypeParameterizedElement element = type.aliasElement ?? type.element;
+      final TypeParameterizedElement element = type.alias?.element ?? type.element;
 
       if (element.typeParameters.isNotEmpty &&
           node.typeArguments == null &&
@@ -224,8 +224,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
   // ---
   @override
-  void visitTypeName(TypeName node) {
-    super.visitTypeName(node);
+  void visitNamedType(NamedType node) {
+    super.visitNamedType(node);
 
     if (!useTypeName) return;
 

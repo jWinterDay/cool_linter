@@ -4,7 +4,14 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-  exclude: ["**/*.g.dart", "**/*.mocks.dart", "**/*.freezed.dart", "tools"]
+  errors:
+    invalid_annotation_target: ignore
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.mocks.dart"
+    - "**/*.freezed.dart"
+    - tools
+    - test/**/test_data.dart
 
 linter:
   rules:
@@ -26,7 +33,6 @@ linter:
     - cancel_subscriptions
     - close_sinks
     - directives_ordering
-    - flutter_style_todos
     - leading_newlines_in_multiline_strings
     - literal_only_boolean_expressions
     - missing_whitespace_between_adjacent_strings

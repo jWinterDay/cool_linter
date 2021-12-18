@@ -83,7 +83,7 @@ class RegExpRule extends Rule {
           start = offset + 1;
 
           if (offset != -1) {
-            final offsetLocation = lineInfo.getLocation(offset);
+            final CharacterLocation offsetLocation = lineInfo.getLocation(offset);
 
             // check by ignore patter
             final int columnWithIgnoreComment = offsetLocation.lineNumber - 1;

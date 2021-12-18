@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;
@@ -83,18 +84,14 @@ abstract class AnalysisSettingsUtil {
     });
   }
 
-  static Iterable<int>? ignoreColumnList(ResolvedUnitResult parseResult, RegExp regExpSuppression) {
-    if (parseResult.content == null) {
-      return null;
-    }
-
+  static Iterable<int> ignoreColumnList(ResolvedUnitResult parseResult, RegExp regExpSuppression) {
     final String content = parseResult.content;
 
     // ignores
     final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
     // places of [// ignore: always_specify_stream_subscription] comment
     final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
-      final loc = parseResult.lineInfo.getLocation(match.start);
+      final CharacterLocation loc = parseResult.lineInfo.getLocation(match.start);
 
       return loc.lineNumber;
     });

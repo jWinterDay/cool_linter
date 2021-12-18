@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
@@ -53,8 +54,8 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;
 
-      final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      final endLocation = parseResult.lineInfo.getLocation(end);
+      final CharacterLocation offsetLocation = parseResult.lineInfo.getLocation(offset);
+      final CharacterLocation endLocation = parseResult.lineInfo.getLocation(end);
 
       return RuleMessage(
         severityName: 'WARNING', // always_specify_stream_subscription

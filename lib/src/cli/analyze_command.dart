@@ -246,7 +246,7 @@ class AnalyzeCommand extends Command<void> {
       for (final String path in filePaths) {
         // print('----path = $path');
 
-        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit(path);
 
         if (unit is! ResolvedUnitResult) {
           continue;
@@ -303,12 +303,9 @@ class AnalyzeCommand extends Command<void> {
 
     for (final String path in filePaths) {
       // print('path: [$path]');
-      final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+      final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit(path);
 
       if (unit is! ResolvedUnitResult) {
-        continue;
-      }
-      if (unit.content == null) {
         continue;
       }
 

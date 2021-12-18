@@ -27,7 +27,8 @@ class Checker {
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
-    final bool isExcluded = AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
+    final bool isExcluded =
+        AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
     if (isExcluded) {
       return <AnalysisErrorFixes>[];
     }

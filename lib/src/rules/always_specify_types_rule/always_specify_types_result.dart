@@ -38,7 +38,8 @@ class AlwaysSpecifyTypesResult extends AstAnalyzeResult {
 
   late ResultType resultType;
 
-  String get resultTypeAsString => kOptionNameOfResultType[resultType] ?? 'Unknown';
+  String get resultTypeAsString =>
+      kOptionNameOfResultType[resultType] ?? 'Unknown';
 
   @override
   String toString() {

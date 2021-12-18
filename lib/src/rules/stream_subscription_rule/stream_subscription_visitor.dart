@@ -12,15 +12,18 @@ class StreamSubscriptionVisitor extends RecursiveAstVisitor<void> {
 
   final Rule rule;
 
-  final List<StreamSubscriptionResult> _visitorRuleMessages = <StreamSubscriptionResult>[];
-  List<StreamSubscriptionResult> get visitorRuleMessages => _visitorRuleMessages;
+  final List<StreamSubscriptionResult> _visitorRuleMessages =
+      <StreamSubscriptionResult>[];
+  List<StreamSubscriptionResult> get visitorRuleMessages =>
+      _visitorRuleMessages;
 
   @override
   void visitExpressionStatement(ExpressionStatement node) {
     super.visitExpressionStatement(node);
 
     if (node.expression is MethodInvocation &&
-        node.expression.staticType?.element?.displayName == _kStreamSubscriptionName) {
+        node.expression.staticType?.element?.displayName ==
+            _kStreamSubscriptionName) {
       _visitorRuleMessages.add(
         StreamSubscriptionResult(
           astNode: node,
@@ -33,7 +36,8 @@ class StreamSubscriptionVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitCascadeExpression(CascadeExpression node) {
-    final bool parentContainsName = node.staticType?.element?.displayName == _kStreamSubscriptionName;
+    final bool parentContainsName =
+        node.staticType?.element?.displayName == _kStreamSubscriptionName;
 
     final bool childContainsName = node.cascadeSections.any((Expression e) {
       return e.staticType?.element?.displayName == _kStreamSubscriptionName;

@@ -2,7 +2,8 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart'
+    show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
@@ -23,7 +24,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
         );
 
   @override
-  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?prefer_trailing_comma');
+  final RegExp regExpSuppression =
+      RegExp(r'\/\/(\s)?ignore:(\s)?prefer_trailing_comma');
 
   /// custom check
   @override
@@ -36,7 +38,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
-    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    final Iterable<int>? ignoreColumnList =
+        AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
     if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
@@ -47,7 +50,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
     );
     parseResult.unit.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.where((PreferTrailingCommaResult visitorMessage) {
+    return visitor.visitorRuleMessages
+        .where((PreferTrailingCommaResult visitorMessage) {
       return visitorMessage.filterByIgnore(
         ignoreColumnList: ignoreColumnList,
         parseResult: parseResult,
@@ -57,10 +61,13 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 
-      final CharacterLocation offsetLocation = parseResult.lineInfo.getLocation(offset);
-      final CharacterLocation endLocation = parseResult.lineInfo.getLocation(end);
+      final CharacterLocation offsetLocation =
+          parseResult.lineInfo.getLocation(offset);
+      final CharacterLocation endLocation =
+          parseResult.lineInfo.getLocation(end);
 
-      final String corr = parseResult.content.substring(offset, end) + TokenType.COMMA.lexeme;
+      final String corr =
+          parseResult.content.substring(offset, end) + TokenType.COMMA.lexeme;
 
       return RuleMessage(
         severityName: 'WARNING',

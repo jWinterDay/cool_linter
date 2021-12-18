@@ -33,7 +33,8 @@ const List<String> kDefaultExcludedFolders = <String>[
 /// '.dart_tool/**',
 /// '.vscode/**',
 /// ```
-final List<String> kDefaultExcludedFoldersYaml = kDefaultExcludedFolders.map((String e) {
+final List<String> kDefaultExcludedFoldersYaml =
+    kDefaultExcludedFolders.map((String e) {
   return e + '/**';
 }).toList();
 
@@ -63,8 +64,10 @@ abstract class AnalysisSettingsUtil {
     return AnalysisSettings.fromJson(convertYamlToMap(yaml));
   }
 
-  static List<Glob> excludesGlobList(String root, AnalysisSettings analysisSettings) {
-    final Iterable<String> patterns = analysisSettings.coolLinter?.excludeFolders ?? <String>[];
+  static List<Glob> excludesGlobList(
+      String root, AnalysisSettings analysisSettings) {
+    final Iterable<String> patterns =
+        analysisSettings.coolLinter?.excludeFolders ?? <String>[];
 
     return <String>[
       ...kDefaultExcludedFoldersYaml,
@@ -84,14 +87,16 @@ abstract class AnalysisSettingsUtil {
     });
   }
 
-  static Iterable<int> ignoreColumnList(ResolvedUnitResult parseResult, RegExp regExpSuppression) {
+  static Iterable<int> ignoreColumnList(
+      ResolvedUnitResult parseResult, RegExp regExpSuppression) {
     final String content = parseResult.content;
 
     // ignores
     final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
     // places of [// ignore: always_specify_stream_subscription] comment
     final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
-      final CharacterLocation loc = parseResult.lineInfo.getLocation(match.start);
+      final CharacterLocation loc =
+          parseResult.lineInfo.getLocation(match.start);
 
       return loc.lineNumber;
     });

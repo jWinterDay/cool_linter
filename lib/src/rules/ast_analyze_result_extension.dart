@@ -10,10 +10,12 @@ extension AstAnalyzeResultIgnoreFilter on AstAnalyzeResult {
     required Iterable<int> ignoreColumnList,
   }) {
     final int offset = visitorMessage.astNode.offset;
-    final CharacterLocation offsetLocation = parseResult.lineInfo.getLocation(offset);
+    final CharacterLocation offsetLocation =
+        parseResult.lineInfo.getLocation(offset);
     final int warningLineNumber = offsetLocation.lineNumber;
 
-    final bool willIgnoreNextLine = ignoreColumnList.any((int ignoreLineNumber) {
+    final bool willIgnoreNextLine =
+        ignoreColumnList.any((int ignoreLineNumber) {
       return ignoreLineNumber + 1 == warningLineNumber;
     });
 

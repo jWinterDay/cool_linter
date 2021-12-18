@@ -7,7 +7,8 @@ import 'package:cool_linter/src/utils/analyse_utils.dart';
 import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:test/test.dart';
 
-const String _kTestDataPath = 'test/always_specify_stream_subscription/test_data.dart';
+const String _kTestDataPath =
+    'test/always_specify_stream_subscription/test_data.dart';
 
 void main() {
   late ResolvedUnitResult resolvedUnitResult;
@@ -44,10 +45,12 @@ void main() {
 
       // yaml
       expect(analysisSettings.coolLinter!.extendedRules, hasLength(1));
-      expect(analysisSettings.coolLinter!.extendedRules.first, 'always_specify_stream_subscription');
+      expect(analysisSettings.coolLinter!.extendedRules.first,
+          'always_specify_stream_subscription');
 
       // checker
-      final List<RuleMessage> ruleMessageList = specifyStreamSubscriptionRule.check(
+      final List<RuleMessage> ruleMessageList =
+          specifyStreamSubscriptionRule.check(
         parseResult: resolvedUnitResult,
         analysisSettings: analysisSettings,
       );

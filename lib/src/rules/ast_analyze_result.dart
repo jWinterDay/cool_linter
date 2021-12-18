@@ -9,7 +9,8 @@ abstract class AstAnalyzeResult {
 
   @override
   String toString() {
-    final StringBuffer sb = StringBuffer()..writeln('astNode: ${astNode.toString()}');
+    final StringBuffer sb = StringBuffer()
+      ..writeln('astNode: ${astNode.toString()}');
 
     return sb.toString();
   }

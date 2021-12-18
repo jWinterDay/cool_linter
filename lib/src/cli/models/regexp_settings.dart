@@ -21,7 +21,8 @@ class RegexpSettings with _$RegexpSettings {
         List<ExcludeWord> regexpExclude,
   }) = _RegexpSettings;
 
-  factory RegexpSettings.fromJson(Map<String, dynamic> json) => _$RegexpSettingsFromJson(json);
+  factory RegexpSettings.fromJson(Map<String, dynamic> json) =>
+      _$RegexpSettingsFromJson(json);
 
   bool get existsAtLeastOneRegExp {
     return regexpExclude.any((ExcludeWord item) {

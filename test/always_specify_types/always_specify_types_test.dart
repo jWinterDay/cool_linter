@@ -48,7 +48,8 @@ void main() {
       // final Iterable<RuleMessage> typedLiteralList =
       for (final RuleMessage message in list) {
         // ignore: unused_local_variable
-        final String? typeStr = kOptionNameOfResultType[ResultType.typedLiteral];
+        final String? typeStr =
+            kOptionNameOfResultType[ResultType.typedLiteral];
         final Location loc = message.location;
 
         final String part1 = 'corr: ${message.correction} ';
@@ -56,7 +57,8 @@ void main() {
         final String part3 = 'line: [${loc.startLine}] '; //:${loc.endLine}] ';
         final String part4 = 'column: [${loc.startColumn}:${loc.endColumn}] ';
 
-        print('$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}');
+        print(
+            '$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}');
 
         // print(
         //   'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',

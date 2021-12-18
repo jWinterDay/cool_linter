@@ -42,7 +42,8 @@ void main() {
       expect(ruleMessageList, hasLength(7));
 
       for (final RuleMessage e in ruleMessageList) {
-        final String part1 = 'corr: [${e.correction}] offset: ${e.location.offset} len: ${e.location.length}';
+        final String part1 =
+            'corr: [${e.correction}] offset: ${e.location.offset} len: ${e.location.length}';
         final String part2 =
             'startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]';
         print('$part1 $part2');

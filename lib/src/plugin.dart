@@ -94,7 +94,9 @@ class CoolLinterPlugin extends ServerPlugin {
 
     // final List<Glob> excludesGlobList = AnalysisSettingsUtil.excludesGlobList(contextRoot.root, _analysisSettings!);
     _excludesGlobList = AnalysisSettingsUtil.excludesGlobList(
-        contextRoot.root, _analysisSettings!);
+      contextRoot.root,
+      _analysisSettings!,
+    );
 
     runZonedGuarded(
       () {

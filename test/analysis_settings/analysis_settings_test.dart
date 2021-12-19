@@ -24,17 +24,22 @@ void main() {
         ''';
 
       final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-          AnalysisSettingsUtil.convertYamlToMap(yaml));
+        AnalysisSettingsUtil.convertYamlToMap(yaml),
+      );
 
       expect(analysisSettings.coolLinter?.types, hasLength(6));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
       expect(analysisSettings.coolLinter?.excludeFolders, hasLength(1));
 
       expect(
-          analysisSettings.coolLinter?.regexpExclude.first.pattern, 'Colors');
+        analysisSettings.coolLinter?.regexpExclude.first.pattern,
+        'Colors',
+      );
       expect(analysisSettings.coolLinter?.regexpExclude.first.hint, 'Hint');
       expect(
-          analysisSettings.coolLinter?.regexpExclude.first.severity, 'WARNING');
+        analysisSettings.coolLinter?.regexpExclude.first.severity,
+        'WARNING',
+      );
     });
 
     test('no cool_linter settings', () {
@@ -45,7 +50,8 @@ void main() {
         ''';
 
       final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-          AnalysisSettingsUtil.convertYamlToMap(yaml));
+        AnalysisSettingsUtil.convertYamlToMap(yaml),
+      );
 
       expect(analysisSettings.coolLinter, isNull);
     });
@@ -61,7 +67,8 @@ void main() {
         ''';
 
       final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-          AnalysisSettingsUtil.convertYamlToMap(yaml));
+        AnalysisSettingsUtil.convertYamlToMap(yaml),
+      );
 
       expect(analysisSettings.coolLinter?.types, hasLength(0));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(1));
@@ -76,7 +83,8 @@ void main() {
         ''';
 
       final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-          AnalysisSettingsUtil.convertYamlToMap(yaml));
+        AnalysisSettingsUtil.convertYamlToMap(yaml),
+      );
 
       expect(analysisSettings.coolLinter?.types, hasLength(1));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));
@@ -92,7 +100,8 @@ void main() {
         ''';
 
       final AnalysisSettings analysisSettings = AnalysisSettings.fromJson(
-          AnalysisSettingsUtil.convertYamlToMap(yaml));
+        AnalysisSettingsUtil.convertYamlToMap(yaml),
+      );
 
       expect(analysisSettings.coolLinter?.types, hasLength(0));
       expect(analysisSettings.coolLinter?.regexpExclude, hasLength(0));

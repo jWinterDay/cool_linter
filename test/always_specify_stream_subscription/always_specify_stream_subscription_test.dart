@@ -45,8 +45,10 @@ void main() {
 
       // yaml
       expect(analysisSettings.coolLinter!.extendedRules, hasLength(1));
-      expect(analysisSettings.coolLinter!.extendedRules.first,
-          'always_specify_stream_subscription');
+      expect(
+        analysisSettings.coolLinter!.extendedRules.first,
+        'always_specify_stream_subscription',
+      );
 
       // checker
       final List<RuleMessage> ruleMessageList =

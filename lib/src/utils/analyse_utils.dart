@@ -65,7 +65,9 @@ abstract class AnalysisSettingsUtil {
   }
 
   static List<Glob> excludesGlobList(
-      String root, AnalysisSettings analysisSettings) {
+    String root,
+    AnalysisSettings analysisSettings,
+  ) {
     final Iterable<String> patterns =
         analysisSettings.coolLinter?.excludeFolders ?? <String>[];
 
@@ -88,7 +90,9 @@ abstract class AnalysisSettingsUtil {
   }
 
   static Iterable<int> ignoreColumnList(
-      ResolvedUnitResult parseResult, RegExp regExpSuppression) {
+    ResolvedUnitResult parseResult,
+    RegExp regExpSuppression,
+  ) {
     final String content = parseResult.content;
 
     // ignores

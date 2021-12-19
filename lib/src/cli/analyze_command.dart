@@ -222,7 +222,8 @@ class AnalyzeCommand extends Command<void> {
         sb.writeln('$indent$indent${indent}pattern: ${regExpExclude.pattern}');
         sb.writeln('$indent$indent${indent}hint: ${regExpExclude.hint}');
         sb.writeln(
-            '$indent$indent${indent}severity: ${regExpExclude.severity}');
+          '$indent$indent${indent}severity: ${regExpExclude.severity}',
+        );
       }
     }
 
@@ -274,7 +275,8 @@ class AnalyzeCommand extends Command<void> {
           //   'col: [${message.location.startColumn}:${message.location.endColumn}] line:[${message.location.startLine}] offset = ${message.location.offset}',
           // );
           iosink.writeln(
-              AnsiColors.prepareRuleForPrint(message, withColor: false));
+            AnsiColors.prepareRuleForPrint(message, withColor: false),
+          );
         }
 
         totalWarnings += messageList.length;
@@ -285,8 +287,13 @@ class AnalyzeCommand extends Command<void> {
       }
     }
 
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings,
-        addInfo: 'errors', withColor: false));
+    iosink.writeln(
+      AnsiColors.totalWarningsPrint(
+        totalWarnings,
+        addInfo: 'errors',
+        withColor: false,
+      ),
+    );
 
     return wasError;
   }
@@ -384,8 +391,13 @@ class AnalyzeCommand extends Command<void> {
 
     //
     iosink.writeln(
-        AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'));
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalFileCorrects,
-        addInfo: 'fixed files'));
+      AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'),
+    );
+    iosink.writeln(
+      AnsiColors.totalWarningsPrint(
+        totalFileCorrects,
+        addInfo: 'fixed files',
+      ),
+    );
   }
 }

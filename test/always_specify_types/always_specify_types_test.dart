@@ -58,7 +58,8 @@ void main() {
         final String part4 = 'column: [${loc.startColumn}:${loc.endColumn}] ';
 
         print(
-            '$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}');
+          '$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}',
+        );
 
         // print(
         //   'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',

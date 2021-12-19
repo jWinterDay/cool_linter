@@ -40,7 +40,8 @@ Future<void> main(List<String> args) async {
     await runner.run(args);
   } on UsageException catch (exc) {
     stderr.writeln(
-        '${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
+      '${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}',
+    );
     // print('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
     exit(64);
   } on Exception catch (exc) {

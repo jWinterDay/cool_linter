@@ -15,6 +15,7 @@ _$_RegexpSettings _$_$_RegexpSettingsFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$_$_RegexpSettingsToJson(_$_RegexpSettings instance) => <String, dynamic>{
+Map<String, dynamic> _$_$_RegexpSettingsToJson(_$_RegexpSettings instance) =>
+    <String, dynamic>{
       'regexp_exclude': instance.regexpExclude,
     };

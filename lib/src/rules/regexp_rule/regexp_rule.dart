@@ -95,7 +95,7 @@ class RegExpRule extends Rule {
                 severityName: excludeWord.severity,
                 message: 'regexp_exclude: ${excludeWord.hint}',
                 code: 'regexp_exclude',
-                changeMessage: 'cool_linter. need to replace by pattern:',
+                replacement: excludeWord.replacement,
                 location: Location(
                   path,
                   offset, // offset

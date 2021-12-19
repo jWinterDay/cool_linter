@@ -110,6 +110,7 @@ class ExcludeWord with _$ExcludeWord {
   const factory ExcludeWord({
     String? pattern,
     @Default('') @JsonKey(name: 'hint', defaultValue: '') String hint,
+    @Default(null) @JsonKey(name: 'replacement', defaultValue: null) String? replacement,
     @Default('WARNING') @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity,
   }) = _ExcludeWord;
 

@@ -62,7 +62,6 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
         severityName: 'WARNING', // always_specify_stream_subscription
         message: 'always_specify_stream_subscription',
         code: 'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
-        changeMessage: 'cool_linter. always_specify_stream_subscription',
         location: Location(
           parseResult.path!, // file
           offset, // offset

@@ -43,18 +43,23 @@ mixin _$RegexpSettings {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $RegexpSettingsCopyWith<RegexpSettings> get copyWith => throw _privateConstructorUsedError;
+  $RegexpSettingsCopyWith<RegexpSettings> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $RegexpSettingsCopyWith<$Res> {
-  factory $RegexpSettingsCopyWith(RegexpSettings value, $Res Function(RegexpSettings) then) =
+  factory $RegexpSettingsCopyWith(
+          RegexpSettings value, $Res Function(RegexpSettings) then) =
       _$RegexpSettingsCopyWithImpl<$Res>;
-  $Res call({@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude});
+  $Res call(
+      {@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+          List<ExcludeWord> regexpExclude});
 }
 
 /// @nodoc
-class _$RegexpSettingsCopyWithImpl<$Res> implements $RegexpSettingsCopyWith<$Res> {
+class _$RegexpSettingsCopyWithImpl<$Res>
+    implements $RegexpSettingsCopyWith<$Res> {
   _$RegexpSettingsCopyWithImpl(this._value, this._then);
 
   final RegexpSettings _value;
@@ -75,17 +80,23 @@ class _$RegexpSettingsCopyWithImpl<$Res> implements $RegexpSettingsCopyWith<$Res
 }
 
 /// @nodoc
-abstract class _$RegexpSettingsCopyWith<$Res> implements $RegexpSettingsCopyWith<$Res> {
-  factory _$RegexpSettingsCopyWith(_RegexpSettings value, $Res Function(_RegexpSettings) then) =
+abstract class _$RegexpSettingsCopyWith<$Res>
+    implements $RegexpSettingsCopyWith<$Res> {
+  factory _$RegexpSettingsCopyWith(
+          _RegexpSettings value, $Res Function(_RegexpSettings) then) =
       __$RegexpSettingsCopyWithImpl<$Res>;
   @override
-  $Res call({@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude});
+  $Res call(
+      {@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+          List<ExcludeWord> regexpExclude});
 }
 
 /// @nodoc
-class __$RegexpSettingsCopyWithImpl<$Res> extends _$RegexpSettingsCopyWithImpl<$Res>
+class __$RegexpSettingsCopyWithImpl<$Res>
+    extends _$RegexpSettingsCopyWithImpl<$Res>
     implements _$RegexpSettingsCopyWith<$Res> {
-  __$RegexpSettingsCopyWithImpl(_RegexpSettings _value, $Res Function(_RegexpSettings) _then)
+  __$RegexpSettingsCopyWithImpl(
+      _RegexpSettings _value, $Res Function(_RegexpSettings) _then)
       : super(_value, (v) => _then(v as _RegexpSettings));
 
   @override
@@ -112,7 +123,8 @@ class _$_RegexpSettings extends _RegexpSettings {
           this.regexpExclude = const <ExcludeWord>[]})
       : super._();
 
-  factory _$_RegexpSettings.fromJson(Map<String, dynamic> json) => _$_$_RegexpSettingsFromJson(json);
+  factory _$_RegexpSettings.fromJson(Map<String, dynamic> json) =>
+      _$_$_RegexpSettingsFromJson(json);
 
   @override
   @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
@@ -128,11 +140,13 @@ class _$_RegexpSettings extends _RegexpSettings {
     return identical(this, other) ||
         (other is _RegexpSettings &&
             (identical(other.regexpExclude, regexpExclude) ||
-                const DeepCollectionEquality().equals(other.regexpExclude, regexpExclude)));
+                const DeepCollectionEquality()
+                    .equals(other.regexpExclude, regexpExclude)));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode ^ const DeepCollectionEquality().hash(regexpExclude);
+  int get hashCode =>
+      runtimeType.hashCode ^ const DeepCollectionEquality().hash(regexpExclude);
 
   @JsonKey(ignore: true)
   @override
@@ -147,16 +161,18 @@ class _$_RegexpSettings extends _RegexpSettings {
 
 abstract class _RegexpSettings extends RegexpSettings {
   const factory _RegexpSettings(
-          {@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[]) List<ExcludeWord> regexpExclude}) =
-      _$_RegexpSettings;
+      {@JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
+          List<ExcludeWord> regexpExclude}) = _$_RegexpSettings;
   const _RegexpSettings._() : super._();
 
-  factory _RegexpSettings.fromJson(Map<String, dynamic> json) = _$_RegexpSettings.fromJson;
+  factory _RegexpSettings.fromJson(Map<String, dynamic> json) =
+      _$_RegexpSettings.fromJson;
 
   @override
   @JsonKey(name: 'regexp_exclude', defaultValue: const <ExcludeWord>[])
   List<ExcludeWord> get regexpExclude => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$RegexpSettingsCopyWith<_RegexpSettings> get copyWith => throw _privateConstructorUsedError;
+  _$RegexpSettingsCopyWith<_RegexpSettings> get copyWith =>
+      throw _privateConstructorUsedError;
 }

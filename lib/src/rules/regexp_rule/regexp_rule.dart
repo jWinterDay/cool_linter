@@ -85,6 +85,7 @@ class RegExpRule extends Rule {
           if (offset != -1) {
             // ignore: always_specify_types
             final offsetLocation = lineInfo.getLocation(offset);
+            final String matchedWord = excludeWord.patternRegExp!.stringMatch(content.substring(offset))!;
 
             // check by ignore patter
             final int columnWithIgnoreComment = offsetLocation.lineNumber - 1;
@@ -93,13 +94,13 @@ class RegExpRule extends Rule {
             if (!willIgnore) {
               final RuleMessage ruleMessage = RuleMessage(
                 severityName: excludeWord.severity,
-                message: 'regexp_exclude: ${excludeWord.hint}',
+                message: excludeWord.hint,
                 code: 'regexp_exclude',
                 replacement: excludeWord.replacement,
                 location: Location(
                   path,
                   offset, // offset
-                  1, // length
+                  matchedWord.length, // length
                   offsetLocation.lineNumber, // startLine
                   offsetLocation.columnNumber + 1, // startColumn
                   offsetLocation.lineNumber, // endLine

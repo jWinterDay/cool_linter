@@ -29,16 +29,19 @@ List<String> excludedExtensions = <String>[
 
 Future<void> main(List<String> args) async {
   try {
-    final CommandRunner<void> runner = CommandRunner<void>('cool_linter', 'cool_linter cli')
-      ..addCommand(
-        AnalyzeCommand(
-          excludedExtensions: excludedExtensions,
-        ),
-      );
+    final CommandRunner<void> runner =
+        CommandRunner<void>('cool_linter', 'cool_linter cli')
+          ..addCommand(
+            AnalyzeCommand(
+              excludedExtensions: excludedExtensions,
+            ),
+          );
 
     await runner.run(args);
   } on UsageException catch (exc) {
-    stderr.writeln('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
+    stderr.writeln(
+      '${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}',
+    );
     // print('${AnsiColors.red}${exc.message}. Usage: ${AnsiColors.green}${exc.usage}${AnsiColors.reset}');
     exit(64);
   } on Exception catch (exc) {

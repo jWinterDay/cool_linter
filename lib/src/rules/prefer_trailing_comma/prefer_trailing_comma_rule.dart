@@ -1,7 +1,9 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/token.dart';
+import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart'
+    show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
@@ -22,7 +24,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
         );
 
   @override
-  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?prefer_trailing_comma');
+  final RegExp regExpSuppression =
+      RegExp(r'\/\/(\s)?ignore:(\s)?prefer_trailing_comma');
 
   /// custom check
   @override
@@ -35,7 +38,8 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
-    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    final Iterable<int>? ignoreColumnList =
+        AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
     if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
@@ -44,9 +48,10 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       this,
       lineInfo: parseResult.lineInfo,
     );
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.where((PreferTrailingCommaResult visitorMessage) {
+    return visitor.visitorRuleMessages
+        .where((PreferTrailingCommaResult visitorMessage) {
       return visitorMessage.filterByIgnore(
         ignoreColumnList: ignoreColumnList,
         parseResult: parseResult,
@@ -56,28 +61,26 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 
-      // ignore: always_specify_types
-      final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      // ignore: always_specify_types
-      final endLocation = parseResult.lineInfo.getLocation(end);
+      final CharacterLocation offsetLocation =
+          parseResult.lineInfo.getLocation(offset);
+      final CharacterLocation endLocation =
+          parseResult.lineInfo.getLocation(end);
 
-      String? corr = parseResult.content?.substring(offset, end);
-      if (corr != null) {
-        corr += TokenType.COMMA.lexeme;
-      }
+      final String corr =
+          parseResult.content.substring(offset, end) + TokenType.COMMA.lexeme;
 
       return RuleMessage(
         severityName: 'WARNING',
         message: 'prefer_trailing_comma',
         code: 'prefer_trailing_comma',
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine
           offsetLocation.columnNumber, // startColumn
-          endLocation.lineNumber, // endLine
-          endLocation.columnNumber, // endColumn
+          endLine: endLocation.lineNumber, // endLine
+          endColumn: endLocation.columnNumber, // endColumn
         ),
         correction: corr,
       );

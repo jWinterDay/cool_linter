@@ -11,7 +11,8 @@ import 'package:pub_semver/pub_semver.dart';
 
 class RegExpRule extends Rule {
   @override
-  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?regexp_exclude');
+  final RegExp regExpSuppression =
+      RegExp(r'\/\/(\s)?ignore:(\s)?regexp_exclude');
 
   // late Iterable<RegExp> _patternRegExpList;
 
@@ -43,13 +44,15 @@ class RegExpRule extends Rule {
       return <RuleMessage>[];
     }
 
-    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    final Iterable<int>? ignoreColumnList =
+        AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
     if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
 
-    final String content = parseResult.content!;
-    final List<ExcludeWord> excludeWordList = analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
+    final String content = parseResult.content;
+    final List<ExcludeWord> excludeWordList =
+        analysisSettings.coolLinter?.regexpExclude ?? <ExcludeWord>[];
 
     if (!analysisSettings.useRegexpExclude) {
       return const <RuleMessage>[];
@@ -85,11 +88,13 @@ class RegExpRule extends Rule {
           if (offset != -1) {
             // ignore: always_specify_types
             final offsetLocation = lineInfo.getLocation(offset);
-            final String matchedWord = excludeWord.patternRegExp!.stringMatch(content.substring(offset))!;
+            final String matchedWord = excludeWord.patternRegExp!
+                .stringMatch(content.substring(offset))!;
 
             // check by ignore patter
             final int columnWithIgnoreComment = offsetLocation.lineNumber - 1;
-            final bool willIgnore = ignoreColumnList.contains(columnWithIgnoreComment);
+            final bool willIgnore =
+                ignoreColumnList.contains(columnWithIgnoreComment);
 
             if (!willIgnore) {
               final RuleMessage ruleMessage = RuleMessage(
@@ -103,8 +108,8 @@ class RegExpRule extends Rule {
                   matchedWord.length, // length
                   offsetLocation.lineNumber, // startLine
                   offsetLocation.columnNumber + 1, // startColumn
-                  offsetLocation.lineNumber, // endLine
-                  offsetLocation.columnNumber + 1, // endColumn
+                  endLine: offsetLocation.lineNumber, // endLine
+                  endColumn: offsetLocation.columnNumber + 1, // endColumn
                 ),
               );
 

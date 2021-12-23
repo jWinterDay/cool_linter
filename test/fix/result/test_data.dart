@@ -1,24 +1,29 @@
 // LINT
 import 'dart:async';
 
-void firstFunction(String firstArgument, String secondArgument, String thirdArgument) {
+void firstFunction(
+    String firstArgument, String secondArgument, String thirdArgument) {
   return;
 }
 
 void secondFunction() {
-  firstFunction('some string', 'some other string', 'and another string for length exceed'); // LINT
+  firstFunction('some string', 'some other string',
+      'and another string for length exceed'); // LINT
 }
 
-void thirdFunction(String someLongVarName, void Function() someLongCallbackName, String arg3) {} // LINT
+void thirdFunction(String someLongVarName, void Function() someLongCallbackName,
+    String arg3) {} // LINT
 
 class TestClass1 {
   // LINT
-  void firstMethod(String firstArgument, String secondArgument, String thirdArgument) {
+  void firstMethod(
+      String firstArgument, String secondArgument, String thirdArgument) {
     return;
   }
 
   void secondMethod() {
-    firstMethod('some string', 'some other string', 'and another string for length exceed'); // LINT
+    firstMethod('some string', 'some other string',
+        'and another string for length exceed'); // LINT
 
     thirdFunction('some string', () {
       return;
@@ -26,9 +31,17 @@ class TestClass1 {
   }
 }
 
-final List<String> secondArray = ['some string', 'some other string', 'and another string for length exceed'];
+final List<String> secondArray = [
+  'some string',
+  'some other string',
+  'and another string for length exceed'
+];
 
-final Set<String> secondSet = {'some string', 'some other string', 'and another string for length exceed'};
+final Set<String> secondSet = {
+  'some string',
+  'some other string',
+  'and another string for length exceed'
+};
 
 final Map<String, String> secondMap = {
   'some string': 'and another string for length exceed',

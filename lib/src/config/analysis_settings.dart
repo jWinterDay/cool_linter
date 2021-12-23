@@ -32,11 +32,14 @@ class AnalysisSettings with _$AnalysisSettings {
     @Default(CoolLinter()) @JsonKey(name: 'cool_linter') CoolLinter? coolLinter,
   }) = _AnalysisSettings;
 
-  factory AnalysisSettings.fromJson(Map<String, dynamic> json) => _$AnalysisSettingsFromJson(json);
+  factory AnalysisSettings.fromJson(Map<String, dynamic> json) =>
+      _$AnalysisSettingsFromJson(json);
 
   /// use `always_specify_stream_subscription` rule
   bool get useAlwaysSpecifyStreamSub {
-    return coolLinter?.extendedRules.contains('always_specify_stream_subscription') ?? false;
+    return coolLinter?.extendedRules
+            .contains('always_specify_stream_subscription') ??
+        false;
   }
 
   List<String> get alwaysSpecifyTypes => coolLinter?.types ?? <String>[];
@@ -55,7 +58,8 @@ class AnalysisSettings with _$AnalysisSettings {
   bool get useAlwaysSpecifyTypes {
     final List<String> typeNameList = coolLinter?.types ?? <String>[];
 
-    final bool containsAnyOfRuleList = typeNameList.any(alwaysSpecifyTypeRuleNameList.contains);
+    final bool containsAnyOfRuleList =
+        typeNameList.any(alwaysSpecifyTypeRuleNameList.contains);
 
     return containsAnyOfRuleList;
   }
@@ -71,7 +75,8 @@ class AnalysisSettings with _$AnalysisSettings {
   }
 
   Iterable<RegExp> get patternRegExpList {
-    final Iterable<RegExp>? list = coolLinter?.regexpExclude.where((ExcludeWord e) {
+    final Iterable<RegExp>? list =
+        coolLinter?.regexpExclude.where((ExcludeWord e) {
       return e.patternRegExp != null;
     }).map((ExcludeWord e) {
       return e.patternRegExp!;
@@ -87,20 +92,27 @@ class CoolLinter with _$CoolLinter {
 
   const factory CoolLinter({
     // always_specify_types
-    @Default(<String>[]) @JsonKey(name: 'always_specify_types', defaultValue: <String>[]) List<String> types,
+    @Default(<String>[])
+    @JsonKey(name: 'always_specify_types', defaultValue: <String>[])
+        List<String> types,
     // regexp_exclude
     @Default(<ExcludeWord>[])
     @JsonKey(name: 'regexp_exclude', defaultValue: <ExcludeWord>[])
         List<ExcludeWord> regexpExclude,
     // exclude_folders
-    @Default(<String>[]) @JsonKey(name: 'exclude_folders', defaultValue: <String>[]) List<String> excludeFolders,
+    @Default(<String>[])
+    @JsonKey(name: 'exclude_folders', defaultValue: <String>[])
+        List<String> excludeFolders,
     // extended_rules
-    @Default(<String>[]) @JsonKey(name: 'extended_rules', defaultValue: <String>[]) List<String> extendedRules,
+    @Default(<String>[])
+    @JsonKey(name: 'extended_rules', defaultValue: <String>[])
+        List<String> extendedRules,
     // prefer_trailing_comma
     // @JsonKey(name: 'prefer_trailing_comma') PreferTrailingComma? preferTrailingComma,
   }) = _CoolLinter;
 
-  factory CoolLinter.fromJson(Map<String, dynamic> json) => _$CoolLinterFromJson(json);
+  factory CoolLinter.fromJson(Map<String, dynamic> json) =>
+      _$CoolLinterFromJson(json);
 }
 
 @freezed
@@ -110,11 +122,16 @@ class ExcludeWord with _$ExcludeWord {
   const factory ExcludeWord({
     String? pattern,
     @Default('') @JsonKey(name: 'hint', defaultValue: '') String hint,
-    @Default(null) @JsonKey(name: 'replacement', defaultValue: null) String? replacement,
-    @Default('WARNING') @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity,
+    @Default(null)
+    @JsonKey(name: 'replacement', defaultValue: null)
+        String? replacement,
+    @Default('WARNING')
+    @JsonKey(name: 'severity', defaultValue: 'WARNING')
+        String severity,
   }) = _ExcludeWord;
 
-  factory ExcludeWord.fromJson(Map<String, dynamic> json) => _$ExcludeWordFromJson(json);
+  factory ExcludeWord.fromJson(Map<String, dynamic> json) =>
+      _$ExcludeWordFromJson(json);
 
   RegExp? get patternRegExp {
     if (pattern == null) {

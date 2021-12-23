@@ -19,7 +19,8 @@ abstract class FileUtil {
           )
           .whereType<File>()
           .where((File file) {
-        final bool excluded = excludedExtensions.any((String excludedExtension) {
+        final bool excluded =
+            excludedExtensions.any((String excludedExtension) {
           return file.path.endsWith(excludedExtension);
         });
 

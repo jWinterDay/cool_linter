@@ -20,5 +20,12 @@ class A {
 
 class B {
   // MUST BE LINT. currently not caught (length < 120 symbols)
-  static A defA = A(16456, 253453454, c: 43242343, d: 4543544, e: 6666666, ssss: 'fdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd');
+  static A defA = A(
+    16456,
+    253453454,
+    c: 43242343,
+    d: 4543544,
+    e: 6666666,
+    ssss: 'fdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsd',
+  );
 }

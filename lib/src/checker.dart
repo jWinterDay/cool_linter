@@ -27,11 +27,8 @@ class Checker {
     required ResolvedUnitResult parseResult,
     AnalysisErrorSeverity errorSeverity = AnalysisErrorSeverity.WARNING,
   }) {
-    if (parseResult.content == null || parseResult.path == null) {
-      return <AnalysisErrorFixes>[];
-    }
-
-    final bool isExcluded = AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
+    final bool isExcluded =
+        AnalysisSettingsUtil.isExcluded(parseResult.path, excludesGlobList);
     if (isExcluded) {
       return <AnalysisErrorFixes>[];
     }
@@ -75,8 +72,8 @@ class Checker {
             'Replace with ${errorMessage.replacement}',
             edits: <SourceFileEdit>[
               SourceFileEdit(
-                parseResult.path!,
-                parseResult.unit?.declaredElement?.source.modificationStamp ?? 1,
+                parseResult.path,
+                1,
                 edits: <SourceEdit>[
                   SourceEdit(
                     errorMessage.location.offset, //1,

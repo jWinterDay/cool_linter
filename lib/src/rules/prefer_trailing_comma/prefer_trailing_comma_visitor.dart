@@ -16,8 +16,10 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
   final Rule rule;
   final LineInfo lineInfo;
 
-  final List<PreferTrailingCommaResult> _visitorRuleMessages = <PreferTrailingCommaResult>[];
-  List<PreferTrailingCommaResult> get visitorRuleMessages => _visitorRuleMessages;
+  final List<PreferTrailingCommaResult> _visitorRuleMessages =
+      <PreferTrailingCommaResult>[];
+  List<PreferTrailingCommaResult> get visitorRuleMessages =>
+      _visitorRuleMessages;
 
   // @override
   // void visitCompilationUnit(CompilationUnit node) {
@@ -108,7 +110,8 @@ class PreferTrailingCommaVisitor extends RecursiveAstVisitor<void> {
   }
 
   bool _isSameLine(Token token1, Token token2) {
-    return lineInfo.getLocation(token1.offset).lineNumber == lineInfo.getLocation(token2.offset).lineNumber;
+    return lineInfo.getLocation(token1.offset).lineNumber ==
+        lineInfo.getLocation(token2.offset).lineNumber;
   }
 
   bool _shouldAllowTrailingCommaException(AstNode lastNode) {

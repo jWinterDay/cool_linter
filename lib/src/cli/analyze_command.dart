@@ -65,24 +65,22 @@ class AnalyzeCommand extends Command<void> {
   String get name => 'analyze';
 
   @override
-  String get invocation => '${runner?.executableName} $name [arguments] <directories>';
+  String get invocation =>
+      '${runner?.executableName} $name [arguments] <directories>';
 
   @override
   Future<void> run() async {
-    // ignore: avoid_as
     final List<String> dirList = argResults?['directories'] as List<String>;
-    // ignore: avoid_as
     final bool fix = argResults?['fix'] as bool;
-    // ignore: avoid_as
-    final bool alwaysSpecifyTypesRule = argResults?['always_specify_types'] as bool;
+    final bool alwaysSpecifyTypesRule =
+        argResults?['always_specify_types'] as bool;
 
-    // ignore: avoid_as
-    final bool alwaysSpecifyStreamSubscriptionRule = argResults?['always_specify_stream_subscription'] as bool;
-    // ignore: avoid_as
+    final bool alwaysSpecifyStreamSubscriptionRule =
+        argResults?['always_specify_stream_subscription'] as bool;
     final String? regexpPath = argResults?['regexp_path'] as String?;
 
-    // ignore: avoid_as
-    final bool preferTrailingCommaRule = argResults?['prefer_trailing_comma'] as bool;
+    final bool preferTrailingCommaRule =
+        argResults?['prefer_trailing_comma'] as bool;
 
     RegexpSettings? regexpSettings;
     if (regexpPath != null) {
@@ -130,7 +128,8 @@ class AnalyzeCommand extends Command<void> {
       excludedExtensions: excludedExtensions,
     );
 
-    final Iterable<AnalysisContext> singleContextList = analysisContext.contexts.take(1);
+    final Iterable<AnalysisContext> singleContextList =
+        analysisContext.contexts.take(1);
 
     final AnalysisSettings analysisSettings = _createAnalysisSettings(
       alwaysSpecifyStreamSubscriptionRule: alwaysSpecifyStreamSubscriptionRule,
@@ -217,11 +216,14 @@ class AnalyzeCommand extends Command<void> {
     if (regexpSettings != null && regexpSettings.existsAtLeastOneRegExp) {
       sb.writeln('${indent}regexp_exclude:');
 
-      for (final ExcludeWord regExpExclude in regexpSettings.regexpExcludeSafeList) {
+      for (final ExcludeWord regExpExclude
+          in regexpSettings.regexpExcludeSafeList) {
         sb.writeln('$indent$indent-');
         sb.writeln('$indent$indent${indent}pattern: ${regExpExclude.pattern}');
         sb.writeln('$indent$indent${indent}hint: ${regExpExclude.hint}');
-        sb.writeln('$indent$indent${indent}severity: ${regExpExclude.severity}');
+        sb.writeln(
+          '$indent$indent${indent}severity: ${regExpExclude.severity}',
+        );
       }
     }
 
@@ -252,7 +254,8 @@ class AnalyzeCommand extends Command<void> {
       for (final String path in filePaths) {
         // print('----path = $path');
 
-        final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+        final SomeResolvedUnitResult unit =
+            await analysisContext.currentSession.getResolvedUnit(path);
 
         if (unit is! ResolvedUnitResult) {
           continue;
@@ -271,7 +274,9 @@ class AnalyzeCommand extends Command<void> {
           // print(
           //   'col: [${message.location.startColumn}:${message.location.endColumn}] line:[${message.location.startLine}] offset = ${message.location.offset}',
           // );
-          iosink.writeln(AnsiColors.prepareRuleForPrint(message, withColor: false));
+          iosink.writeln(
+            AnsiColors.prepareRuleForPrint(message, withColor: false),
+          );
         }
 
         totalWarnings += messageList.length;
@@ -282,7 +287,13 @@ class AnalyzeCommand extends Command<void> {
       }
     }
 
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalWarnings, addInfo: 'errors', withColor: false));
+    iosink.writeln(
+      AnsiColors.totalWarningsPrint(
+        totalWarnings,
+        addInfo: 'errors',
+        withColor: false,
+      ),
+    );
 
     return wasError;
   }
@@ -309,12 +320,10 @@ class AnalyzeCommand extends Command<void> {
 
     for (final String path in filePaths) {
       // print('path: [$path]');
-      final SomeResolvedUnitResult unit = await analysisContext.currentSession.getResolvedUnit2(path);
+      final SomeResolvedUnitResult unit =
+          await analysisContext.currentSession.getResolvedUnit(path);
 
       if (unit is! ResolvedUnitResult) {
-        continue;
-      }
-      if (unit.content == null) {
         continue;
       }
 
@@ -329,9 +338,9 @@ class AnalyzeCommand extends Command<void> {
           //   });
 
           // need work here
-          final String content = unit.content!;
+          final String content = unit.content;
           final StringBuffer sb = StringBuffer();
-          final File correctFile = File(unit.path!);
+          final File correctFile = File(unit.path);
 
           int prevPosition = 0;
           for (int i = 0; i < messageList.length; i++) {
@@ -344,7 +353,8 @@ class AnalyzeCommand extends Command<void> {
 
             // print('$part1 $part2 $part3 $part4');
 
-            final String strLeftPart = content.substring(prevPosition, message.location.offset);
+            final String strLeftPart =
+                content.substring(prevPosition, message.location.offset);
 
             sb.write(strLeftPart);
             if (message.correction == null) {
@@ -375,12 +385,19 @@ class AnalyzeCommand extends Command<void> {
 
         // discard any changes for file
         final File tmpFile = File(path);
-        await tmpFile.writeAsString(unit.content!);
+        await tmpFile.writeAsString(unit.content);
       }
     }
 
     //
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'));
-    iosink.writeln(AnsiColors.totalWarningsPrint(totalFileCorrects, addInfo: 'fixed files'));
+    iosink.writeln(
+      AnsiColors.totalWarningsPrint(totalError, addInfo: 'skipped files'),
+    );
+    iosink.writeln(
+      AnsiColors.totalWarningsPrint(
+        totalFileCorrects,
+        addInfo: 'fixed files',
+      ),
+    );
   }
 }

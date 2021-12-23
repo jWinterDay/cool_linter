@@ -1,6 +1,8 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart'
+    show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/ast_analyze_result_extension.dart';
@@ -21,7 +23,8 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
         );
 
   @override
-  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_stream_subscription');
+  final RegExp regExpSuppression =
+      RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_stream_subscription');
 
   /// custom check
   @override
@@ -35,15 +38,17 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
 
-    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    final Iterable<int>? ignoreColumnList =
+        AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
     if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
 
     final StreamSubscriptionVisitor visitor = StreamSubscriptionVisitor(this);
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
-    return visitor.visitorRuleMessages.where((StreamSubscriptionResult visitorMessage) {
+    return visitor.visitorRuleMessages
+        .where((StreamSubscriptionResult visitorMessage) {
       return visitorMessage.filterByIgnore(
         ignoreColumnList: ignoreColumnList,
         parseResult: parseResult,
@@ -53,23 +58,24 @@ class StreamSubscriptionRule extends LintRule implements NodeLintRule, Rule {
       final int offset = visitorMessage.astNode.offset;
       final int end = visitorMessage.astNode.end;
 
-      // ignore: always_specify_types
-      final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      // ignore: always_specify_types
-      final endLocation = parseResult.lineInfo.getLocation(end);
+      final CharacterLocation offsetLocation =
+          parseResult.lineInfo.getLocation(offset);
+      final CharacterLocation endLocation =
+          parseResult.lineInfo.getLocation(end);
 
       return RuleMessage(
         severityName: 'WARNING', // always_specify_stream_subscription
         message: 'always_specify_stream_subscription',
-        code: 'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
+        code:
+            'always_specify_stream_subscription', // visitorMessage.resultTypeAsString,
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine
           offsetLocation.columnNumber, // startColumn
-          endLocation.lineNumber, // endLine
-          endLocation.columnNumber, // endColumn
+          endLine: endLocation.lineNumber, // endLine
+          endColumn: endLocation.columnNumber, // endColumn
         ),
       );
     }).toList();

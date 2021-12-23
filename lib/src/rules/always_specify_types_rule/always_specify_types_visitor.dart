@@ -48,8 +48,10 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
   final bool useTypeName;
   final bool useVariableDeclarationList;
 
-  final List<AlwaysSpecifyTypesResult> _visitorRuleMessages = <AlwaysSpecifyTypesResult>[];
-  List<AlwaysSpecifyTypesResult> get visitorRuleMessages => _visitorRuleMessages;
+  final List<AlwaysSpecifyTypesResult> _visitorRuleMessages =
+      <AlwaysSpecifyTypesResult>[];
+  List<AlwaysSpecifyTypesResult> get visitorRuleMessages =>
+      _visitorRuleMessages;
 
   void _checkLiteral(TypedLiteral node, {required ResultType resultType}) {
     if (node.typeArguments == null) {
@@ -96,7 +98,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     if (node.type == null) {
       // correction
       final SimpleIdentifier? identifier = node.identifier;
-      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+      final String? varType =
+          node.declaredElement?.type.getDisplayString(withNullability: true);
       final String? lexeme = node.keyword?.lexeme;
 
       String? corr;
@@ -143,11 +146,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
     );
   }
 
-  void _visitNamedType(TypeName node) {
+  void _visitNamedType(NamedType node) {
     final DartType? type = node.type;
 
     if (type is InterfaceType) {
-      final TypeParameterizedElement element = type.aliasElement ?? type.element;
+      final TypeParameterizedElement element =
+          type.alias?.element ?? type.element;
 
       if (element.typeParameters.isNotEmpty &&
           node.typeArguments == null &&
@@ -156,7 +160,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
         // correction
         String? corr;
 
-        final String displayString = type.getDisplayString(withNullability: true);
+        final String displayString =
+            type.getDisplayString(withNullability: true);
         if (!displayString.contains('dynamic')) {
           corr = displayString;
         }
@@ -195,9 +200,12 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
     final SimpleIdentifier? identifier = node.identifier;
 
-    if (identifier != null && node.type == null && !isJustUnderscores(identifier.name)) {
+    if (identifier != null &&
+        node.type == null &&
+        !isJustUnderscores(identifier.name)) {
       // correction
-      final String? varType = node.declaredElement?.type.getDisplayString(withNullability: true);
+      final String? varType =
+          node.declaredElement?.type.getDisplayString(withNullability: true);
 
       String? corr;
       if (varType != 'dynamic') {
@@ -224,8 +232,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
 
   // ---
   @override
-  void visitTypeName(TypeName node) {
-    super.visitTypeName(node);
+  void visitNamedType(NamedType node) {
+    super.visitNamedType(node);
 
     if (!useTypeName) return;
 
@@ -245,7 +253,8 @@ class AlwaysSpecifyTypesVisitor extends RecursiveAstVisitor<void> {
       String? corr;
       if (node.variables.length == 1) {
         final VariableDeclaration item = node.variables.first;
-        final String? varType = item.declaredElement?.type.getDisplayString(withNullability: true);
+        final String? varType =
+            item.declaredElement?.type.getDisplayString(withNullability: true);
         final String? lexeme = node.keyword?.lexeme;
 
         // item.childEntities.join(' ')

@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/results.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group; //, LinterContext, NodeLintRegistry, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart'
+    show LintRule, Group; //, LinterContext, NodeLintRegistry, NodeLintRule;
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 

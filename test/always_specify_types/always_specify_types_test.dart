@@ -6,9 +6,8 @@ import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_t
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
+import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:test/test.dart';
-
-import '../../lib/src/utils/resolved_unit_util.dart';
 
 const String _kTestDataPath = 'test/always_specify_types/test_data.dart';
 
@@ -47,8 +46,10 @@ void main() {
 
       // ==================
       // final Iterable<RuleMessage> typedLiteralList =
-      list.forEach((RuleMessage message) {
-        final String? typeStr = kOptionNameOfResultType[ResultType.typedLiteral];
+      for (final RuleMessage message in list) {
+        // ignore: unused_local_variable
+        final String? typeStr =
+            kOptionNameOfResultType[ResultType.typedLiteral];
         final Location loc = message.location;
 
         final String part1 = 'corr: ${message.correction} ';
@@ -56,12 +57,14 @@ void main() {
         final String part3 = 'line: [${loc.startLine}] '; //:${loc.endLine}] ';
         final String part4 = 'column: [${loc.startColumn}:${loc.endColumn}] ';
 
-        print('$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}');
+        print(
+          '$part1 $part2 $part3 $part4 ${loc.file}:${loc.endLine}:${loc.endColumn}',
+        );
 
         // print(
         //   'corr: ${e.correction} offset: ${e.location.offset} startline: ${e.location.startLine} column: [${e.location.startColumn}:${e.location.endColumn}]',
         // );
-      });
+      }
       // expect(typedLiteralList, hasLength(3));
       // ==================
 

@@ -1,6 +1,8 @@
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/lint/linter.dart' show LintRule, Group, NodeLintRule;
+import 'package:analyzer/src/lint/linter.dart'
+    show LintRule, Group, NodeLintRule;
 import 'package:analyzer_plugin/protocol/protocol_common.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:cool_linter/src/rules/always_specify_types_rule/always_specify_types_result.dart';
@@ -21,7 +23,8 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
         );
 
   @override
-  final RegExp regExpSuppression = RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_types');
+  final RegExp regExpSuppression =
+      RegExp(r'\/\/(\s)?ignore:(\s)?always_specify_types');
 
   @override
   List<String> get incompatibleRules {
@@ -42,10 +45,8 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       return <RuleMessage>[];
     }
     // content
-    if (parseResult.content == null) {
-      return <RuleMessage>[];
-    }
-    final Iterable<int>? ignoreColumnList = AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
+    final Iterable<int>? ignoreColumnList =
+        AnalysisSettingsUtil.ignoreColumnList(parseResult, regExpSuppression);
     if (ignoreColumnList == null) {
       return <RuleMessage>[];
     }
@@ -53,12 +54,18 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
     //
     final List<String> types = analysisSettings.alwaysSpecifyTypes;
 
-    final bool useTypedLiteral = types.contains(kOptionNameOfResultType[ResultType.typedLiteral]);
-    final bool useDeclaredIdentifier = types.contains(kOptionNameOfResultType[ResultType.declaredIdentifier]);
-    final bool useSetOrMapLiteral = types.contains(kOptionNameOfResultType[ResultType.setOrMapLiteral]);
-    final bool useSimpleFormalParameter = types.contains(kOptionNameOfResultType[ResultType.simpleFormalParameter]);
-    final bool useTypeName = types.contains(kOptionNameOfResultType[ResultType.typeName]);
-    final bool useVariableDeclarationList = types.contains(kOptionNameOfResultType[ResultType.variableDeclarationList]);
+    final bool useTypedLiteral =
+        types.contains(kOptionNameOfResultType[ResultType.typedLiteral]);
+    final bool useDeclaredIdentifier =
+        types.contains(kOptionNameOfResultType[ResultType.declaredIdentifier]);
+    final bool useSetOrMapLiteral =
+        types.contains(kOptionNameOfResultType[ResultType.setOrMapLiteral]);
+    final bool useSimpleFormalParameter = types
+        .contains(kOptionNameOfResultType[ResultType.simpleFormalParameter]);
+    final bool useTypeName =
+        types.contains(kOptionNameOfResultType[ResultType.typeName]);
+    final bool useVariableDeclarationList = types
+        .contains(kOptionNameOfResultType[ResultType.variableDeclarationList]);
 
     // print(
     //   'useTypedLiteral: $useTypedLiteral, useDeclaredIdentifier: $useDeclaredIdentifier, useSetOrMapLiteral: $useSetOrMapLiteral',
@@ -76,7 +83,7 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       useTypeName: useTypeName,
       useVariableDeclarationList: useVariableDeclarationList,
     );
-    parseResult.unit?.visitChildren(visitor);
+    parseResult.unit.visitChildren(visitor);
 
     // final List<String> analysisTypes = analysisSettings.coolLinter?.types ?? <String>[];
 
@@ -94,26 +101,27 @@ class AlwaysSpecifyTypesRule extends LintRule implements NodeLintRule, Rule {
       final int offset = typesResult.astNode.offset;
       final int end = typesResult.astNode.end;
 
-      // ignore: always_specify_types
-      final offsetLocation = parseResult.lineInfo.getLocation(offset);
-      // ignore: always_specify_types
-      final endLocation = parseResult.lineInfo.getLocation(end);
+      final CharacterLocation offsetLocation =
+          parseResult.lineInfo.getLocation(offset);
+      final CharacterLocation endLocation =
+          parseResult.lineInfo.getLocation(end);
 
       return RuleMessage(
         severityName: 'WARNING',
         message: 'always_specify_rule: ${typesResult.resultTypeAsString}',
         code: typesResult.resultTypeAsString,
-        changeMessage: 'cool_linter. always_specify_type for rule: ${typesResult.resultTypeAsString}',
+        changeMessage:
+            'cool_linter. always_specify_type for rule: ${typesResult.resultTypeAsString}',
         addInfo: typesResult.resultTypeAsString,
         correction: typesResult.correction,
         location: Location(
-          parseResult.path!, // file
+          parseResult.path, // file
           offset, // offset
           end - offset, // length
           offsetLocation.lineNumber, // startLine
           offsetLocation.columnNumber, // startColumn
-          endLocation.lineNumber, // endLine
-          endLocation.columnNumber, // endColumn
+          endLine: endLocation.lineNumber, // endLine
+          endColumn: endLocation.columnNumber, // endColumn
         ),
       );
     }).toList();

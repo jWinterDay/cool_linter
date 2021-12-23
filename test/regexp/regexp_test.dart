@@ -4,9 +4,8 @@ import 'package:cool_linter/src/rules/regexp_rule/regexp_rule.dart';
 import 'package:cool_linter/src/rules/rule.dart';
 import 'package:cool_linter/src/rules/rule_message.dart';
 import 'package:cool_linter/src/utils/analyse_utils.dart';
+import 'package:cool_linter/src/utils/resolved_unit_util.dart';
 import 'package:test/test.dart';
-
-import '../../lib/src/utils/resolved_unit_util.dart';
 
 const String _kTestDataPath = 'test/regexp/test_data.dart';
 

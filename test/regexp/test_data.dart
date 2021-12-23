@@ -13,5 +13,4 @@ class TestClass2 {
 final TestClass tc = TestClass();
 final ttterter = TestClass2();
 
-// ignore: always_specify_types
 final dfdsf = tc.test();

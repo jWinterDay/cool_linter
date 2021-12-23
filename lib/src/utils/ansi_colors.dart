@@ -11,7 +11,11 @@ abstract class AnsiColors {
   static const String white = '\x1B[37m';
   static const String reset = '\x1B[0m';
 
-  static String totalWarningsPrint(int count, {String addInfo = '', bool withColor = true}) {
+  static String totalWarningsPrint(
+    int count, {
+    String addInfo = '',
+    bool withColor = true,
+  }) {
     final StringBuffer sb = StringBuffer();
 
     if (withColor) sb.write(AnsiColors.cyan);
@@ -22,19 +26,26 @@ abstract class AnsiColors {
     return sb.toString();
   }
 
-  static void cliSettingsPrint(String name, Object? setting, {bool withColor = true}) {
+  static void cliSettingsPrint(
+    String name,
+    Object? setting, {
+    bool withColor = true,
+  }) {
     if (withColor) {
-      // ignore: avoid_print
-      print('${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}');
+      print(
+        '${AnsiColors.yellow}[$name]:${AnsiColors.white} ${setting?.toString()}${AnsiColors.reset}',
+      );
 
       return;
     }
 
-    // ignore: avoid_print
     print('[$name]: ${setting?.toString()}');
   }
 
-  static String prepareRuleForPrint(RuleMessage ruleMessage, {bool withColor = true}) {
+  static String prepareRuleForPrint(
+    RuleMessage ruleMessage, {
+    bool withColor = true,
+  }) {
     final StringBuffer sb = StringBuffer();
 
     if (withColor) sb.write(AnsiColors.red);

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:cool_linter/src/config/analysis_settings.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;
@@ -32,7 +33,8 @@ const List<String> kDefaultExcludedFolders = <String>[
 /// '.dart_tool/**',
 /// '.vscode/**',
 /// ```
-final List<String> kDefaultExcludedFoldersYaml = kDefaultExcludedFolders.map((String e) {
+final List<String> kDefaultExcludedFoldersYaml =
+    kDefaultExcludedFolders.map((String e) {
   return e + '/**';
 }).toList();
 
@@ -62,8 +64,12 @@ abstract class AnalysisSettingsUtil {
     return AnalysisSettings.fromJson(convertYamlToMap(yaml));
   }
 
-  static List<Glob> excludesGlobList(String root, AnalysisSettings analysisSettings) {
-    final Iterable<String> patterns = analysisSettings.coolLinter?.excludeFolders ?? <String>[];
+  static List<Glob> excludesGlobList(
+    String root,
+    AnalysisSettings analysisSettings,
+  ) {
+    final Iterable<String> patterns =
+        analysisSettings.coolLinter?.excludeFolders ?? <String>[];
 
     return <String>[
       ...kDefaultExcludedFoldersYaml,
@@ -83,19 +89,18 @@ abstract class AnalysisSettingsUtil {
     });
   }
 
-  static Iterable<int>? ignoreColumnList(ResolvedUnitResult parseResult, RegExp regExpSuppression) {
-    if (parseResult.content == null) {
-      return null;
-    }
-
-    final String content = parseResult.content!;
+  static Iterable<int> ignoreColumnList(
+    ResolvedUnitResult parseResult,
+    RegExp regExpSuppression,
+  ) {
+    final String content = parseResult.content;
 
     // ignores
     final Iterable<RegExpMatch> matches = regExpSuppression.allMatches(content);
     // places of [// ignore: always_specify_stream_subscription] comment
     final Iterable<int> ignoreColumnList = matches.map((RegExpMatch match) {
-      // ignore: always_specify_types
-      final loc = parseResult.lineInfo.getLocation(match.start);
+      final CharacterLocation loc =
+          parseResult.lineInfo.getLocation(match.start);
 
       return loc.lineNumber;
     });

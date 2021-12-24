@@ -8,9 +8,9 @@ class RuleMessage {
     required this.location,
     required this.code,
     required this.message,
-    required this.changeMessage,
-    this.addInfo,
+    this.replacement,
     this.correction,
+    this.addInfo,
   });
 
   final String severityName;
@@ -21,12 +21,12 @@ class RuleMessage {
 
   final String code;
 
-  final String? addInfo;
+  final String? replacement;
 
   /// fix info shown for user
-  final String changeMessage;
-
   final String? correction;
+
+  final String? addInfo;
 
   @override
   String toString() {
@@ -35,7 +35,7 @@ class RuleMessage {
     sb.writeln('severityName: $severityName');
     sb.writeln('message: $message');
     sb.writeln('code: $code');
-    sb.writeln('changeMessage: $changeMessage');
+    sb.writeln('correction: $correction');
     sb.writeln('location: $location');
     sb.writeln('correction: $correction');
 

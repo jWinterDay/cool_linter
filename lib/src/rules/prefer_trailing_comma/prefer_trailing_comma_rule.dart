@@ -73,7 +73,6 @@ class PreferTrailingCommaRule extends LintRule implements NodeLintRule, Rule {
         severityName: 'WARNING',
         message: 'prefer_trailing_comma',
         code: 'prefer_trailing_comma',
-        changeMessage: 'prefer_trailing_comma',
         location: Location(
           parseResult.path, // file
           offset, // offset

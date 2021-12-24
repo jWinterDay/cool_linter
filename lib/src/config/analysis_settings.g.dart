@@ -50,6 +50,7 @@ _$_ExcludeWord _$$_ExcludeWordFromJson(Map<String, dynamic> json) =>
     _$_ExcludeWord(
       pattern: json['pattern'] as String?,
       hint: json['hint'] as String? ?? '',
+      replacement: json['replacement'] as String? ?? null,
       severity: json['severity'] as String? ?? 'WARNING',
     );
 
@@ -57,5 +58,6 @@ Map<String, dynamic> _$$_ExcludeWordToJson(_$_ExcludeWord instance) =>
     <String, dynamic>{
       'pattern': instance.pattern,
       'hint': instance.hint,
+      'replacement': instance.replacement,
       'severity': instance.severity,
     };

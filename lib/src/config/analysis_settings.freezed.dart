@@ -463,11 +463,14 @@ class _$ExcludeWordTearOff {
       {String? pattern,
       @JsonKey(name: 'hint', defaultValue: '')
           String hint = '',
+      @JsonKey(name: 'replacement', defaultValue: null)
+          String? replacement = null,
       @JsonKey(name: 'severity', defaultValue: 'WARNING')
           String severity = 'WARNING'}) {
     return _ExcludeWord(
       pattern: pattern,
       hint: hint,
+      replacement: replacement,
       severity: severity,
     );
   }
@@ -485,6 +488,8 @@ mixin _$ExcludeWord {
   String? get pattern => throw _privateConstructorUsedError;
   @JsonKey(name: 'hint', defaultValue: '')
   String get hint => throw _privateConstructorUsedError;
+  @JsonKey(name: 'replacement', defaultValue: null)
+  String? get replacement => throw _privateConstructorUsedError;
   @JsonKey(name: 'severity', defaultValue: 'WARNING')
   String get severity => throw _privateConstructorUsedError;
 
@@ -502,6 +507,7 @@ abstract class $ExcludeWordCopyWith<$Res> {
   $Res call(
       {String? pattern,
       @JsonKey(name: 'hint', defaultValue: '') String hint,
+      @JsonKey(name: 'replacement', defaultValue: null) String? replacement,
       @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity});
 }
 
@@ -517,6 +523,7 @@ class _$ExcludeWordCopyWithImpl<$Res> implements $ExcludeWordCopyWith<$Res> {
   $Res call({
     Object? pattern = freezed,
     Object? hint = freezed,
+    Object? replacement = freezed,
     Object? severity = freezed,
   }) {
     return _then(_value.copyWith(
@@ -528,6 +535,10 @@ class _$ExcludeWordCopyWithImpl<$Res> implements $ExcludeWordCopyWith<$Res> {
           ? _value.hint
           : hint // ignore: cast_nullable_to_non_nullable
               as String,
+      replacement: replacement == freezed
+          ? _value.replacement
+          : replacement // ignore: cast_nullable_to_non_nullable
+              as String?,
       severity: severity == freezed
           ? _value.severity
           : severity // ignore: cast_nullable_to_non_nullable
@@ -546,6 +557,7 @@ abstract class _$ExcludeWordCopyWith<$Res>
   $Res call(
       {String? pattern,
       @JsonKey(name: 'hint', defaultValue: '') String hint,
+      @JsonKey(name: 'replacement', defaultValue: null) String? replacement,
       @JsonKey(name: 'severity', defaultValue: 'WARNING') String severity});
 }
 
@@ -563,6 +575,7 @@ class __$ExcludeWordCopyWithImpl<$Res> extends _$ExcludeWordCopyWithImpl<$Res>
   $Res call({
     Object? pattern = freezed,
     Object? hint = freezed,
+    Object? replacement = freezed,
     Object? severity = freezed,
   }) {
     return _then(_ExcludeWord(
@@ -574,6 +587,10 @@ class __$ExcludeWordCopyWithImpl<$Res> extends _$ExcludeWordCopyWithImpl<$Res>
           ? _value.hint
           : hint // ignore: cast_nullable_to_non_nullable
               as String,
+      replacement: replacement == freezed
+          ? _value.replacement
+          : replacement // ignore: cast_nullable_to_non_nullable
+              as String?,
       severity: severity == freezed
           ? _value.severity
           : severity // ignore: cast_nullable_to_non_nullable
@@ -589,6 +606,8 @@ class _$_ExcludeWord extends _ExcludeWord {
       {this.pattern,
       @JsonKey(name: 'hint', defaultValue: '')
           this.hint = '',
+      @JsonKey(name: 'replacement', defaultValue: null)
+          this.replacement = null,
       @JsonKey(name: 'severity', defaultValue: 'WARNING')
           this.severity = 'WARNING'})
       : super._();
@@ -602,12 +621,15 @@ class _$_ExcludeWord extends _ExcludeWord {
   @JsonKey(name: 'hint', defaultValue: '')
   final String hint;
   @override
+  @JsonKey(name: 'replacement', defaultValue: null)
+  final String? replacement;
+  @override
   @JsonKey(name: 'severity', defaultValue: 'WARNING')
   final String severity;
 
   @override
   String toString() {
-    return 'ExcludeWord(pattern: $pattern, hint: $hint, severity: $severity)';
+    return 'ExcludeWord(pattern: $pattern, hint: $hint, replacement: $replacement, severity: $severity)';
   }
 
   @override
@@ -617,6 +639,8 @@ class _$_ExcludeWord extends _ExcludeWord {
             other is _ExcludeWord &&
             const DeepCollectionEquality().equals(other.pattern, pattern) &&
             const DeepCollectionEquality().equals(other.hint, hint) &&
+            const DeepCollectionEquality()
+                .equals(other.replacement, replacement) &&
             const DeepCollectionEquality().equals(other.severity, severity));
   }
 
@@ -625,6 +649,7 @@ class _$_ExcludeWord extends _ExcludeWord {
       runtimeType,
       const DeepCollectionEquality().hash(pattern),
       const DeepCollectionEquality().hash(hint),
+      const DeepCollectionEquality().hash(replacement),
       const DeepCollectionEquality().hash(severity));
 
   @JsonKey(ignore: true)
@@ -643,6 +668,8 @@ abstract class _ExcludeWord extends ExcludeWord {
       {String? pattern,
       @JsonKey(name: 'hint', defaultValue: '')
           String hint,
+      @JsonKey(name: 'replacement', defaultValue: null)
+          String? replacement,
       @JsonKey(name: 'severity', defaultValue: 'WARNING')
           String severity}) = _$_ExcludeWord;
   const _ExcludeWord._() : super._();
@@ -655,6 +682,9 @@ abstract class _ExcludeWord extends ExcludeWord {
   @override
   @JsonKey(name: 'hint', defaultValue: '')
   String get hint;
+  @override
+  @JsonKey(name: 'replacement', defaultValue: null)
+  String? get replacement;
   @override
   @JsonKey(name: 'severity', defaultValue: 'WARNING')
   String get severity;

@@ -55,41 +55,45 @@ class Checker {
 
     return errorMessageList.map((RuleMessage errorMessage) {
       final AnalysisError error = AnalysisError(
-        AnalysisErrorSeverity.INFO, //( errorMessage.severityName),
+        AnalysisErrorSeverity(errorMessage.severityName),
         AnalysisErrorType.LINT,
         errorMessage.location,
         errorMessage.message,
         errorMessage.code,
-        hasFix: true,
-        correction:
-            'go correct path = ${parseResult.path} offset = ${errorMessage.location.offset} len = ${errorMessage.location.length}',
+        correction: errorMessage.correction,
+        hasFix: errorMessage.replacement != null,
       );
 
-      final PrioritizedSourceChange fix = PrioritizedSourceChange(
-        1,
-        SourceChange(
-          'Apply fixes for cool_linter.',
-          edits: <SourceFileEdit>[
-            SourceFileEdit(
-              parseResult.path,
-              1,
-              edits: <SourceEdit>[
-                SourceEdit(
-                  errorMessage.location.offset, //1,
-                  errorMessage.location.length, //2,
-                  errorMessage.changeMessage,
-                ),
-              ],
-            )
-          ],
-        ),
-      );
+      final List<PrioritizedSourceChange>? fixes;
+      if (errorMessage.replacement != null) {
+        final PrioritizedSourceChange fix = PrioritizedSourceChange(
+          1,
+          SourceChange(
+            'Replace with ${errorMessage.replacement}',
+            edits: <SourceFileEdit>[
+              SourceFileEdit(
+                parseResult.path,
+                1,
+                edits: <SourceEdit>[
+                  SourceEdit(
+                    errorMessage.location.offset, //1,
+                    errorMessage.location.length, //2,
+                    errorMessage.replacement ?? '',
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+
+        fixes = <PrioritizedSourceChange>[fix];
+      } else {
+        fixes = null;
+      }
 
       return AnalysisErrorFixes(
         error,
-        fixes: <PrioritizedSourceChange>[
-          fix,
-        ],
+        fixes: fixes,
       );
     });
   }

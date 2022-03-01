@@ -1,3 +1,5 @@
+## 2.4.0
+    fixes from github
 ## 2.3.5
     withColor flag for command line
 ## 2.3.4

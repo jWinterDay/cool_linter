@@ -1,3 +1,5 @@
+## 2.6.0
+    bump some packages
 ## 2.5.0
     fix incompatible with freezed v2
 ## 2.4.0

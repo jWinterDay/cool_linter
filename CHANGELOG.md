@@ -1,3 +1,5 @@
+## 2.5.0
+    fix incompatible with freezed v2
 ## 2.4.0
     fixes from github
 ## 2.3.5

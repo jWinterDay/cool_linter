@@ -25,8 +25,6 @@ linter:
     - avoid_private_typedef_functions
     - avoid_redundant_argument_values
     - avoid_relative_lib_imports
-    - avoid_returning_null
-    - avoid_returning_null_for_future
     - avoid_returning_this
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
